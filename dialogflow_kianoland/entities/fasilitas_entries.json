@@ -1,0 +1,13 @@
+[
+  {"value": "kanopi", "synonyms": ["kanopi"]},
+  {"value": "carport", "synonyms": ["carport", "garasi"]},
+  {"value": "tol", "synonyms": ["jalan tol", "akses tol"]},
+  {"value": "sekolah", "synonyms": ["sekolah", "sd", "smp", "sma"]},
+  {"value": "rumah sakit", "synonyms": ["rumah sakit", "rs"]},
+  {"value": "pasar", "synonyms": ["pasar", "pasar tradisional"]},
+  {"value": "taman", "synonyms": ["taman", "taman bermain"]},
+  {"value": "jogging track", "synonyms": ["jogging track", "track lari"]},
+  {"value": "kolam renang", "synonyms": ["kolam renang", "renang"]},
+  {"value": "club house", "synonyms": ["club house", "klub"]},
+  {"value": "mushola", "synonyms": ["mushola", "tempat ibadah"]}
+]

@@ -1,0 +1,72 @@
+{
+  "displayName": "info_proyek",
+  "trainingPhrases": [
+    {"parts": [{"text": "info"}]},
+    {"parts": [{"text": "info!"}]},
+    {"parts": [{"text": "berikan info"}]},
+    {"parts": [{"text": "informasi"}]},
+    {"parts": [{"text": "berikan informasi"}]},
+    {"parts": [{"text": "tampilkan info"}]},
+    {"parts": [{"text": "detail proyek"}]},
+    {"parts": [{"text": "proyek"}]},
+    {"parts": [{"text": "info "}, {"text": "Natureland Kiano 3", "entityType": "@proyek"}]},
+    {"parts": [{"text": "Saya ingin tahu tentang "}, {"text": "Green Jonggol Village", "entityType": "@proyek"}]},
+    {"parts": [{"text": "Detail Natureland Kiano 2"}]},
+    {"parts": [{"text": "informasi "}, {"text": "Natureland Kiano 3", "entityType": "@proyek"}]},
+    {"parts": [{"text": "berikan info "}, {"text": "Green Jonggol Village", "entityType": "@proyek"}]},
+    {"parts": [{"text": "Natureland Kiano 2"}]},
+    {"parts": [{"text": "kiano 2"}]},
+    {"parts": [{"text": "nlk2"}]},
+    {"parts": [{"text": "gjv"}]},
+    {"parts": [{"text": "info properti"}]},
+    {
+      "parts": [
+        { "text": "saya ingin info " },
+        { "text": "kiano 3", "entityType": "@proyek" }
+      ]
+    },
+    {
+      "parts": [
+        { "text": "saya ingin informasi " },
+        { "text": "kiano 2", "entityType": "@proyek" }
+      ]
+    },
+    {
+      "parts": [
+        { "text": "informasi proyek " },
+        { "text": "nlk2", "entityType": "@proyek" }
+      ]
+    },
+    {
+      "parts": [
+        { "text": "berikan informasi proyek " },
+        { "text": "k3", "entityType": "@proyek" }
+      ]
+    },
+    {
+      "parts": [
+        { "text": "saya ingin tahu tentang " },
+        { "text": "kiano tiga", "entityType": "@proyek" }
+      ]
+    },
+    {
+      "parts": [
+        {"text": "info "},
+        {"text": "Natureland Kiano 1", "entityType": "@proyek"}
+      ]
+    }
+  ],
+  "messages": [
+    {
+      "text": {
+        "text": [
+          "{{#Natureland Kiano 1}}bold_startNatureland Kiano 1:bold_end\nMaaf, proyek ini sudah sold out. Kami merekomendasikan proyek terbaru kami:\n\n🏡 Natureland Kiano 2 (Jatisampurna, Bekasi)\n🏡 Natureland Kiano 3 (Cibarusah, Bekasi)\n🌳 Green Jonggol Village (Jonggol, Bogor)\n\nKetik 'info [nama_proyek]' untuk detail lebih lanjut.{{/Natureland Kiano 1}}",
+          "{{#Natureland Kiano 2}}bold_startNatureland Kiano 2 - Detail Proyek:bold_end\nLokasi: KP. Pondok Ranggon, Jatirangon – Jatisampurna\nTipe Rumah: 40 / 60\nHarga Jual: Rp 600.000.000\nBooking Fee: Rp 1.000.000\nDP: 0% (Gratis)\nAngsuran Tetap: Rp 2.235.000/bulan (10, 15, 20, 25 tahun)\nPromo: FREE Kanopi\nFasilitas: One Gate System, Taman Bermain, Club House, Mushola, Sport Center{{/Natureland Kiano 2}}",
+          "{{#Natureland Kiano 3}}bold_startNatureland Kiano 3 - Detail Proyek:bold_end\nLokasi: Kp. Babakan, Cibarusahkota – Bekasi\nTipe Rumah: 40 / 60\nHarga Jual: Rp 465.000.000\nBooking Fee: Rp 1.000.000\nDP: 0% (Tanpa Uang Muka)\nAngsuran Tahun 1: Rp 771.000/bulan\nAngsuran Tahun 2: Rp 1.546.125/bulan\nPromo: Gratis Kanopi & Carport, Free Biaya-Biaya, KPR Zero, Subsidi Bunga\nFurnish Termasuk: 2 Tempat Tidur, 2 Lemari, Sofa, Meja Makan, Dapur & Kabinet, AC, Closed Duduk, Shower, Kanopi\nFasilitas: Akses Tol Sukaragam, One Gate System, Indoor System, Taman Bermain, Jogging Track, Club House, Sport Center, Mushola, Perkantoran Kiano{{/Natureland Kiano 3}}",
+          "{{#Green Jonggol Village}}bold_startGreen Jonggol Village - Detail Proyek:bold_end\nLokasi: Jl. Kp. Pojok Salak RT 04 RW 08, Jonggol – Bogor\nTipe Rumah: 30/60 (Magnolya), 36/72\nHarga Jual: Rp 400.000.000\nBooking Fee: Rp 1.000.000\nDP: 0% (Gratis)\nAngsuran Tetap: Rp 1.663.400/bulan (10, 15, 20, 25 tahun)\nPromo: KPR Zero BTN, Full Furnish, Gratis Biaya Proses\nSpesifikasi: Pondasi Batu Kali, Dinding Double Hebel, Rangka Baja Ringan, Genteng Beton, Lantai Keramik, Listrik 1300W, Air Sumur Pantek\nFasilitas Sekitar: Sekolah SD-SMA, RS Harapan Mulia, Jonggol Waterpark, Stasiun Nambo, Terminal Cileungsi, Pasar Jonggol, Kolam Renang, Sport Center{{/Green Jonggol Village}}",
+          "{{#fallback}}Maaf, proyek yang Anda maksud tidak tersedia di Kianoland Group.\n\nProyek yang tersedia:\n• Natureland Kiano 2\n• Natureland Kiano 3\n• Green Jonggol Village\n\nKetik 'daftar proyek' untuk melihat semua proyek.{{/fallback}}"
+        ]
+      }
+    }
+  ]
+}

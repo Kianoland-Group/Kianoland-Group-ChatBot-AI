@@ -1,0 +1,30 @@
+[
+  {
+    "value": "Natureland Kiano 1",
+    "synonyms": ["kiano 1", "natureland kiano 1", "kiano satu", "proyek kiano 1"]
+  },
+  {
+    "value": "Natureland Kiano 3",
+    "synonyms": [
+      "natureland kiano 3", "kiano 3", "natureland 3", "nlk3", 
+      "kiano3", "k3", "natureland k3", "kianoland 3", "kiano tiga",
+      "natureland tiga", "nlk 3", "proyek k3"
+    ]
+  },
+  {
+    "value": "Natureland Kiano 2",
+    "synonyms": [
+      "natureland kiano 2", "kiano 2", "natureland 2", "nlk2", 
+      "kiano2", "k2", "natureland k2", "kianoland 2", "kiano dua",
+      "natureland dua", "nlk 2", "proyek k2"
+    ]
+  },
+  {
+    "value": "Green Jonggol Village",
+    "synonyms": [
+      "green jonggol village", "jonggol village", "g.jonggol", 
+      "g jonggol", "green jonggol", "jonggol", "gjv", "green village",
+      "jonggol property", "g jv", "proyek bogor"
+    ]
+  }
+]

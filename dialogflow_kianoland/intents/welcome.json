@@ -1,0 +1,29 @@
+{
+  "displayName": "welcome",
+  "trainingPhrases": [
+    {"parts": [{"text": "halo"}]},
+    {"parts": [{"text": "hi"}]},
+    {"parts": [{"text": "hai"}]},
+    {"parts": [{"text": "selamat pagi"}]},
+    {"parts": [{"text": "selamat siang"}]},
+    {"parts": [{"text": "selamat sore"}]},
+    {"parts": [{"text": "selamat malam"}]},
+    {"parts": [{"text": "assalamualaikum"}]},
+    {"parts": [{"text": "permisi"}]},
+    {"parts": [{"text": "p"}]},
+    {"parts": [{"text": "pe"}]},
+    {"parts": [{"text": "mulai"}]},
+    {"parts": [{"text": "/mulai"}]},
+    {"parts": [{"text": "start"}]},
+    {"parts": [{"text": "/start"}]}
+  ],
+  "messages": [
+    {
+      "text": {
+        "text": [
+          "Halo! 👋 Selamat datang di Kiano Property Bot. Saya siap membantu Anda mencari informasi properti Kianoland Group.\n\nUntuk mulai, Anda bisa ketik:\n• `daftar proyek` - Lihat semua proyek\n• `promo` - Penawaran spesial\n• `bantuan` - Panduan lengkap\n\nApa yang bisa saya bantu hari ini?"
+        ]
+      }
+    }
+  ]
+}

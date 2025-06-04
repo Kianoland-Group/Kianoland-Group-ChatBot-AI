@@ -1,0 +1,41 @@
+{
+  "displayName": "info_lokasi",
+  "trainingPhrases": [
+    {
+      "parts": [
+        {"text": "Dimana lokasi "},
+        {"text": "Natureland Kiano 3", "entityType": "@proyek"}
+      ]
+    },
+    {
+      "parts": [
+        {"text": "Lokasi "},
+        {"text": "Green Jonggol Village", "entityType": "@proyek"}
+      ]
+    },
+    {"parts": [{"text": "Dimana alamat Natureland Kiano 2?"}]},
+    {"parts": [{"text": "alamat "}, {"text": "kiano 3", "entityType": "@proyek"}]},
+    {"parts": [{"text": "dimana letak "}, {"text": "gjv", "entityType": "@proyek"}]},
+    {"parts": [{"text": "peta lokasi "}, {"text": "nlk2", "entityType": "@proyek"}]},
+    {
+      "parts": [
+        {"text": "lokasi "},
+        {"text": "Natureland Kiano 1", "entityType": "@proyek"}
+      ]
+    },
+    {
+      "parts": [
+        {"text": "dimana alamat kiano 1"}
+      ]
+    }
+  ],
+  "messages": [
+    {
+      "text": {
+        "text": [
+          "bold_startLokasi {{proyek}}:bold_end\n{{#Natureland Kiano 1}}Jl. Kp. Tegal No.3, RT.002/RW.01, Jatisari, Kec. Cileungsi, Kabupaten Bogor, Jawa Barat{{/Natureland Kiano 1}}{{#Natureland Kiano 2}}JI. Kp Pondok Ranggon RT 003/004, Jatiranggon Jatisampurna, Bekasi{{/Natureland Kiano 2}}{{#Natureland Kiano 3}}Jl. Kp Babakan RT 015/005, Cibarusah, Kab. Bekasi{{/Natureland Kiano 3}}{{#Green Jonggol Village}}JI. Kp Pojok Salak RT 0044 RW 008 Jonggol, Bekasi{{/Green Jonggol Village}}{{#fallback}}Maaf, saya tidak menemukan informasi lokasi untuk proyek tersebut{{/fallback}}\n\nLihat peta: https://kianolandgroup.com"
+        ]
+      }
+    }
+  ]
+}

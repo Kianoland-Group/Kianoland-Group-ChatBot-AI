@@ -28,8 +28,8 @@ body {
     flex-direction: column;
     gap: 8px; /* Mengurangi jarak antar pesan */
     overflow-y: auto;
-    background-color: #343a40; /* Latar belakang gelap untuk chatbox */
-    color: white; /* Warna teks putih untuk kontras */
+    background-color: #f0f2f5 !important; /* Warna latar mirip WhatsApp/Telegram */
+    color: #333;
     border-radius: 10px;
     flex-grow: 1;
 }
@@ -37,17 +37,17 @@ body {
 #messages {
     display: flex;
     flex-direction: column;
-    gap: 8px; /* Mengurangi jarak antar pesan */
+    gap: 6px !important;
     flex-grow: 1;
 }
 
 .message {
     position: relative;
-    max-width: 75%;
+    max-width: 85% !important;
     min-width: 150px;
-    padding: 12px;
+    padding: 10px 14px !important;
     border-radius: 20px;
-    margin-bottom: 8px;
+    margin-bottom: 6px !important;
     font-size: 16px;
     line-height: 1.4;
     background-color: #f1f1f1;
@@ -56,10 +56,10 @@ body {
 }
 
 .user-message {
-    background-color: #ffffff;
-    color: #333;
+    background: #007bff !important;
+    color: white !important;
+    border-radius: 18px 18px 4px 18px !important;
     align-self: flex-end;
-    border-radius: 20px 20px 0 20px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     position: relative;
     max-width: 80%;
@@ -67,30 +67,34 @@ body {
 }
 
 .bot-message {
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    position: relative;
-    max-width: 80%;
-    word-wrap: break-word;
+    background: #ffffff !important;
+    color: #333 !important;
+    border-radius: 18px 18px 18px 4px !important;
+    align-self: flex-start;
+    box-shadow: 0 1px 1px rgba(0,0,0,0.1);
 }
 
-/* Waktu ditempatkan di ujung kanan atau kiri setelah pesan */
-.time {
-    font-size: 12px;
-    color: #888;
-    position: absolute;
-    bottom: -18px;
-    right: 5px;  /* Waktu pada pesan user berada di kanan */
-    left: 5px;   /* Waktu pada pesan bot berada di kiri */
-    text-align: right;
-    margin-top: 5px;
-}
-
-.user-message .time {
-    right: 5px; /* Waktu pada pesan user berada di kanan */
-}
-
+/* PERBAIKAN TIMESTAMP PESAN BOT */
 .bot-message .time {
-    left: 5px;  /* Waktu pada pesan bot berada di kiri */
+    color: rgba(0, 0, 0, 0.4) !important; /* Warna abu-abu gelap */
+    text-align: left;
+}
+
+/* PERBAIKAN TIMESTAMP PESAN USER */
+.user-message .time {
+    color: rgba(255, 255, 255, 0.7) !important; /* Tetap putih transparan */
+    text-align: right;
+}
+
+/* PERBAIKAN LAYOUT TIMESTAMP */
+.time {
+    position: relative !important;
+    display: block;
+    font-size: 11px !important;
+    margin-top: 4px;
+    bottom: auto !important;
+    right: auto !important;
+    left: auto !important;
 }
 
 .input-group {
@@ -205,4 +209,61 @@ button {
     color: white;
     align-self: flex-end;
     border-top-right-radius: 0;
+}
+
+/* Tambahkan style untuk header baru */
+.chat-header {
+    background-color: #0071C8;
+    color: white;
+    padding: 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: relative;
+    z-index: 2;
+    border-top-left-radius: 15px;
+    border-top-right-radius: 15px;
+}
+
+.chat-title h5 {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.chat-title p {
+    margin: 2px 0 0;
+    font-size: 12px;
+    opacity: 0.8;
+}
+
+.status-indicator {
+    font-size: 12px;
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 10px;
+}
+
+.status-indicator.online {
+    background-color: #28a745;
+    color: white;
+}
+
+.status-indicator.offline {
+    background-color: #dc3545;
+    color: white;
+}
+
+.status-indicator:before {
+    content: "•";
+    margin-right: 5px;
+    font-size: 16px;
+}
+
+.status-indicator.online:before {
+    color: #28a745;
+}
+
+.status-indicator.offline:before {
+    color: #dc3545;
 }

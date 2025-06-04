@@ -119,3 +119,32 @@ function addBotMessage(message) {
     messageContainer.appendChild(botMessage);
     scrollToBottom();
 }
+
+// Fungsi untuk memeriksa status server
+async function checkServerStatus() {
+    try {
+        const response = await fetch('http://localhost:8000/health');
+        if (response.ok) {
+            updateStatusIndicator(true);
+        } else {
+            updateStatusIndicator(false);
+        }
+    } catch (error) {
+        updateStatusIndicator(false);
+    }
+}
+
+// Fungsi untuk mengupdate indikator status
+function updateStatusIndicator(isOnline) {
+    const statusElement = document.querySelector('.status-indicator');
+    if (statusElement) {
+        statusElement.textContent = isOnline ? 'Online' : 'Offline';
+        statusElement.className = isOnline ? 'status-indicator online' : 'status-indicator offline';
+    }
+}
+
+// Panggil fungsi check setiap 10 detik
+setInterval(checkServerStatus, 10000);
+
+// Cek status saat pertama kali load
+document.addEventListener('DOMContentLoaded', checkServerStatus);

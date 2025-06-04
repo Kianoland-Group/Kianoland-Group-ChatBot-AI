@@ -1,0 +1,44 @@
+{
+  "displayName": "bantuan",
+  "trainingPhrases": [
+    {"parts": [{"text": "bantuan"}]},
+    {"parts": [{"text": "panduan"}]},
+    {"parts": [{"text": "cara pakai"}]},
+    {"parts": [{"text": "menu"}]},
+    {"parts": [{"text": "apa saja yang bisa ditanyakan?"}]},
+    {"parts": [{"text": "saya perlu bantuan"}]},
+    {"parts": [{"text": "tolong bantu saya"}]},
+    {"parts": [{"text": "bagaimana cara menggunakan bot ini?"}]},
+    {"parts": [{"text": "saya butuh panduan"}]},
+    {"parts": [{"text": "tutorial penggunaan"}]},
+    {"parts": [{"text": "tolong"}]},
+    {"parts": [{"text": "bantu"}]},
+    {"parts": [{"text": "saya tidak mengerti"}]},
+    {"parts": [{"text": "saya tidak paham"}]},
+    {"parts": [{"text": "ga ngerti"}]},
+    {"parts": [{"text": "gimana caranya"}]},
+    {"parts": [{"text": "cara penggunaan"}]},
+    {"parts": [{"text": "mau tanya"}]},
+    {"parts": [{"text": "bisa tanya apa"}]},
+    {"parts": [{"text": "fitur apa saja"}]},
+    {"parts": [{"text": "help"}]},
+    {"parts": [{"text": "assist"}]},
+    {"parts": [{"text": "saya bingung"}]},
+    {"parts": [{"text": "bingung"}]},
+    {"parts": [{"text": "petunjuk"}]},
+    {"parts": [{"text": "instruksi"}]},
+    {"parts": [{"text": "cara bertanya"}]},
+    {"parts": [{"text": "gimana nanya"}]},
+    {"parts": [{"text": "bantu saya"}]},
+    {"parts": [{"text": "saya butuh bantuan"}]}
+  ],
+  "messages": [
+    {
+      "text": {
+        "text": [
+          "🛎️ **PANDUAN PENGGUNAAN**\n\nAnda bisa menanyakan:\n1. `daftar proyek` - Lihat semua proyek Kianoland\n2. `info [nama_proyek]` - Detail proyek (contoh: _info Natureland Kiano 3_)\n3. `harga [proyek]` - Info harga & KPR (contoh: _harga Green Jonggol_)\n4. `fasilitas [proyek]` - Fasilitas perumahan\n5. `lokasi [proyek]` - Peta dan akses lokasi\n6. `promo` - Promo dan penawaran spesial\n7. `syarat` - Persyaratan dokumen KPR\n8. `rekomendasi` - Rekomendasi proyek berdasarkan lokasi\n\nContoh pertanyaan lengkap:\n_\"Info harga dan fasilitas di Natureland Kiano 3\"_\n\n📞 Untuk bantuan lebih lanjut, hubungi marketing kami di 0811-1611-724"
+        ]
+      }
+    }
+  ]
+}

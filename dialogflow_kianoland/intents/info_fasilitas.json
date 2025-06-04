@@ -1,0 +1,31 @@
+{
+  "displayName": "info_fasilitas",
+  "trainingPhrases": [
+    {
+      "parts": [
+        {"text": "Fasilitas di "},
+        {"text": "Natureland Kiano 3", "entityType": "@proyek"}
+      ]
+    },
+    {"parts": [{"text": "Apa saja fasilitas Green Jonggol Village?"}]},
+    {
+      "parts": [
+        {"text": "fasilitas"}
+      ]
+    },
+    {
+      "parts": [
+        {"text": "apa fasilitas di kiano 2?"}
+      ]
+    }
+  ],
+  "messages": [
+    {
+      "text": {
+        "text": [
+          "{{#Natureland Kiano 2}}bold_startFasilitas Natureland Kiano 2:bold_end\n• Akses Tol Terdekat\n• One Gate System\n• Taman Bermain\n• Jogging Track\n• Club House\n• Sport Center\n• Mushola\n• Kolam Renang{{/Natureland Kiano 2}}{{#Natureland Kiano 3}}bold_startFasilitas Natureland Kiano 3:bold_end\n• Akses Tol Terdekat\n• One Gate System\n• Taman Bermain\n• Jogging Track\n• Club House\n• Sport Center\n• Mushola\n• Kolam Renang{{/Natureland Kiano 3}}{{#Green Jonggol Village}}bold_startFasilitas Green Jonggol Village:bold_end\n• Akses Tol Terdekat\n• One Gate System\n• Taman Bermain\n• Jogging Track\n• Club House\n• Sport Center\n• Mushola\n• Kolam Renang\n• Jonggol Waterpark\n• Taman Buaya I. Jaya{{/Green Jonggol Village}}{{#fallback}}Silakan sebutkan proyek yang ingin Anda ketahui fasilitasnya. Contoh: 'fasilitas di Natureland Kiano 3'{{/fallback}}"
+        ]
+      }
+    }
+  ]
+}

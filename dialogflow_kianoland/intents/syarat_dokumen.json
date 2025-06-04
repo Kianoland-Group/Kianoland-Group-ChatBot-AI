@@ -1,0 +1,48 @@
+{
+  "displayName": "syarat_dokumen",
+  "trainingPhrases": [
+    {"parts": [{"text": "Syarat dokumen untuk beli rumah"}]},
+    {"parts": [{"text": "Apa saja syarat KPR?"}]},
+    {"parts": [{"text": "Dokumen yang diperlukan"}]},
+    {"parts": [{"text": "bagaimana proses kpr"}]},
+    {"parts": [{"text": "cara pengajuan kpr"}]},
+    {"parts": [{"text": "langkah-langkah kpr"}]},
+    {"parts": [{"text": "prosedur kpr"}]},
+    {"parts": [{"text": "alur kpr"}]},
+    {"parts": [{"text": "bagaimana cara kpr"}]},
+    {"parts": [{"text": "proses kredit pemilikan rumah"}]},
+    {"parts": [{"text": "gimana proses pembayaran"}]},
+    {"parts": [{"text": "tahapan pembayaran rumah"}]},
+    {"parts": [{"text": "sistem pembayaran di kianoland"}]},
+    {"parts": [{"text": "cara pembayaran rumah"}]},
+    {"parts": [{"text": "metode pembayaran"}]},
+    {"parts": [{"text": "tahapan bayar rumah"}]},
+    {"parts": [{"text": "langkah-langkah pembelian"}]},
+    {"parts": [{"text": "proses pembayaran kpr"}]}
+  ],
+  "messages": [
+    {
+      "text": {
+        "text": [
+          "bold_startProses Pembelian Rumah & KPR di Kianoland Group:bold_end\n\n",
+          "1. **Pilih Properti**: Tentukan unit rumah yang diinginkan\n",
+          "2. **Booking Fee**: Bayar Rp 5.000.000 - Rp 10.000.000 untuk mengamankan unit\n",
+          "3. **Down Payment (DP)**: Pembayaran uang muka (bisa menggunakan promo DP 0%)\n",
+          "4. **Pengajuan KPR**: Siapkan dokumen dan ajukan ke bank mitra (BTN, Mandiri, dll)\n",
+          "5. **Verifikasi Bank**: Proses pengecekan dokumen dan survey oleh bank\n",
+          "6. **Akad Kredit**: Penandatanganan perjanjian kredit dengan bank\n",
+          "7. **Pembangunan Rumah**: Proses konstruksi dimulai setelah akad\n",
+          "8. **Cicilan Bulanan**: Mulai membayar angsuran setelah rumah selesai atau sesuai perjanjian\n\n",
+          "bold_startSyarat Dokumen KPR:bold_end\n",
+          "- KTP suami/istri\n",
+          "- Kartu Keluarga\n",
+          "- Surat Nikah (bagi yang menikah)\n",
+          "- Slip gaji/Surat keterangan penghasilan\n",
+          "- Rekening koran 3 bulan terakhir\n",
+          "- NPWP\n\n",
+          "Untuk info lebih detail, hubungi marketing kami di 0812-3456-7890"
+        ]
+      }
+    }
+  ]
+}

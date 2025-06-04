@@ -1,0 +1,30 @@
+{
+  "displayName": "info_promo",
+  "trainingPhrases": [
+    {"parts": [{"text": "Apa promo yang tersedia?"}]},
+    {"parts": [{"text": "Ada promo apa?"}]},
+    {"parts": [{"text": "Diskon rumah"}]},
+    {"parts": [{"text": "Promo KPR"}]},
+    {"parts": [{"text": "apakah ada promo terbaru"}]},
+    {"parts": [{"text": "ada penawaran baru?"}]},
+    {"parts": [{"text": "apakah dp gratis?"}]},
+    {"parts": [{"text": "apakah ada promo dp 0 persen?"}]},
+    {"parts": [{"text": "apakah ada rumah tanpa uang muka?"}]},
+    {"parts": [{"text": "dp gratis untuk proyek mana?"}]},
+    {"parts": [{"text": "apakah semua proyek gratis dp?"}]},
+    {"parts": [{"text": "apakah beli rumah di kianoland group gratis dp?"}]},
+    {"parts": [{"text": "apakah beli rumah di kiano ada dp"}]},
+    {"parts": [{"text": "dp berapa persen untuk beli rumah di kiano"}]},
+    {"parts": [{"text": "apakah ada dp 0 persen di kiano"}]},
+    {"parts": [{"text": "uang muka berapa persen untuk rumah di kiano"}]}
+  ],
+  "messages": [
+    {
+      "text": {
+        "text": [
+          "bold_startPromo Spesial:bold_end\n• Gratis Kanopi dan Carport\n• Free Biaya-Biaya\n• Tanpa DP!\n• KPR Zero di Bank BTN\n\nbold_startPilih Promo Sesuai Keinginan:bold_end\n- Promo Khusus Komersil\n- Promo Full Furnish\n- Promo Subsidi Suku Bunga"
+        ]
+      }
+    }
+  ]
+}

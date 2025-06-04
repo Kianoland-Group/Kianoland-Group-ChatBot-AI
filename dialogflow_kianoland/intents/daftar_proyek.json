@@ -1,0 +1,37 @@
+{
+  "displayName": "daftar_proyek",
+  "trainingPhrases": [
+    {"parts": [{"text": "daftar proyek"}]},
+    {"parts": [{"text": "proyek apa saja"}]},
+    {"parts": [{"text": "list proyek"}]},
+    {"parts": [{"text": "tampilkan semua proyek"}]},
+    {"parts": [{"text": "perumahan apa yang ada"}]},
+    {"parts": [{"text": "pilihan proyek"}]},
+    {"parts": [{"text": "rekomendasi proyek"}]},
+    {"parts": [{"text": "proyek yang tersedia"}]},
+    {"parts": [{"text": "daftar rumah"}]},
+    {"parts": [{"text": "berikan saya daftar rumah"}]},
+    {"parts": [{"text": "daftar perumahan"}]},
+    {"parts": [{"text": "berikan saya daftar perumahan"}]},
+    {"parts": [{"text": "apa saja proyek kianoland"}]},
+    {"parts": [{"text": "property apa yang tersedia"}]},
+    {"parts": [{"text": "list perumahan"}]},
+    {"parts": [{"text": "tampilkan proyek"}]},
+    {"parts": [{"text": "pilihan rumah"}]},
+    {"parts": [{"text": "proyek-proyek kianoland"}]},
+    {"parts": [{"text": "semua proyek"}]},
+    {"parts": [{"text": "katalog proyek"}]},
+    {"parts": [{"text": "jenis perumahan yang ada"}]},
+    {"parts": [{"text": "rumah apa saja yang dijual"}]},
+    {"parts": [{"text": "proyek properti"}]}
+  ],
+  "messages": [
+    {
+      "text": {
+        "text": [
+          "Kianoland Group memiliki 3 proyek utama:\n\n🏡 Natureland Kiano 3 (Cibarusah, Bekasi) - Harga mulai Rp 465 Juta\n🏡 Natureland Kiano 2 (Jatisampurna, Bekasi) - Harga mulai Rp 600 Juta\n🌳 Green Jonggol Village (Jonggol, Bogor) - Harga mulai Rp 400 Juta\n\nKetik 'info [nama_proyek]' untuk detail lebih lanjut"
+        ]
+      }
+    }
+  ]
+}

@@ -2,7 +2,7 @@ from fastapi import FastAPI, HTTPException, Request
 from pydantic import BaseModel
 from fastapi.middleware.cors import CORSMiddleware
 import httpx
-from dialogflow_integration import detect_intent
+from local_nlp import detect_intent_local as detect_intent, load_intents
 import discord
 from discord.ext import commands
 import asyncio
@@ -10,42 +10,38 @@ import threading
 from dotenv import load_dotenv
 import os
 
-# Load environment variables
-load_dotenv()
-
-# Validasi token penting
-if not os.getenv("DISCORD_TOKEN"):
-    raise ValueError("DISCORD_TOKEN tidak ditemukan di .env")
-
-if not os.getenv("TELEGRAM_TOKEN"):
-    raise ValueError("TELEGRAM_TOKEN tidak ditemukan di .env")
-
-if not os.getenv("DIALOGFLOW_PROJECT_ID"):
-    raise ValueError("DIALOGFLOW_PROJECT_ID tidak ditemukan di .env")
-
-if not os.getenv("GOOGLE_APPLICATION_CREDENTIALS"):
-    raise ValueError("GOOGLE_APPLICATION_CREDENTIALS tidak ditemukan di .env")
-
-if not os.getenv("TELEGRAM_WEBHOOK_URL"):
-    raise ValueError("TELEGRAM_WEBHOOK_URL tidak ditemukan di .env")
-
 # 🚀 Initialize FastAPI
 app = FastAPI()
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
-    allow_methods=["POST", "OPTIONS"],
-    allow_headers=["Content-Type"],
+    allow_origins=[
+        "https://kianolandgroup.com", 
+        "https://www.kianolandgroup.com",
+        "https://kianolandgroup.netlify.app", 
+        "http://localhost:8000",  # Untuk development
+        "https://79c8-157-15-46-172.ngrok-free.app",
+        "http://127.0.0.1:3002"
+    ],
+    allow_methods=["POST", "GET", "OPTIONS"],
+    allow_headers=["*"],
     allow_credentials=True
 )
 
 # 🛠️ Configurations from .env
+load_dotenv()
 DISCORD_TOKEN = os.getenv("DISCORD_TOKEN")
 TELEGRAM_TOKEN = os.getenv("TELEGRAM_TOKEN")
 DEDICATED_CHANNEL_ID = int(os.getenv("DEDICATED_CHANNEL_ID"))
-DIALOGFLOW_PROJECT_ID = os.getenv("DIALOGFLOW_PROJECT_ID")
 BOT_PREFIXES = ('!', '/', '$')
+
+@app.post("/detect-intent")
+async def detect_intent_endpoint(text: str):
+    return detect_intent(text)
+
+@app.get("/")
+async def root():
+    return {"message": "Kiano Property Bot API is running"}
 
 # Initialize Discord Client
 intents = discord.Intents.default()
@@ -70,8 +66,7 @@ def run_discord_bot():
             )
         )
         print(f'Logged in as {discord_bot.user} (ID: {discord_bot.user.id})')
-        
-        # Send guide message to dedicated channel
+
         channel = discord_bot.get_channel(DEDICATED_CHANNEL_ID)
         async for msg in channel.history(limit=5):
             if msg.author == discord_bot.user and "PANDUAN" in msg.content:
@@ -86,68 +81,67 @@ def run_discord_bot():
 
     @discord_bot.event
     async def on_message(message):
-        # Ignore messages from other bots
         if message.author.bot:
             return
 
-        # Handle messages in dedicated channel
-        if message.channel.id == DEDICATED_CHANNEL_ID:
-            # Process commands with prefixes
-            if message.content.startswith(BOT_PREFIXES):
-                await discord_bot.process_commands(message)
-                await asyncio.sleep(3)
-                try:
-                    await message.delete()
-                except:
-                    pass
-            # Process normal messages
-            else:
-                result = detect_intent(message.content, DIALOGFLOW_PROJECT_ID)
-                await message.reply(result['discord'])  # Hanya kirim bagian discord
-        
-        # Handle mentions in other channels
-        elif discord_bot.user.mentioned_in(message):
-            await message.reply(
-                f"💡 Silakan gunakan <#{DEDICATED_CHANNEL_ID}> untuk berinteraksi dengan bot.\n"
-                "Saya tidak akan merespon di channel ini.",
-                delete_after=15
-            )
+        # Handle commands first
+        ctx = await discord_bot.get_context(message)
+        if ctx.command:
+            await discord_bot.invoke(ctx)
+            return
 
-    # Custom commands
+        try:
+            if message.channel.id == DEDICATED_CHANNEL_ID:
+                response = detect_intent(message.content)
+                if not response or 'discord' not in response:
+                    await message.reply("Maaf, terjadi kesalahan saat memproses permintaan Anda")
+                else:
+                    await message.reply(response['discord'])
+        except Exception as e:
+            print(f"Error processing message: {str(e)}")
+            await message.reply("Maaf, terjadi kesalahan. Silakan coba lagi.")
+
     @discord_bot.command()
     async def proyek(ctx):
-        result = detect_intent("daftar proyek", DIALOGFLOW_PROJECT_ID)
-        await ctx.send(result['discord'])  # Hanya kirim bagian discord
-        
+        result = detect_intent("daftar proyek")
+        await ctx.send(result['discord'])
+
     @discord_bot.command()
     async def info(ctx):
-        """Get property information"""
-        response = detect_intent("info properti", DIALOGFLOW_PROJECT_ID)
-        await ctx.send(response)
+        response = detect_intent("info properti")
+        await ctx.send(response['discord'])
 
     @discord_bot.command()
     async def konsul(ctx, *, question: str):
-        """Create consultation thread"""
         thread = await ctx.channel.create_thread(
             name=f"Konsul-{ctx.author.display_name}",
             type=discord.ChannelType.private_thread,
             reason=f"Konsultasi properti oleh {ctx.author}"
         )
-        response = detect_intent(question, DIALOGFLOW_PROJECT_ID)
+        response = detect_intent(question)
         await thread.send(
             f"🛎️ Konsultasi dimulai oleh {ctx.author.mention}!\n"
             f"**Pertanyaan:** {question}\n\n"
-            f"**Jawaban:** {response}"
+            f"**Jawaban:** {response['discord']}"
         )
         await ctx.message.delete()
 
     discord_bot.run(DISCORD_TOKEN)
 
-# Start Discord bot in separate thread
 @app.on_event("startup")
 async def startup_event():
+    load_intents()
     thread = threading.Thread(target=run_discord_bot, daemon=True)
     thread.start()
+    
+    # Pindahkan inisialisasi Telegram webhook ke sini
+    webhook_url = os.getenv("TELEGRAM_WEBHOOK_URL")
+    async with httpx.AsyncClient() as client:
+        res = await client.post(
+            f"{TELEGRAM_API_URL}/setWebhook",
+            json={"url": webhook_url}
+        )
+        print("Telegram setWebhook result:", res.json())
 
 # REST API Endpoints
 @app.post("/discord-webhook")
@@ -155,11 +149,11 @@ async def discord_webhook(message: DiscordMessage):
     try:
         if message.author.get("bot", False):
             return {"status": "ignored"}
-        
-        result = detect_intent(message.content, DIALOGFLOW_PROJECT_ID)
+
+        result = detect_intent(message.content)
         channel = discord_bot.get_channel(message.channel_id)
-        await channel.send(result['discord'])  # Hanya kirim bagian discord
-        
+        await channel.send(result['discord'])
+
         return {"status": "success"}
     except Exception as e:
         raise HTTPException(400, str(e))
@@ -174,14 +168,13 @@ async def send_telegram_message(chat_id: int, text: str):
             json={"chat_id": chat_id, "text": text, "parse_mode": "HTML"}
         )
 
-# 📱 Endpoint untuk UI web / chat
 class ChatRequest(BaseModel):
     user_input: str
 
 @app.post("/chat")
 async def chat(request: ChatRequest):
     try:
-        result = detect_intent(request.user_input, DIALOGFLOW_PROJECT_ID)
+        result = detect_intent(request.user_input)
         return {
             "response": {
                 "raw": result['raw'],
@@ -193,20 +186,27 @@ async def chat(request: ChatRequest):
 
 @app.post("/telegram-webhook")
 async def telegram_webhook(request: Request):
-    update = await request.json()
-    if "message" in update:
-        chat_id = update["message"]["chat"]["id"]
-        text = update["message"].get("text", "")
+    try:
+        update = await request.json()
+        print("Received Telegram update:", update)  # Log update
         
-        result = detect_intent(text, DIALOGFLOW_PROJECT_ID)
-        await send_telegram_message(chat_id, result['telegram'])
-    
-    return {"ok": True}
+        if "message" in update:
+            chat_id = update["message"]["chat"]["id"]
+            text = update["message"].get("text", "")
+            print(f"Processing message from {chat_id}: {text}")  # Log pesan
+            
+            result = detect_intent(text)
+            print("Intent detection result:", result)  # Log hasil deteksi
+            
+            await send_telegram_message(chat_id, result['telegram'])
+            
+        return {"ok": True}
+    except Exception as e:
+        print("Error in telegram_webhook:", str(e))  # Log error
+        raise HTTPException(500, "Internal Server Error")
 
-# 📢 (Optional) set webhook secara otomatis saat startup
 @app.on_event("startup")
 async def on_startup():
-    # Ganti dengan URL publik (ngrok atau domain Anda)
     webhook_url = os.getenv("TELEGRAM_WEBHOOK_URL")
     async with httpx.AsyncClient() as client:
         res = await client.post(
@@ -215,3 +215,6 @@ async def on_startup():
         )
         print("setWebhook result:", res.json())
 
+@app.get("/health")
+async def health_check():
+    return {"status": "online"}

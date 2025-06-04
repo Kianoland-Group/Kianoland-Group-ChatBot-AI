@@ -1,0 +1,61 @@
+{
+  "displayName": "info_harga",
+  "trainingPhrases": [
+    {
+      "parts": [
+        {"text": "Berapa harga di "},
+        {"text": "Natureland Kiano 3", "entityType": "@proyek"}
+      ]
+    },
+    {
+      "parts": [
+        {"text": "Harga rumah tipe "},
+        {"text": "40/60", "entityType": "@tipe_rumah"},
+        {"text": " di "},
+        {"text": "Natureland Kiano 2", "entityType": "@proyek"}
+      ]
+    },
+    {"parts": [{"text": "Skema KPR Green Jonggol Village"}]},
+    {
+      "parts": [
+        {"text": "harga "},
+        {"text": "Natureland Kiano 1", "entityType": "@proyek"}
+      ]
+    },
+    {
+      "parts": [
+        {"text": "berapa cicilan kiano 1"}
+      ]
+    },
+    {
+      "parts": [
+        {"text": "promo "},
+        {"text": "Natureland Kiano 1", "entityType": "@proyek"}
+      ]
+    },
+    {
+      "parts": [
+        {"text": "harga kiano 2"}
+      ]
+    },
+    {
+      "parts": [
+        {"text": "harga kiano 3"}
+      ]
+    },
+    {
+      "parts": [
+        {"text": "harga green jonggol"}
+      ]
+    }
+  ],
+  "messages": [
+    {
+      "text": {
+        "text": [
+          "{{#Natureland Kiano 1}}bold_startHarga Natureland Kiano 1:bold_end\nMaaf, proyek ini sudah sold out. Berikut harga proyek terbaru kami:\n\n🏡 Natureland Kiano 2: Rp 600 Juta\n🏡 Natureland Kiano 3: Rp 465 Juta\n🌳 Green Jonggol Village: Rp 400 Juta\n\nKetik 'info [nama_proyek]' untuk detail lebih lanjut.{{/Natureland Kiano 1}}{{#Natureland Kiano 2}}bold_startHarga & Pembiayaan Natureland Kiano 2:bold_end\n• Harga: Rp 600.000.000\n• Angsuran Tetap: Rp 2.235.000/bulan (10-25 tahun)\n• Booking Fee: Rp 1.000.000\n• DP: 0% (Gratis){{/Natureland Kiano 2}}{{#Natureland Kiano 3}}bold_startHarga & Pembiayaan Natureland Kiano 3:bold_end\n• Harga: Rp 465.000.000\n• DP: 0% (Tanpa Uang Muka)\n• Angsuran Tahun 1: Rp 771.000/bulan\n• Angsuran Tahun 2: Rp 1.546.125/bulan{{/Natureland Kiano 3}}{{#Green Jonggol Village}}bold_startHarga & Pembiayaan Green Jonggol Village:bold_end\n• Harga Mulai: Rp 400.000.000\n• Cicilan: Rp 1.663.400/bulan{{/Green Jonggol Village}}{{#fallback}}bold_startPromo Pembiayaan:bold_end\n• KPR Zero di Bank BTN\n• Tanpa Biaya Administrasi\n• Gratis Kanopi & Carport\n\nUntuk info harga, sebutkan nama proyeknya. Contoh: 'harga Natureland Kiano 3'{{/fallback}}"
+        ]
+      }
+    }
+  ]
+}

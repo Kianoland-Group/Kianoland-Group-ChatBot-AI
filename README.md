@@ -1,121 +1,100 @@
 # Kianoland Group ChattBot AI 🤖
 
-A multi-platform chatbot for property consultations, integrated with Any Website Discord and Telegram using Dialogflow ES for natural language processing.
+A multi-platform chatbot for property consultations, integrated with Any Website Discord and Telegram using Hybrid AI with NLP and Rule-Based System.
 
-## Features ✨
+## Fitur Utama
 
-- **Multi-platform support**: Website, Discord and Telegram
-- **Natural Language Processing**: Powered by Dialogflow ES
-- **Dedicated channels**: Keeps bot interactions organized
-- **Thread isolation**: Private consultations in separate threads
+- Menjawab pertanyaan tentang proyek properti
+- Memberikan informasi harga, fasilitas, dan lokasi
+- Rekomendasi proyek berdasarkan lokasi
+- Sistem konsultasi privat di Discord
+- Tersedia di Discord, Telegram, dan Web
 
-## Setup Instructions 🛠️
+## Struktur Proyek
 
-### Prerequisites
+```bash
+├── backend/
+│ ├── app.py                # Aplikasi utama (FastAPI)
+│ ├── local_nlp.py          # Modul NLP lokal
+│ └── requirements.txt      # Dependensi Python
+├── dialogflow_kianoland/   # Data pelatihan Dialogflow
+│ ├── entities/             # Entitas sistem
+│ └── intents/              # Intents dialog
+├── frontend/               # Antarmuka web chatbot
+│ ├── index.html
+│ ├── script.js
+│ └── style.css
+└── .env                    # Konfigurasi lingkungan
+```
 
-- Python 3.8+
-- Discord Bot Token
-- Telegram Bot Token
-- Google Cloud Service Account JSON
+## Instalasi
 
-### Installation
-
-Clone the repository:
+1. Clone repositori:
 
 ```bash
 git clone https://github.com/fatonyahmadfauzi/Kianoland-Group-ChattBot-AI.git
 cd Kianoland-Group-ChattBot-AI
 ```
 
-## Setup Instructions 🛠️
+2. Buat virtual environment:
 
-### Backend Setup
+```bash
+python -m venv venv
+source venv/bin/activate  # Linux/Mac
+venv\Scripts\activate     # Windows
+```
 
-1. Navigate to backend folder:
-   ```bash
-   cd backend
-   ```
-2. Create and activate virtual environment:
-   ```bash
-   python -m venv venv
-   source venv/bin/activate  # Linux/Mac
-   venv\Scripts\activate     # Windows   cd Kianoland-Group-ChattBot-AI
-   ```
-3. Install dependencies:
-   ```bash
-   pip install -r requirements.txt
-   ```
-4. Create `.env` file:
-   ```bash
-   cp .env.example .env
-   ```
-   Then edit `.env` with your credentials.
+3. Instal dependensi:
 
-### Configuration
+```bash
+pip install -r backend/requirements.txt
+```
 
-Fill in your `.env` file:
+4. Buat file `.env` dengan konten:
 
 ```env
-DISCORD_TOKEN=your_discord_token_here
-TELEGRAM_TOKEN=your_telegram_token_here
-TELEGRAM_WEBHOOK_URL=your_url/telegram-webhook
-DIALOGFLOW_PROJECT_ID=your_project_id
-DEDICATED_CHANNEL_ID=your_channel_id
-GOOGLE_APPLICATION_CREDENTIALS=service-account.json
+DISCORD_TOKEN=your-bot-discord-token
+TELEGRAM_TOKEN=your-bot-telegram-token
+TELEGRAM_WEBHOOK_URL=your-ngrok-url/telegram-webhook
+DEDICATED_CHANNEL_ID=your-discord-channel-id
 ```
 
-### Frontend Setup
+## Menjalankan Aplikasi
 
-1. Open `frontend/index.html` in your browser
-2. No additional setup required for static files
-
-### Running the Bot
+1. Jalankan backend:
 
 ```bash
-uvicorn app:app --reload --port 8000
+uvicorn backend.app:app --reload --port 8000
 ```
 
-## Project Structure 📁
+2. Buka frontend:
 
-```bash
-Kianoland-Group-ChattBot-AI
-├── backend/
-│   ├── __pycache__
-│   ├── __init__.py
-│   ├── app.py                    # Main FastAPI application
-│   ├── dialogflow_integration.py # Dialogflow integration
-│   ├── requirements.txt          # Python dependencies
-│   └── service-account.json      # Google Cloud credentials
-├── frontend/
-│   ├── index.html                # Main HTML file
-│   ├── script.js                 # Frontend JavaScript
-│   └── style.css                 # CSS styles
-├── __init__.py
-├── .env                          # Environment
-├── app.py                        # Main application
-├── .gitignore
-├── LICENSE
-└── README.md                     # This file
-```
+- Buka file `frontend/index.html` di browser
 
-## Bot Commands 🤖
+3. Untuk Discord bot:
 
-### Discord
+- Bot akan otomatis berjalan setelah backend dijalankan
 
-- `!info` - Get property information
-- `!konsul [question]` - Start private consultation
-- Mention bot in other channels to get redirected
+4. Untuk Telegram:
 
-### Telegram & Website
+- Pastikan webhook sudah terdaftar di `TELEGRAM_WEBHOOK_URL`
 
-Just send messages normally
+## Endpoint API
 
-## Troubleshooting 🔧
+- `POST /detect-intent` - Deteksi intent dari teks
+- `POST /chat` - Endpoint chat untuk web
+- `POST /telegram-webhook` - Webhook Telegram
+- `POST /discord-webhook` - Webhook Discord
+- `GET /health` - Health check
 
-- **Privileged Intents Error**: Enable intents in [Discord Developer Portal](https://discord.com/developers)
-- **Dialogflow Authentication**: Ensure `service-account.json` is in root directory
-- **Port Conflicts**: Change port in run command if 8000 is occupied
+## Kontribusi
 
-## License 📄
+1. Fork repositori
+2. Buat branch fitur baru (`git checkout -b fitur-baru`)
+3. Commit perubahan (`git commit -am 'Tambahkan fitur'`)
+4. Push ke branch (`git push origin fitur-baru`)
+5. Buat pull request
 
-This project is licensed under the MIT License.
+## Lisensi
+
+[MIT]()

@@ -1,0 +1,37 @@
+{
+  "displayName": "default_fallback",
+  "trainingPhrases": [
+    {"parts": [{"text": "Apa kabar?"}]},
+    {"parts": [{"text": "Kenapa gitu?"}]},
+    {"parts": [{"text": "Bisa bahasa Inggris?"}]},
+    {"parts": [{"text": "Apa artinya?"}]},
+    {"parts": [{"text": "Gak ngerti"}]},
+    {"parts": [{"text": "Bukan itu maksud saya"}]},
+    {"parts": [{"text": "Salah"}]},
+    {"parts": [{"text": "saya ingin kopi"}]},
+    {"parts": [{"text": "beli kopi"}]},
+    {"parts": [{"text": "bisa ngopi"}]},
+    {"parts": [{"text": "cari makan"}]},
+    {"parts": [{"text": "bukan tentang rumah"}]},
+    {"parts": [{"text": "lu ngomong apa"}]},
+    {"parts": [{"text": "gak nyambung"}]},
+    {"parts": [{"text": "ngawur"}]},
+    {"parts": [{"text": "ga jelas"}]},
+    {"parts": [{"text": "ga ngerti"}]},
+    {"parts": [{"text": "apa ini"}]},
+    {"parts": [{"text": "bisa bantu hal lain"}]},
+    {"parts": [{"text": "bantu saya"}]},
+    {"parts": [{"text": "tolong dong"}]},
+    {"parts": [{"text": "error"}]},
+    {"parts": [{"text": "help"}]}
+  ],
+  "messages": [
+    {
+      "text": {
+        "text": [
+          "Maaf, saya belum memahami maksud Anda. Berikut opsi yang bisa saya bantu:\n\nℹ️  `daftar proyek` - Lihat semua proyek\n🏡  `info [nama_proyek]` - Detail proyek (contoh: info Natureland Kiano 3)\n💰  `promo` - Lihat promo terkini\n📄  `syarat` - Persyaratan dokumen\n\nAtau ketik `bantuan` untuk panduan lengkap."
+        ]
+      }
+    }
+  ]
+}
