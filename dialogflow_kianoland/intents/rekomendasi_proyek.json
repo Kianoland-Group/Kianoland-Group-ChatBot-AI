@@ -108,6 +108,24 @@
         { "text": "proyek yang cocok di " },
         { "text": "Jonggol", "entityType": "@lokasi" }
       ]
+    },
+    {
+      "parts": [
+        { "text": "rekomendasi rumah di daerah " },
+        { "text": "Bekasi", "entityType": "@lokasi" }
+      ]
+    },
+    {
+      "parts": [
+        { "text": "rekomendasi rumah di kawasan " },
+        { "text": "Bekasi", "entityType": "@lokasi" }
+      ]
+    },
+    {
+      "parts": [
+        { "text": "rekomendasi perumahan daerah " },
+        { "text": "Bekasi", "entityType": "@lokasi" }
+      ]
     }
   ],
   "messages": [

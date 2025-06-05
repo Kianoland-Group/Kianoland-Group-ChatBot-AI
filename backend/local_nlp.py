@@ -19,6 +19,12 @@ def load_resources():
     load_intents()
     load_entities()
 
+marketing_contacts = {
+    "Natureland Kiano 2": "Bp. Toni - 0896 3823 0725",
+    "Natureland Kiano 3": "Bp. Toni - 0896 3823 0725",
+    "Green Jonggol Village": "0851-7955-3681"
+}
+
 def load_intents():
     """Load intents from JSON files"""
     global INTENTS
@@ -189,6 +195,72 @@ def detect_intent_local(user_input: str) -> Dict[str, str]:
     user_input_normalized = re.sub(r'(\w)\1{2,}', r'\1', user_input.lower())
     print(f"\n🔍 User input: '{user_input}' → Normalized: '{user_input_normalized}'")
 
+    # ===== NEW: PURCHASE HANDLING AT THE TOP =====
+    # Check for strong purchase intent first
+    purchase_keywords = [
+        'mau beli', 'ingin beli', 'minat beli', 'pesan rumah', 'booking rumah',
+        'beli rumah', 'pembelian rumah', 'booking unit'
+    ]
+    # Check for exact phrases
+    if any(phrase in user_input_normalized for phrase in purchase_keywords):
+        # Enhanced project detection with word boundaries
+        project = None
+        if re.search(r'\b(kiano\s*2|natureland\s*2|nlk2)\b', user_input_normalized):
+            project = "Natureland Kiano 2"
+        elif re.search(r'\b(kiano\s*3|natureland\s*3|nlk3)\b', user_input_normalized):
+            project = "Natureland Kiano 3"
+        elif re.search(r'\b(green\s*jonggol|jonggol\s*village|gjv|jonggol)\b', user_input_normalized):
+            project = "Green Jonggol Village"
+        elif re.search(r'\b(kiano\s*1|natureland\s*1|nlk1)\b', user_input_normalized):
+            project = "Natureland Kiano 1"
+        
+        if project:
+            # Handle Kiano 1 separately
+            if project == "Natureland Kiano 1":
+                return format_response(
+                    "bold_startNatureland Kiano 1:bold_end\n"
+                    "Maaf, proyek ini sudah sold out. Kami merekomendasikan proyek terbaru kami:\n\n"
+                    "🏡 Natureland Kiano 2 (Jatisampurna, Bekasi)\n"
+                    "🏡 Natureland Kiano 3 (Cibarusah, Bekasi)\n"
+                    "🌳 Green Jonggol Village (Jonggol, Bogor)\n\n"
+                    "Ketik 'info [nama_proyek]' untuk detail lebih lanjut."
+                )
+            
+            # Validate project
+            if not is_valid_project(project):
+                projects_list = "\n".join(f"• {p}" for p in get_valid_projects())
+                return format_response(
+                    f"Maaf, proyek {project} tidak tersedia di Kianoland Group.\n\n"
+                    f"Proyek yang tersedia:\n{projects_list}\n\n"
+                    f"Ketik 'info [nama_proyek]' untuk detail lebih lanjut."
+                )
+            
+            # Valid project - return contact info
+            contact = marketing_contacts.get(project, "Bp. Toni - 0896 3823 0725")
+            return format_response(
+                f"Terima kasih atas minat Anda pada proyek {project}!\n\n"
+                f"Untuk proses pembelian atau kunjungan proyek, silakan hubungi marketing kami:\n"
+                f"📞 {contact}\n\n"
+                "Atau kunjungi website resmi kami:\n"
+                "🌐 https://kianolandgroup.com"
+            )
+        else:
+            # Show all projects if not specific
+            projects_list = "\n".join([
+                "🏡 Natureland Kiano 2 (Jatisampurna, Bekasi) - Rp 600 Juta",
+                "🏡 Natureland Kiano 3 (Cibarusah, Bekasi) - Rp 465 Juta",
+                "🌳 Green Jonggol Village (Jonggol, Bogor) - Rp 400 Juta"
+            ])
+            return format_response(
+                "Berikut proyek yang tersedia:\n\n"
+                f"{projects_list}\n\n"
+                "Silakan sebutkan proyek yang Anda minati atau hubungi marketing kami:\n"
+                "📞 Bp. Toni - 0896 3823 0725\n"
+                "🌐 https://kianolandgroup.com"
+            )
+    # ===== END OF PURCHASE HANDLING BLOCK =====
+
+    # Rest of the function remains the same...
     # Intent matching logic
     best_match = None
     highest_score = 0
@@ -204,8 +276,8 @@ def detect_intent_local(user_input: str) -> Dict[str, str]:
             if base_similarity > 0.4:  # Only apply boosts if already somewhat similar
                 if intent['name'] == 'info_lokasi' and any(kw in user_input_normalized for kw in ['lokasi', 'alamat', 'letak', 'peta', 'dimana']):
                     similarity += 0.3
-                elif intent['name'] == 'info_proyek' and any(kw in user_input_normalized for kw in ['info', 'informasi', 'detail']):
-                    similarity += 0.1
+                elif intent['name'] == 'info_proyek' and any(kw in user_input_normalized for kw in ['info', 'informasi', 'detail', 'beli', 'rumah', 'lihat']):
+                    similarity += 0.2  # tambahkan booster keyword
                 elif intent['name'] == 'daftar_proyek' and any(kw in user_input_normalized for kw in ['daftar', 'list', 'semua']):
                     similarity += 0.1
                 elif intent['name'] == 'bantuan' and any(kw in user_input_normalized for kw in ['bantu', 'tolong', 'panduan', 'tidak mengerti', 'ga ngerti', 'help']):
@@ -214,6 +286,8 @@ def detect_intent_local(user_input: str) -> Dict[str, str]:
                     similarity += 0.2
                 elif intent['name'] == 'syarat_dokumen' and any(kw in user_input_normalized for kw in ['bayar', 'pembayaran', 'kpr', 'cicil', 'angsuran', 'proses', 'alur', 'tahap', 'langkah', 'sistem']):
                     similarity += 0.3
+                elif intent['name'] == 'rekomendasi_proyek' and any(kw in user_input_normalized for kw in ['rekomendasi', 'rekom', 'sarankan', 'saran', 'cocok', 'daerah', 'kawasan']):
+                    similarity += 0.2
 
             similarity = min(similarity, 1.0)
             
@@ -361,6 +435,53 @@ def detect_intent_local(user_input: str) -> Dict[str, str]:
         
         print(f"✅ Processed response: {response_text}")
         return format_response(response_text)
+
+    # Deteksi khusus minat beli/kunjungan proyek
+    minat_keywords = ['beli', 'lihat', 'kunjung', 'proyek', 'rumah', 'minat']
+    if any(kw in user_input_normalized for kw in minat_keywords):
+        # Cek apakah ada proyek yang disebutkan
+        project = None
+        # Use more robust regex patterns that account for word boundaries
+        if re.search(r'\b(kiano\s*2|natureland\s*2|nlk2)\b', user_input_normalized):
+            project = "Natureland Kiano 2"
+        elif re.search(r'\b(kiano\s*3|natureland\s*3|nlk3)\b', user_input_normalized):
+            project = "Natureland Kiano 3"
+        elif re.search(r'\b(green\s*jonggol|jonggol\s*village|gjv|jonggol)\b', user_input_normalized):
+            project = "Green Jonggol Village"
+        
+        if project:
+            # ✅ Validasi proyek
+            if not is_valid_project(project):
+                projects_list = "\n".join(f"• {p}" for p in get_valid_projects())
+                return format_response(
+                    f"Maaf, proyek yang Anda maksud tidak tersedia di Kianoland Group.\n\n"
+                    f"Proyek yang tersedia:\n{projects_list}\n\n"
+                    f"Ketik 'info [nama_proyek]' untuk detail lebih lanjut."
+                )
+
+            # Jika valid
+            contact = marketing_contacts.get(project, "Bp. Toni - 0896 3823 0725")
+            return format_response(
+                f"Terima kasih atas minat Anda pada proyek {project}!\n\n"
+                f"Untuk proses pembelian atau kunjungan proyek, silakan hubungi marketing kami:\n"
+                f"📞 {contact}\n\n"
+                "Atau kunjungi website resmi kami:\n"
+                "🌐 https://kianolandgroup.com"
+            )
+        else:
+            # Tampilkan semua proyek jika tidak spesifik
+            projects_list = "\n".join([
+                "🏡 Natureland Kiano 2 (Jatisampurna, Bekasi) - Rp 600 Juta",
+                "🏡 Natureland Kiano 3 (Cibarusah, Bekasi) - Rp 465 Juta",
+                "🌳 Green Jonggol Village (Jonggol, Bogor) - Rp 400 Juta"
+            ])
+            return format_response(
+                "Berikut proyek yang tersedia:\n\n"
+                f"{projects_list}\n\n"
+                "Silakan sebutkan proyek yang Anda minati atau hubungi marketing kami:\n"
+                "📞 Bp. Toni - 0896 3823 0725\n"
+                "🌐 https://kianolandgroup.com"
+            )
 
     # Special fallbacks - only trigger if keywords are prominent
     payment_keywords = ['bayar', 'pembayaran', 'kpr', 'cicil', 'angsuran', 'proses', 'alur', 'tahap', 'langkah']

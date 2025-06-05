@@ -1,0 +1,19 @@
+{
+  "displayName": "minat_beli",
+  "trainingPhrases": [
+    {"parts": [{"text": "saya ingin beli rumah"}]},
+    {"parts": [{"text": "saya ingin beli rumah di "}, {"text": "kiano 2", "entityType": "@proyek"}]},
+    {"parts": [{"text": "ingin lihat rumah"}]},
+    {"parts": [{"text": "mau beli rumah"}]},
+    {"parts": [{"text": "bisa lihat proyek"}]}
+  ],
+  "messages": [
+    {
+      "text": {
+        "text": [
+          "Terima kasih atas minat Anda. Silakan sebutkan nama proyek yang ingin Anda kunjungi atau beli. Contoh: 'saya ingin beli rumah di Kiano 2'"
+        ]
+      }
+    }
+  ]
+}
