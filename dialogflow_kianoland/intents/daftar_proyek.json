@@ -23,7 +23,14 @@
     {"parts": [{"text": "katalog proyek"}]},
     {"parts": [{"text": "jenis perumahan yang ada"}]},
     {"parts": [{"text": "rumah apa saja yang dijual"}]},
-    {"parts": [{"text": "proyek properti"}]}
+    {"parts": [{"text": "proyek properti"}]},
+    {"parts": [{"text": "proyek yang masih tersedia"}]},
+    {"parts": [{"text": "project yang ada di kianoland"}]},
+    {"parts": [{"text": "berikan saya proyek yang masih tersedia di kianoland"}]},
+    {"parts": [{"text": "apa saja proyek yang masih ada"}]},
+    {"parts": [{"text": "list proyek kianoland yang tersedia"}]},
+    {"parts": [{"text": "daftar proyek yang masih ada"}]},
+    {"parts": [{"text": "proyek kianoland apa saja yang tersedia"}]}
   ],
   "messages": [
     {

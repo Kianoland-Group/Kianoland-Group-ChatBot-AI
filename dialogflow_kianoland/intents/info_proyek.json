@@ -19,6 +19,11 @@
     {"parts": [{"text": "nlk2"}]},
     {"parts": [{"text": "gjv"}]},
     {"parts": [{"text": "info properti"}]},
+    {"parts": [{"text": "info proyek yang tersedia"}]},
+    {"parts": [{"text": "proyek apa saja yang ada"}]},
+    {"parts": [{"text": "list proyek tersedia"}]},
+    {"parts": [{"text": "daftar proyek"}]},
+    {"parts": [{"text": "info semua proyek"}]},
     {
       "parts": [
         { "text": "saya ingin info " },
