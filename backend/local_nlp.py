@@ -156,6 +156,11 @@ def detect_entities(text: str) -> Dict[str, str]:
         
         # Prioritize exact alias matches
         for entry in ENTITIES.get('proyek', []):
+            if re.search(r'\bkiano\s*([123])\b', text_lower):
+                num = re.search(r'\bkiano\s*([123])\b', text_lower).group(1)
+                detected['proyek'] = f"Natureland Kiano {num}"
+                break
+
             # Cek value utama
             if entry['value'].lower() in text_lower:
                 detected['proyek'] = entry['value']
@@ -253,7 +258,26 @@ def detect_intent_local(user_input: str) -> Dict[str, str]:
                 "🌐 https://kianolandgroup.com"
             )
         else:
-            # Show all projects if not specific
+            # Tampilkan semua proyek jika tidak spesifik
+            # DETECT ENTITIES UNTUK LOKASI
+            entities = detect_entities(user_input)
+            lokasi_value = entities.get('lokasi', '').lower()
+            
+            # Daftar lokasi valid
+            valid_locations = ["cibarusah", "jatisampurna", "jonggol", "bekasi", "cibubur"]
+            
+            # PERBAIKAN: Respons untuk lokasi di luar area layanan
+            if lokasi_value and lokasi_value not in valid_locations:
+                return format_response(
+                    "Maaf, proyek kami belum tersedia di area tersebut.\n\n"
+                    "Kianoland Group memiliki 3 proyek utama:\n\n"
+                    "🏡 Natureland Kiano 3 (Cibarusah, Bekasi) - Rp 465 Juta\n"
+                    "🏡 Natureland Kiano 2 (Jatisampurna, Bekasi) - Rp 600 Juta\n"
+                    "🌳 Green Jonggol Village (Jonggol, Bogor) - Rp 400 Juta\n\n"
+                    "Ketik 'info [nama_proyek]' untuk detail lebih lanjut."
+                )
+            
+            # Tampilkan semua proyek jika tidak ada lokasi atau lokasi valid
             projects_list = "\n".join([
                 "🏡 Natureland Kiano 2 (Jatisampurna, Bekasi) - Rp 600 Juta",
                 "🏡 Natureland Kiano 3 (Cibarusah, Bekasi) - Rp 465 Juta",
@@ -285,10 +309,9 @@ def detect_intent_local(user_input: str) -> Dict[str, str]:
                 if intent['name'] == 'info_lokasi' and any(kw in user_input_normalized for kw in ['lokasi', 'alamat', 'letak', 'peta', 'dimana']):
                     similarity += 0.3
                 elif intent['name'] == 'info_proyek' and any(kw in user_input_normalized for kw in ['info', 'informasi', 'detail', 'beli', 'rumah', 'lihat']):
-                    similarity += 0.2  # tambahkan booster keyword
+                    similarity += 0.2
                 elif intent['name'] == 'daftar_proyek' and any(kw in user_input_normalized for kw in ['daftar', 'list', 'semua', 'tersedia', 'ada', 'apa saja', 'yang ada']):
-                    similarity += 0.3  # Increase boost for better matching
-                    similarity += 0.1
+                    similarity += 0.3  # Only one boost
                 elif intent['name'] == 'bantuan' and any(kw in user_input_normalized for kw in ['bantu', 'tolong', 'panduan', 'tidak mengerti', 'ga ngerti', 'help']):
                     similarity += 0.2
                 elif intent['name'] == 'info_promo' and any(kw in user_input_normalized for kw in ['dp', 'promo', 'diskon', 'uang muka', 'persen']):
@@ -375,6 +398,13 @@ def detect_intent_local(user_input: str) -> Dict[str, str]:
                 f"{projects_list}\n\n"
                 "Ketik 'info [nama_proyek]' untuk detail lebih lanjut."
             )
+        
+        # TAMBAHKAN pengecualian khusus untuk minat_beli:
+        if best_match['name'] == 'minat_beli':
+            # Gunakan respons daftar proyek, bukan respons asli minat_beli
+            daftar_intent = next((i for i in INTENTS if i['name'] == 'daftar_proyek'), None)
+            if daftar_intent:
+                return format_response(daftar_intent['responses'][0])
 
         # Handle info_harga intent specifically
         if best_match['name'] == 'info_harga':
@@ -434,13 +464,10 @@ def detect_intent_local(user_input: str) -> Dict[str, str]:
 
             # PERBAIKAN KHUSUS UNTUK REKOMENDASI_PROYEK
             if best_match['name'] == 'rekomendasi_proyek':
-                # Jika lokasi Jonggol terdeteksi
-                if lokasi == "Jonggol":
-                    # Respons khusus untuk Jonggol
-                    response_text = "bold_startRekomendasi:bold_end Green Jonggol Village, berlokasi di Jonggol - Bogor, dekat Tol Cileungsi. (Harga mulai Rp 400 Juta)"
-                else:
+
                     # Gunakan lokasi sebagai parameter utama
                     response_text = process_conditional_templates(response_text, lokasi, lokasi)
+                    return format_response(response_text)
             else:
                 response_text = process_conditional_templates(response_text, project, lokasi)
             
@@ -488,19 +515,10 @@ def detect_intent_local(user_input: str) -> Dict[str, str]:
                 "🌐 https://kianolandgroup.com"
             )
         else:
-            # Tampilkan semua proyek jika tidak spesifik
-            projects_list = "\n".join([
-                "🏡 Natureland Kiano 2 (Jatisampurna, Bekasi) - Rp 600 Juta",
-                "🏡 Natureland Kiano 3 (Cibarusah, Bekasi) - Rp 465 Juta",
-                "🌳 Green Jonggol Village (Jonggol, Bogor) - Rp 400 Juta"
-            ])
-            return format_response(
-                "Berikut proyek yang tersedia:\n\n"
-                f"{projects_list}\n\n"
-                "Silakan sebutkan proyek yang Anda minati atau hubungi marketing kami:\n"
-                "📞 Bp. Toni - 0896 3823 0725\n"
-                "🌐 https://kianolandgroup.com"
-            )
+            # Gunakan respons dari daftar_proyek.json
+            daftar_intent = next((i for i in INTENTS if i['name'] == 'daftar_proyek'), None)
+            if daftar_intent:
+                return format_response(daftar_intent['responses'][0])
 
     # Special fallbacks - only trigger if keywords are prominent
     payment_keywords = ['bayar', 'pembayaran', 'kpr', 'cicil', 'angsuran', 'proses', 'alur', 'tahap', 'langkah']
@@ -510,24 +528,24 @@ def detect_intent_local(user_input: str) -> Dict[str, str]:
         if payment_intent:
             return format_response(payment_intent['responses'][0])
     
-    if (("bantu" in user_input_normalized.split() or "tolong" in user_input_normalized.split()) and
-        len(user_input_normalized.split()) <= 4):
-        bantuan_intent = next((i for i in INTENTS if i['name'] == 'bantuan'), None)
-        if bantuan_intent:
-            return format_response(bantuan_intent['responses'][0])
+    # Replace the current bantuan fallback block with:
+    if len(user_input_normalized.split()) <= 4:
+        bantuan_keywords = ['bantu', 'tolong', 'panduan', 'help', 'bantuan']
+        if any(kw in user_input_normalized for kw in bantuan_keywords):
+            bantuan_intent = next((i for i in INTENTS if i['name'] == 'bantuan'), None)
+            if bantuan_intent:
+                return format_response(bantuan_intent['responses'][0])
 
     # Default fallback
     fallback = next((i for i in INTENTS if i['name'] == 'default_fallback'), None)
     if fallback:
-        # PERBAIKAN: Tambahkan penanganan khusus untuk Jonggol di fallback
-        if 'jonggol' in user_input_normalized:
-            return format_response(
-                "Rekomendasi untuk Jonggol: Green Jonggol Village\n\n"
-                "🌳 Green Jonggol Village (Jonggol, Bogor)\n"
-                "Harga mulai Rp 400 Juta\n\n"
-                "Ketik 'info Green Jonggol Village' untuk detail lebih lanjut."
-            )
-        return format_response(fallback['responses'][0])
+        # Jika ada kata kunci rumah/cari/beli, gunakan daftar proyek
+        if any(kw in user_input_normalized for kw in ['rumah', 'cari', 'beli', 'lihat']):
+            daftar_intent = next((i for i in INTENTS if i['name'] == 'daftar_proyek'), None)
+            if daftar_intent:
+                return format_response(daftar_intent['responses'][0])
+        else:
+            return format_response(fallback['responses'][0])
     
     return format_response("Maaf, saya tidak memahami pertanyaan Anda. Ketik 'bantuan' untuk panduan.")
 
