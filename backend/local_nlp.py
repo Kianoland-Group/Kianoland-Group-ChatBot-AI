@@ -211,91 +211,63 @@ def detect_intent_local(user_input: str) -> Dict[str, str]:
     user_input_normalized = re.sub(r'(\w)\1{2,}', r'\1', user_input.lower())
     print(f"\n🔍 User input: '{user_input}' → Normalized: '{user_input_normalized}'")
 
-    # ===== NEW: PURCHASE HANDLING AT THE TOP =====
+    # --- START PERBAIKAN ---
+    # 1. Deteksi entitas di awal untuk semua kasus.
+    entities = detect_entities(user_input)
+    project = entities.get('proyek')
+
+    # 2. Validasi proyek jika terdeteksi, sebelum memproses intent apapun.
+    if project:
+        # Handle kasus khusus untuk Kiano 1 (sold out)
+        if "kiano 1" in project.lower():
+            return format_response(
+                "bold_startNatureland Kiano 1:bold_end\n"
+                "Maaf, proyek ini sudah sold out. Kami merekomendasikan proyek terbaru kami:\n\n"
+                "🏡 Natureland Kiano 2 (Jatisampurna, Bekasi)\n"
+                "🏡 Natureland Kiano 3 (Cibarusah, Bekasi)\n"
+                "🌳 Green Jonggol Village (Jonggol, Bogor)\n\n"
+                "Ketik 'info [nama_proyek]' untuk detail lebih lanjut."
+            )
+        
+        # Handle proyek tidak valid lainnya (misal: Kiano 4)
+        if not is_valid_project(project):
+            projects_list = "\n".join(f"• {p}" for p in get_valid_projects())
+            return format_response(
+                f"Maaf, proyek '{project}' tidak tersedia di Kianoland Group.\n\n"
+                f"Proyek yang tersedia:\n{projects_list}\n\n"
+                f"Ketik 'info [nama_proyek]' untuk detail lebih lanjut."
+            )
+    # --- AKHIR PERBAIKAN ---
+
+    # --- PERBAIKAN 1: Prioritaskan Rekomendasi Berbasis Lokasi ---
+    rekomendasi_keywords = ['rekomendasi', 'rekom', 'sarankan', 'saran', 'cocok', 'daerah', 'kawasan']
+    lokasi = entities.get('lokasi')
+    
+    if any(kw in user_input_normalized for kw in rekomendasi_keywords) and lokasi:
+        rekomendasi_intent = next((i for i in INTENTS if i['name'] == 'rekomendasi_proyek'), None)
+        if rekomendasi_intent:
+            response_text = rekomendasi_intent['responses'][0]
+            # Gunakan lokasi sebagai parameter utama untuk memicu template yang benar
+            processed_response = process_conditional_templates(response_text, lokasi, lokasi)
+            return format_response(processed_response)
+    # --- AKHIR PERBAIKAN 1 ---
+
+    # ===== Logika Intent Lanjutan =====
     purchase_keywords = [
         'mau beli', 'ingin beli', 'minat beli', 'pesan rumah', 'booking rumah',
         'beli rumah', 'pembelian rumah', 'booking unit', 'lihat rumah', 'kunjung'
     ]
-    if any(phrase in user_input_normalized for phrase in purchase_keywords):
-        # Enhanced project detection with word boundaries
-        project = None
-        if re.search(r'\b(kiano\s*2|natureland\s*2|nlk2)\b', user_input_normalized):
-            project = "Natureland Kiano 2"
-        elif re.search(r'\b(kiano\s*3|natureland\s*3|nlk3)\b', user_input_normalized):
-            project = "Natureland Kiano 3"
-        elif re.search(r'\b(green\s*jonggol|jonggol\s*village|gjv|jonggol)\b', user_input_normalized):
-            project = "Green Jonggol Village"
-        elif re.search(r'\b(kiano\s*1|natureland\s*1|nlk1)\b', user_input_normalized):
-            project = "Natureland Kiano 1"
-
-        entities = detect_entities(user_input)
-        project = entities.get('proyek')
-        lokasi = entities.get('lokasi')
-
-        # Scenario 1: User mentions a specific project name
-        if project:
-            # Handle Kiano 1 (Sold Out)
-            if project == "Natureland Kiano 1":
-                return format_response(
-                    "bold_startNatureland Kiano 1:bold_end\n"
-                    "Maaf, proyek ini sudah sold out. Kami merekomendasikan proyek terbaru kami:\n\n"
-                    "🏡 Natureland Kiano 2 (Jatisampurna, Bekasi)\n"
-                    "🏡 Natureland Kiano 3 (Cibarusah, Bekasi)\n"
-                    "🌳 Green Jonggol Village (Jonggol, Bogor)\n\n"
-                    "Ketik 'info [nama_proyek]' untuk detail lebih lanjut."
-                )
-            
-            # Handle other invalid projects (like "Kiano 4")
-            if not is_valid_project(project):
-                projects_list = "\n".join(f"• {p}" for p in get_valid_projects())
-                return format_response(
-                    f"Maaf, proyek '{project}' tidak tersedia di Kianoland Group.\n\n"
-                    f"Proyek yang tersedia:\n{projects_list}\n\n"
-                    f"Ketik 'info [nama_proyek]' untuk detail lebih lanjut."
-                )
-            
-            # Handle valid projects by providing contact info
-            contact = marketing_contacts.get(project, "Bp. Toni - 0896 3823 0725")
-            return format_response(
-                f"Terima kasih atas minat Anda pada proyek {project}!\n\n"
-                f"Untuk proses pembelian atau kunjungan proyek, silakan hubungi marketing kami:\n"
-                f"📞 {contact}\n\n"
-                "Atau kunjungi website resmi kami:\n"
-                "🌐 https://kianolandgroup.com"
-            )
-
-        # Scenario 2: User mentions a location (e.g., "beli rumah di Cibubur")
-        elif lokasi:
-            rekomendasi_intent = next((i for i in INTENTS if i['name'] == 'rekomendasi_proyek'), None)
-            if rekomendasi_intent:
-                response_text = rekomendasi_intent['responses'][0]
-                processed_response = process_conditional_templates(response_text, lokasi=lokasi, primary=lokasi)
-                return format_response(processed_response)
-
-        # Scenario 3: Generic purchase, but check for unsupported locations first.
-        else:
-            # Cek apakah ada kata-kata yang mengindikasikan lokasi
-            location_cues = ['di', 'daerah', 'kawasan', 'sekitar', 'area']
-            is_location_query = any(cue in user_input_normalized for cue in location_cues)
-
-            # Jika kueri sepertinya menanyakan lokasi tetapi tidak ada lokasi valid yang terdeteksi
-            if is_location_query:
-                # Ambil dan gunakan fallback dari intent rekomendasi
-                rekomendasi_intent = next((i for i in INTENTS if i['name'] == 'rekomendasi_proyek'), None)
-                if rekomendasi_intent:
-                    response_template = rekomendasi_intent['responses'][0]
-                    # Proses templat tanpa lokasi akan memicu blok fallback
-                    processed_response = process_conditional_templates(response_template, lokasi=None)
-                    return format_response(processed_response)
-            
-            # Fallback asli untuk kueri yang benar-benar generik (misal: "saya mau beli rumah")
-            daftar_intent = next((i for i in INTENTS if i['name'] == 'daftar_proyek'), None)
-            if daftar_intent:
-                response_text = daftar_intent['responses'][0] + "\n\nSilakan sebutkan proyek yang Anda minati atau hubungi marketing kami:\n📞 Bp. Toni - 0896 3823 0725\n🌐 https://kianolandgroup.com"
-                return format_response(response_text)
-    # ===== END OF PURCHASE HANDLING BLOCK =====
-
-    # Rest of the function remains the same...
+    # Jika intent adalah pembelian dan proyek sudah tervalidasi
+    if any(phrase in user_input_normalized for phrase in purchase_keywords) and project:
+        contact = marketing_contacts.get(project, "Bp. Toni - 0896 3823 0725")
+        return format_response(
+            f"Terima kasih atas minat Anda pada proyek {project}!\n\n"
+            f"Untuk proses pembelian atau kunjungan proyek, silakan hubungi marketing kami:\n"
+            f"📞 {contact}\n\n"
+            "Atau kunjungi website resmi kami:\n"
+            "🌐 https://kianolandgroup.com"
+        )
+    
     # Intent matching logic
     best_match = None
     highest_score = 0
@@ -486,7 +458,7 @@ def detect_intent_local(user_input: str) -> Dict[str, str]:
         return format_response(response_text)
 
     # Deteksi khusus minat beli/kunjungan proyek
-    minat_keywords = ['beli', 'lihat', 'kunjung', 'proyek', 'rumah', 'minat']
+    minat_keywords = ['beli', 'kunjung', 'proyek', 'rumah', 'minat']
     if any(kw in user_input_normalized for kw in minat_keywords):
         # Cek apakah ada proyek yang disebutkan
         project = None
