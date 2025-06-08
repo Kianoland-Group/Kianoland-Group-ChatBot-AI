@@ -209,12 +209,10 @@ def detect_intent_local(user_input: str) -> Dict[str, str]:
     print(f"\n🔍 User input: '{user_input}' → Normalized: '{user_input_normalized}'")
 
     # ===== NEW: PURCHASE HANDLING AT THE TOP =====
-    # Check for strong purchase intent first
     purchase_keywords = [
         'mau beli', 'ingin beli', 'minat beli', 'pesan rumah', 'booking rumah',
-        'beli rumah', 'pembelian rumah', 'booking unit'
+        'beli rumah', 'pembelian rumah', 'booking unit', 'lihat rumah', 'kunjung'
     ]
-    # Check for exact phrases
     if any(phrase in user_input_normalized for phrase in purchase_keywords):
         # Enhanced project detection with word boundaries
         project = None
@@ -226,9 +224,14 @@ def detect_intent_local(user_input: str) -> Dict[str, str]:
             project = "Green Jonggol Village"
         elif re.search(r'\b(kiano\s*1|natureland\s*1|nlk1)\b', user_input_normalized):
             project = "Natureland Kiano 1"
-        
+
+        entities = detect_entities(user_input)
+        project = entities.get('proyek')
+        lokasi = entities.get('lokasi')
+
+        # Scenario 1: User mentions a specific project name
         if project:
-            # Handle Kiano 1 separately
+            # Handle Kiano 1 (Sold Out)
             if project == "Natureland Kiano 1":
                 return format_response(
                     "bold_startNatureland Kiano 1:bold_end\n"
@@ -239,16 +242,16 @@ def detect_intent_local(user_input: str) -> Dict[str, str]:
                     "Ketik 'info [nama_proyek]' untuk detail lebih lanjut."
                 )
             
-            # Validate project
+            # Handle other invalid projects (like "Kiano 4")
             if not is_valid_project(project):
                 projects_list = "\n".join(f"• {p}" for p in get_valid_projects())
                 return format_response(
-                    f"Maaf, proyek {project} tidak tersedia di Kianoland Group.\n\n"
+                    f"Maaf, proyek '{project}' tidak tersedia di Kianoland Group.\n\n"
                     f"Proyek yang tersedia:\n{projects_list}\n\n"
                     f"Ketik 'info [nama_proyek]' untuk detail lebih lanjut."
                 )
             
-            # Valid project - return contact info
+            # Handle valid projects by providing contact info
             contact = marketing_contacts.get(project, "Bp. Toni - 0896 3823 0725")
             return format_response(
                 f"Terima kasih atas minat Anda pada proyek {project}!\n\n"
@@ -257,39 +260,22 @@ def detect_intent_local(user_input: str) -> Dict[str, str]:
                 "Atau kunjungi website resmi kami:\n"
                 "🌐 https://kianolandgroup.com"
             )
+
+        # Scenario 2: User mentions a location (e.g., "beli rumah di Cibubur")
+        elif lokasi:
+            rekomendasi_intent = next((i for i in INTENTS if i['name'] == 'rekomendasi_proyek'), None)
+            if rekomendasi_intent:
+                response_text = rekomendasi_intent['responses'][0]
+                processed_response = process_conditional_templates(response_text, lokasi=lokasi, primary=lokasi)
+                return format_response(processed_response)
+
+        # Scenario 3: Generic purchase intent without specifics
         else:
-            # Tampilkan semua proyek jika tidak spesifik
-            # DETECT ENTITIES UNTUK LOKASI
-            entities = detect_entities(user_input)
-            lokasi_value = entities.get('lokasi', '').lower()
-            
-            # Daftar lokasi valid
-            valid_locations = ["cibarusah", "jatisampurna", "jonggol", "bekasi", "cibubur"]
-            
-            # PERBAIKAN: Respons untuk lokasi di luar area layanan
-            if lokasi_value and lokasi_value not in valid_locations:
-                return format_response(
-                    "Maaf, proyek kami belum tersedia di area tersebut.\n\n"
-                    "Kianoland Group memiliki 3 proyek utama:\n\n"
-                    "🏡 Natureland Kiano 3 (Cibarusah, Bekasi) - Rp 465 Juta\n"
-                    "🏡 Natureland Kiano 2 (Jatisampurna, Bekasi) - Rp 600 Juta\n"
-                    "🌳 Green Jonggol Village (Jonggol, Bogor) - Rp 400 Juta\n\n"
-                    "Ketik 'info [nama_proyek]' untuk detail lebih lanjut."
-                )
-            
-            # Tampilkan semua proyek jika tidak ada lokasi atau lokasi valid
-            projects_list = "\n".join([
-                "🏡 Natureland Kiano 2 (Jatisampurna, Bekasi) - Rp 600 Juta",
-                "🏡 Natureland Kiano 3 (Cibarusah, Bekasi) - Rp 465 Juta",
-                "🌳 Green Jonggol Village (Jonggol, Bogor) - Rp 400 Juta"
-            ])
-            return format_response(
-                "Berikut proyek yang tersedia:\n\n"
-                f"{projects_list}\n\n"
-                "Silakan sebutkan proyek yang Anda minati atau hubungi marketing kami:\n"
-                "📞 Bp. Toni - 0896 3823 0725\n"
-                "🌐 https://kianolandgroup.com"
-            )
+            daftar_intent = next((i for i in INTENTS if i['name'] == 'daftar_proyek'), None)
+            if daftar_intent:
+                response_text = daftar_intent['responses'][0] + "\n\nSilakan sebutkan proyek yang Anda minati atau hubungi marketing kami:\n📞 Bp. Toni - 0896 3823 0725\n🌐 https://kianolandgroup.com"
+                return format_response(response_text)
+
     # ===== END OF PURCHASE HANDLING BLOCK =====
 
     # Rest of the function remains the same...
