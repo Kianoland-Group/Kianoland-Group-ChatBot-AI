@@ -511,17 +511,25 @@ def detect_intent_local(user_input: str) -> Dict[str, str]:
             if bantuan_intent:
                 return format_response(bantuan_intent['responses'][0])
 
-    # Default fallback
-    fallback = next((i for i in INTENTS if i['name'] == 'default_fallback'), None)
-    if fallback:
-        # Jika ada kata kunci rumah/cari/beli, gunakan daftar proyek
-        if any(kw in user_input_normalized for kw in ['rumah', 'cari', 'beli', 'lihat']):
-            daftar_intent = next((i for i in INTENTS if i['name'] == 'daftar_proyek'), None)
-            if daftar_intent:
-                return format_response(daftar_intent['responses'][0])
-        else:
-            return format_response(fallback['responses'][0])
+    # ===== Logika Fallback yang Diperbaiki =====
+
+    # Jika ada intent yang cocok (walaupun skornya rendah), prioritaskan fallback dari intent tersebut.
+    if best_match:
+        # Untuk intent spesifik yang butuh nama proyek, minta klarifikasi.
+        specific_intents_needing_project = ['info_fasilitas', 'info_harga', 'info_lokasi', 'info_proyek']
+        if best_match['name'] in specific_intents_needing_project:
+            # Ambil respons dari intent yang terdeteksi
+            response_text = best_match['responses'][0] if best_match['responses'] else ""
+            # Gunakan template fallback dari intent tersebut, yang akan meminta pengguna menyebutkan proyek
+            processed_response = process_conditional_templates(response_text, project=None)
+            return format_response(processed_response)
+
+    # Jika setelah semua pengecekan masih tidak ada intent yang jelas, baru gunakan fallback umum.
+    fallback_intent = next((i for i in INTENTS if i['name'] == 'default_fallback'), None)
+    if fallback_intent:
+        return format_response(fallback_intent['responses'][0])
     
+    # Fallback terakhir jika file default_fallback.json tidak ada
     return format_response("Maaf, saya tidak memahami pertanyaan Anda. Ketik 'bantuan' untuk panduan.")
 
 def process_conditional_templates(text: str, project: str = None, lokasi: str = None, primary: str = None, secondary: str = None) -> str:
