@@ -269,13 +269,27 @@ def detect_intent_local(user_input: str) -> Dict[str, str]:
                 processed_response = process_conditional_templates(response_text, lokasi=lokasi, primary=lokasi)
                 return format_response(processed_response)
 
-        # Scenario 3: Generic purchase intent without specifics
+        # Scenario 3: Generic purchase, but check for unsupported locations first.
         else:
+            # Cek apakah ada kata-kata yang mengindikasikan lokasi
+            location_cues = ['di', 'daerah', 'kawasan', 'sekitar', 'area']
+            is_location_query = any(cue in user_input_normalized for cue in location_cues)
+
+            # Jika kueri sepertinya menanyakan lokasi tetapi tidak ada lokasi valid yang terdeteksi
+            if is_location_query:
+                # Ambil dan gunakan fallback dari intent rekomendasi
+                rekomendasi_intent = next((i for i in INTENTS if i['name'] == 'rekomendasi_proyek'), None)
+                if rekomendasi_intent:
+                    response_template = rekomendasi_intent['responses'][0]
+                    # Proses templat tanpa lokasi akan memicu blok fallback
+                    processed_response = process_conditional_templates(response_template, lokasi=None)
+                    return format_response(processed_response)
+            
+            # Fallback asli untuk kueri yang benar-benar generik (misal: "saya mau beli rumah")
             daftar_intent = next((i for i in INTENTS if i['name'] == 'daftar_proyek'), None)
             if daftar_intent:
                 response_text = daftar_intent['responses'][0] + "\n\nSilakan sebutkan proyek yang Anda minati atau hubungi marketing kami:\n📞 Bp. Toni - 0896 3823 0725\n🌐 https://kianolandgroup.com"
                 return format_response(response_text)
-
     # ===== END OF PURCHASE HANDLING BLOCK =====
 
     # Rest of the function remains the same...
