@@ -97,19 +97,19 @@ def get_valid_projects():
     return available_projects
 
 # 2. Fungsi validasi proyek menggunakan entitas
-def is_valid_project(project: str) -> bool:
-    """Cek apakah proyek valid berdasarkan entitas"""
-    project = project.lower().strip()
+def is_valid_project(project_name: str) -> bool:
+    """Cek apakah proyek valid berdasarkan entitas secara lebih ketat."""
+    project_lower = project_name.lower().strip()
     
     # Cek di semua entitas proyek
     for entry in ENTITIES.get('proyek', []):
-        # Cek value utama
-        if similar(project, entry['value'].lower()) > 0.7:
+        # Cek value utama (nama resmi proyek)
+        if project_lower == entry['value'].lower():
             return True
         
-        # Cek semua sinonim
+        # Cek semua sinonimnya
         for synonym in entry.get('synonyms', []):
-            if similar(project, synonym.lower()) > 0.8:
+            if project_lower == synonym.lower():
                 return True
                 
     return False
@@ -154,25 +154,28 @@ def detect_entities(text: str) -> Dict[str, str]:
     if 'proyek' not in detected:
         text_lower = text.lower()
         
-        # Prioritize exact alias matches
-        for entry in ENTITIES.get('proyek', []):
-            if re.search(r'\bkiano\s*([123])\b', text_lower):
-                num = re.search(r'\bkiano\s*([123])\b', text_lower).group(1)
-                detected['proyek'] = f"Natureland Kiano {num}"
-                break
-
-            # Cek value utama
-            if entry['value'].lower() in text_lower:
-                detected['proyek'] = entry['value']
-                break
-                
-            # Cek sinonim
-            for synonym in entry.get('synonyms', []):
-                if synonym.lower() in text_lower:
+        # --- START OF FIX ---
+        # Prioritaskan untuk mendeteksi pola "kiano [angka]" terlebih dahulu
+        kiano_match = re.search(r'\bkiano\s*(\d+)\b', text_lower)
+        if kiano_match:
+            # Jika pola ditemukan, ambil angkanya
+            num = kiano_match.group(1)
+            detected['proyek'] = f"Natureland Kiano {num}"
+        else:
+            # Jika tidak ada pola "kiano [angka]", baru cari sinonim lain
+            for entry in ENTITIES.get('proyek', []):
+                # Cek value utama
+                if entry['value'].lower() in text_lower:
                     detected['proyek'] = entry['value']
                     break
-            if 'proyek' in detected:
-                break
+                # Cek sinonim lain
+                for synonym in entry.get('synonyms', []):
+                    if synonym.lower() in text_lower:
+                        detected['proyek'] = entry['value']
+                        break
+                if 'proyek' in detected:
+                    break
+        # --- END OF FIX ---
         
         # FALLBACK BARU: Deteksi pola "info [nama_proyek]" jika belum terdeteksi
     if 'proyek' not in detected:

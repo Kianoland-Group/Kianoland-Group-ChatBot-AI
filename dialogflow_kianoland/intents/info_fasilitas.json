@@ -17,6 +17,24 @@
       "parts": [
         {"text": "apa fasilitas di kiano 2?"}
       ]
+    },
+    {
+      "parts": [
+        {"text": "fasilitas "},
+        {"text": "green jonggol", "entityType": "@proyek", "alias": "proyek"}
+      ]
+    },
+    {
+      "parts": [
+        {"text": "fasilitas "},
+        {"text": "kiano 2", "entityType": "@proyek", "alias": "proyek"}
+      ]
+    },
+    {
+      "parts": [
+        {"text": "apa fasilitas "},
+        {"text": "Natureland Kiano 3", "entityType": "@proyek", "alias": "proyek"}
+      ]
     }
   ],
   "messages": [
