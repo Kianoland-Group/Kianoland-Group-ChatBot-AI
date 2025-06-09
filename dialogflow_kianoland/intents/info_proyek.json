@@ -59,6 +59,27 @@
         {"text": "info "},
         {"text": "Natureland Kiano 1", "entityType": "@proyek"}
       ]
+    },
+    {
+      "parts": [
+        {"text": "Green Jonggol Village"}
+      ]
+    },
+    {
+      "parts": [
+        {"text": "green jonggol"}
+      ]
+    },
+    {
+      "parts": [
+        {"text": "info gjv"}
+      ]
+    },
+    {
+      "parts": [
+        {"text": "info "},
+        {"text": "Natureland Kiano 1", "entityType": "@proyek"}
+      ]
     }
   ],
   "messages": [

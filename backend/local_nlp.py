@@ -211,6 +211,13 @@ def detect_intent_local(user_input: str) -> Dict[str, str]:
     user_input_normalized = re.sub(r'(\w)\1{2,}', r'\1', user_input.lower())
     print(f"\n🔍 User input: '{user_input}' → Normalized: '{user_input_normalized}'")
 
+    # --- START PERBAIKAN: Handle "lihat saja" ---
+    if user_input_normalized == "saya ingin lihat":
+        bantuan_intent = next((i for i in INTENTS if i['name'] == 'bantuan'), None)
+        if bantuan_intent:
+            return format_response(bantuan_intent['responses'][0])
+    # --- AKHIR PERBAIKAN ---
+
     # --- START PERBAIKAN ---
     # 1. Deteksi entitas di awal untuk semua kasus.
     entities = detect_entities(user_input)
@@ -282,15 +289,17 @@ def detect_intent_local(user_input: str) -> Dict[str, str]:
             base_similarity = similarity
             if base_similarity > 0.4:  # Only apply boosts if already somewhat similar
                 if intent['name'] == 'info_lokasi' and any(kw in user_input_normalized for kw in ['lokasi', 'alamat', 'letak', 'peta', 'dimana']):
-                    similarity += 0.3
-                elif intent['name'] == 'info_proyek' and any(kw in user_input_normalized for kw in ['info', 'informasi', 'detail', 'beli', 'rumah', 'lihat']):
+                    similarity += 0.3                
+                # 'lihat' dihapus karena terlalu umum
+                elif intent['name'] == 'info_proyek' and any(kw in user_input_normalized for kw in ['info', 'informasi', 'detail', 'beli', 'rumah']):
                     similarity += 0.2
                 elif intent['name'] == 'daftar_proyek' and any(kw in user_input_normalized for kw in ['daftar', 'list', 'semua', 'tersedia', 'ada', 'apa saja', 'yang ada']):
                     similarity += 0.3  # Only one boost
                 elif intent['name'] == 'bantuan' and any(kw in user_input_normalized for kw in ['bantu', 'tolong', 'panduan', 'tidak mengerti', 'ga ngerti', 'help']):
-                    similarity += 0.2
+                    similarity += 0.2                
+                # Skor dinaikkan agar lebih prioritas saat kata 'promo' muncul
                 elif intent['name'] == 'info_promo' and any(kw in user_input_normalized for kw in ['dp', 'promo', 'diskon', 'uang muka', 'persen']):
-                    similarity += 0.2
+                    similarity += 0.4
                 elif intent['name'] == 'syarat_dokumen' and any(kw in user_input_normalized for kw in ['bayar', 'pembayaran', 'kpr', 'cicil', 'angsuran', 'proses', 'alur', 'tahap', 'langkah', 'sistem']):
                     similarity += 0.3
                 elif intent['name'] == 'rekomendasi_proyek' and any(kw in user_input_normalized for kw in ['rekomendasi', 'rekom', 'sarankan', 'saran', 'cocok', 'daerah', 'kawasan']):
@@ -321,33 +330,19 @@ def detect_intent_local(user_input: str) -> Dict[str, str]:
         # Dapatkan daftar proyek valid
         VALID_PROJECTS = get_valid_projects()
 
-        # ===== FALLBACK 1: Info tanpa proyek =====
-        if best_match and best_match['name'] == 'info_proyek':
-            # First, handle list requests
-            if any(kw in user_input_normalized for kw in ['semua proyek', 'proyek yang ada', 'proyek tersedia', 'apa saja proyek', 'list proyek', 'daftar proyek']):
-                projects_list = "\n".join(f"- {p}" for p in VALID_PROJECTS)
-                return format_response(
-                    "Berikut proyek yang tersedia:\n\n"
-                    f"{projects_list}\n\n"
-                    "Ketik 'info [nama_proyek]' untuk detail lebih lanjut."
-                )
-            
-            # Then handle cases with no project specified
-            if not project:
-                # Check if query is specifically asking for project info
-                if "info" in user_input_normalized and len(user_input_normalized.split()) <= 2:
-                    projects_list = "\n".join(f"- {p}" for p in VALID_PROJECTS)
-                    return format_response(
-                        "Silakan sebutkan proyek yang ingin Anda ketahui informasinya.\n"
-                        "Contoh: 'info Natureland Kiano 3'\n\n"
-                        "Proyek yang tersedia:\n"
-                        f"{projects_list}"
-                    )
-                else:
-                    # Return the daftar_proyek response for general info requests
-                    daftar_intent = next((i for i in INTENTS if i['name'] == 'daftar_proyek'), None)
-                    if daftar_intent:
-                        return format_response(daftar_intent['responses'][0])
+        # ===== FALLBACK 1: Info tanpa proyek (LOGIKA BARU) =====
+        specific_intents = ['info_fasilitas', 'info_harga', 'info_lokasi', 'info_proyek']
+        if best_match and best_match['name'] in specific_intents and not project:
+            # Minta klarifikasi kepada pengguna
+            # Mengambil topik dari nama intent (misal, 'info_fasilitas' -> 'fasilitas')
+            topic = best_match['name'].split('_')[-1]
+            return format_response(
+                f"Tentu, informasi {topic} untuk proyek mana yang ingin Anda ketahui?\n\n"
+                f"Proyek yang tersedia:\n"
+                f"• Natureland Kiano 2\n"
+                f"• Natureland Kiano 3\n"
+                f"• Green Jonggol Village"
+            )
         
         # ===== FALLBACK 2: Proyek tidak valid =====
         if project and not is_valid_project(project):
