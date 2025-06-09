@@ -1,138 +1,44 @@
 {
   "displayName": "rekomendasi_proyek",
   "trainingPhrases": [
-    {
-      "parts": [
-        { "text": "saya ingin beli rumah di " },
-        { "text": "Cibarusah", "entityType": "@lokasi" }
-      ]
-    },
-    {
-      "parts": [
-        { "text": "perumahan yang cocok di " },
-        { "text": "Jatisampurna", "entityType": "@lokasi" }
-      ]
-    },
-    {
-      "parts": [
-        { "text": "cocoknya ambil apa kalau di " },
-        { "text": "Bogor", "entityType": "@lokasi" }
-      ]
-    },
-    {
-      "parts": [
-        { "text": "rekomendasi rumah untuk " },
-        { "text": "Cibarusah", "entityType": "@lokasi" }
-      ]
-    },
-    {
-      "parts": [
-        { "text": "yang cocok di " },
-        { "text": "Bekasi", "entityType": "@lokasi" }
-      ]
-    },
-    {
-      "parts": [
-        { "text": "lokasi dekat " },
-        { "text": "Cibubur", "entityType": "@lokasi" }
-      ]
-    },
-    {
-      "parts": [
-        { "text": "rumah di sekitar " },
-        { "text": "Jonggol", "entityType": "@lokasi" }
-      ]
-    },
-    {
-      "parts": [
-        { "text": "saya cari rumah di " },
-        { "text": "Bekasi", "entityType": "@lokasi" }
-      ]
-    },
-    {
-      "parts": [
-        { "text": "yang dekat " },
-        { "text": "Jatirangon", "entityType": "@lokasi" }
-      ]
-    },
-    {
-      "parts": [
-        { "text": "yang dekat " },
-        { "text": "Jatiranggon", "entityType": "@lokasi" }
-      ]
-    },
-    {
-      "parts": [
-        { "text": "perumahan dekat " },
-        { "text": "Jatiranggon", "entityType": "@lokasi" }
-      ]
-    },
-    {
-      "parts": [
-        { "text": "rumah di sekitar " },
-        { "text": "Jatiranggon", "entityType": "@lokasi" }
-      ]
-    },
-    {
-      "parts": [
-        { "text": "rekomendasi proyek dekat dengan " },
-        { "text": "Cibubur", "entityType": "@lokasi" }
-      ]
-    },
-    {
-      "parts": [
-        { "text": "rekomendasi rumah dekat " },
-        { "text": "Cibubur", "entityType": "@lokasi" }
-      ]
-    },
-    {
-      "parts": [
-        { "text": "rekomendasi properti di sekitar " },
-        { "text": "Cibubur", "entityType": "@lokasi" }
-      ]
-    },
-    {
-      "parts": [
-        { "text": "proyek kianoland terdekat dengan " },
-        { "text": "Cibubur", "entityType": "@lokasi" }
-      ]
-    },
-    {
-      "parts": [
-        { "text": "rekomendasi rumah di " },
-        { "text": "Jonggol", "entityType": "@lokasi" }
-      ]
-    },
-    {
-      "parts": [
-        { "text": "proyek yang cocok di " },
-        { "text": "Jonggol", "entityType": "@lokasi" }
-      ]
-    },
-    {
-      "parts": [
-        { "text": "rekomendasi rumah di daerah " },
-        { "text": "Bekasi", "entityType": "@lokasi" }
-      ]
-    },
-    {
-      "parts": [
-        { "text": "rekomendasi rumah di kawasan " },
-        { "text": "Bekasi", "entityType": "@lokasi" }
-      ]
-    },
-    {
-      "parts": [
-        { "text": "rekomendasi perumahan daerah " },
-        { "text": "Bekasi", "entityType": "@lokasi" }
-      ]
-    }
+    { "parts": [ { "text": "saya ingin beli rumah di " }, { "text": "Cibarusah", "entityType": "@lokasi" } ] },
+    { "parts": [ { "text": "perumahan yang cocok di " }, { "text": "Jatisampurna", "entityType": "@lokasi" } ] },
+    { "parts": [ { "text": "cocoknya ambil apa kalau di " }, { "text": "Bogor", "entityType": "@lokasi" } ] },
+    { "parts": [ { "text": "rekomendasi rumah untuk " }, { "text": "Cibarusah", "entityType": "@lokasi" } ] },
+    { "parts": [ { "text": "yang cocok di " }, { "text": "Bekasi", "entityType": "@lokasi" } ] },
+    { "parts": [ { "text": "lokasi dekat " }, { "text": "Cibubur", "entityType": "@lokasi" } ] },
+    { "parts": [ { "text": "rumah di sekitar " }, { "text": "Jonggol", "entityType": "@lokasi" } ] },
+    { "parts": [ { "text": "saya cari rumah di " }, { "text": "Bekasi", "entityType": "@lokasi" } ] },
+    { "parts": [ { "text": "yang dekat " }, { "text": "Jatirangon", "entityType": "@lokasi" } ] },
+    { "parts": [ { "text": "yang dekat " }, { "text": "Jatiranggon", "entityType": "@lokasi" } ] },
+    { "parts": [ { "text": "perumahan dekat " }, { "text": "Jatiranggon", "entityType": "@lokasi" } ] },
+    { "parts": [ { "text": "rumah di sekitar " }, { "text": "Jatiranggon", "entityType": "@lokasi" } ] },
+    { "parts": [ { "text": "rekomendasi proyek dekat dengan " }, { "text": "Cibubur", "entityType": "@lokasi" } ] },
+    { "parts": [ { "text": "rekomendasi rumah dekat " }, { "text": "Cibubur", "entityType": "@lokasi" } ] },
+    { "parts": [ { "text": "rekomendasi properti di sekitar " }, { "text": "Cibubur", "entityType": "@lokasi" } ] },
+    { "parts": [ { "text": "proyek kianoland terdekat dengan " }, { "text": "Cibubur", "entityType": "@lokasi" } ] },
+    { "parts": [ { "text": "rekomendasi rumah di " }, { "text": "Jonggol", "entityType": "@lokasi" } ] },
+    { "parts": [ { "text": "proyek yang cocok di " }, { "text": "Jonggol", "entityType": "@lokasi" } ] },
+    { "parts": [ { "text": "rekomendasi rumah di daerah " }, { "text": "Bekasi", "entityType": "@lokasi" } ] },
+    { "parts": [ { "text": "rekomendasi rumah di kawasan " }, { "text": "Bekasi", "entityType": "@lokasi" } ] },
+    { "parts": [ { "text": "rekomendasi perumahan daerah " }, { "text": "Bekasi", "entityType": "@lokasi" } ] },
+    { "parts": [ { "text": "Ada proyek apa di " }, { "text": "Cileungsi", "entityType": "@lokasi" }, { "text": "?" } ] },
+    { "parts": [ { "text": "Kalau di " }, { "text": "Bogor", "entityType": "@lokasi" }, { "text": ", Kianoland punya apa?" } ] },
+    { "parts": [ { "text": "Boleh minta saran untuk " }, { "text": "Jonggol", "entityType": "@lokasi" }, { "text": "?" } ] },
+    { "parts": [ { "text": "Saya lagi cari hunian di sekitar " }, { "text": "Cibubur", "entityType": "@lokasi" } ] },
+    { "parts": [ { "text": "Info properti di " }, { "text": "Bekasi", "entityType": "@lokasi" }, { "text": " dong" } ] },
+    { "parts": [ { "text": "Tolong rekomendasikan perumahan di " }, { "text": "Cibarusah", "entityType": "@lokasi" } ] },
+    { "parts": [ { "text": "Proyek di " }, { "text": "Jatisampurna", "entityType": "@lokasi" }, { "text": " apa saja?" } ] },
+    { "parts": [ { "text": "Tunjukkan pilihan di " }, { "text": "Bekasi", "entityType": "@lokasi" } ] },
+    { "parts": [ { "text": "Untuk area " }, { "text": "Cibubur", "entityType": "@lokasi" }, { "text": ", ada apa?" } ] },
+    { "parts": [ { "text": "Butuh info rumah di " }, { "text": "Jonggol", "entityType": "@lokasi" } ] },
+    { "parts": [ { "text": "Cileungsi", "entityType": "@lokasi" }, { "text": " ada perumahan apa?" } ] }
   ],
   "messages": [
     {
       "text": {
         "text": [
-          "{{lokasi}} - Rekomendasi:\n{{#Cibarusah}}bold_startRekomendasi:bold_end Natureland Kiano 3, karena berlokasi di Cibarusahkota - Bekasi. (Harga mulai Rp 465 Juta){{/Cibarusah}}{{#Jatisampurna}}bold_startRekomendasi:bold_end Natureland Kiano 2, karena berada di Jatisampurna - Bekasi. (Harga mulai Rp 600 Juta){{/Jatisampurna}}{{#Jonggol}}bold_startRekomendasi:bold_end Green Jonggol Village, berlokasi di Jonggol - Bogor, dekat Tol Cileungsi. (Harga mulai Rp 400 Juta){{/Jonggol}}{{#Bekasi}}bold_startRekomendasi:bold_end Natureland Kiano 2 atau 3, karena keduanya berada di wilayah Bekasi.{{/Bekasi}}{{#Cibubur}}bold_startRekomendasi:bold_end Natureland Kiano 2, hanya 30 menit dari Cibubur via Tol JORR.{{/Cibubur}}{{#fallback}}Maaf, proyek kami belum tersedia di area tersebut.\n\nKianoland Group memiliki 3 proyek utama:\n\n🏡 Natureland Kiano 3 (Cibarusah, Bekasi) - Rp 465 Juta\n🏡 Natureland Kiano 2 (Jatisampurna, Bekasi) - Rp 600 Juta\n🌳 Green Jonggol Village (Jonggol, Bogor) - Rp 400 Juta\n\nKetik 'info [nama_proyek]' untuk detail lebih lanjut.{{/fallback}}"
+          "{{lokasi}} - Rekomendasi:\n{{#Cileungsi}}bold_startRekomendasi untuk Cileungsi:bold_end\nProyek kami di Cileungsi (Natureland Kiano 1) sudah sold out. Proyek terdekat yang tersedia adalah bold_startGreen Jonggol Villagebold_end di Jonggol, Bogor.{{/Cileungsi}}{{#Cibarusah}}bold_startRekomendasi:bold_end Natureland Kiano 3, karena berlokasi di Cibarusahkota - Bekasi. (Harga mulai Rp 465 Juta){{/Cibarusah}}{{#Jatisampurna}}bold_startRekomendasi untuk Jatisampurna:bold_end\nProyek kami di Jatisampurna (Natureland Kiano 2) sudah sold out. Proyek terdekat yang tersedia adalah Natureland Kiano 3 di Cibarusah, Bekasi.{{/Jatisampurna}}{{#Jonggol}}bold_startRekomendasi:bold_end Green Jonggol Village, berlokasi di Jonggol - Bogor. (Harga mulai Rp 400 Juta){{/Jonggol}}{{#Bekasi}}bold_startRekomendasi untuk Bekasi:bold_end\nKami merekomendasikan Natureland Kiano 3 yang berlokasi di Cibarusah, Bekasi. (Harga mulai Rp 465 Juta){{/Bekasi}}{{#Cibubur}}bold_startRekomendasi untuk area Cibubur:bold_end\nProyek kami yang terdekat dari Cibubur (Natureland Kiano 2) sudah sold out. Alternatif lainnya adalah:\n\n🌳 Green Jonggol Village (Jonggol)\n🏡 Natureland Kiano 3 (Cibarusah)\n\nKetik 'info [nama proyek]' untuk detail.{{/Cibubur}}{{#fallback}}Maaf, kami belum memiliki proyek di lokasi '{{lokasi}}'.\n\nProyek kami saat ini berada di:\n- Cibarusah, Bekasi\n- Jonggol, Bogor{{/fallback}}"
         ]
       }
     }

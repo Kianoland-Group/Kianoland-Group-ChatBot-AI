@@ -1,11 +1,14 @@
 {
   "displayName": "info_promo",
   "trainingPhrases": [
+    {"parts": [{"text": "promo"}]},
     {"parts": [{"text": "Apa promo yang tersedia?"}]},
     {"parts": [{"text": "Ada promo apa?"}]},
     {"parts": [{"text": "Diskon rumah"}]},
     {"parts": [{"text": "Promo KPR"}]},
     {"parts": [{"text": "apakah ada promo terbaru"}]},
+    {"parts": [{"text": "promo saat ini"}]},
+    {"parts": [{"text": "promo yang sedang berjalan"}]},
     {"parts": [{"text": "ada penawaran baru?"}]},
     {"parts": [{"text": "apakah dp gratis?"}]},
     {"parts": [{"text": "apakah ada promo dp 0 persen?"}]},
@@ -13,16 +16,20 @@
     {"parts": [{"text": "dp gratis untuk proyek mana?"}]},
     {"parts": [{"text": "apakah semua proyek gratis dp?"}]},
     {"parts": [{"text": "apakah beli rumah di kianoland group gratis dp?"}]},
-    {"parts": [{"text": "apakah beli rumah di kiano ada dp"}]},
-    {"parts": [{"text": "dp berapa persen untuk beli rumah di kiano"}]},
-    {"parts": [{"text": "apakah ada dp 0 persen di kiano"}]},
-    {"parts": [{"text": "uang muka berapa persen untuk rumah di kiano"}]}
+    {"parts": [{"text": "dp berapa persen"}]},
+    {"parts": [{"text": "apakah ada diskon"}]},
+    {"parts": [{"text": "uang muka berapa"}]}
   ],
   "messages": [
     {
       "text": {
         "text": [
-          "bold_startPromo Spesial:bold_end\n• Gratis Kanopi dan Carport\n• Free Biaya-Biaya\n• Tanpa DP!\n• KPR Zero di Bank BTN\n\nbold_startPilih Promo Sesuai Keinginan:bold_end\n- Promo Khusus Komersil\n- Promo Full Furnish\n- Promo Subsidi Suku Bunga"
+          "{{#Natureland Kiano 1}}bold_startPromo Natureland Kiano 1:bold_end\nMaaf, proyek ini sudah sold out sehingga tidak ada promo yang berlaku.{{/Natureland Kiano 1}}",
+          "{{#Natureland Kiano 2}}bold_startPromo Natureland Kiano 2:bold_end\nMaaf, proyek ini sudah sold out sehingga tidak ada promo yang berlaku.{{/Natureland Kiano 2}}",
+          "{{#all_promos}}bold_startPromo Kianoland Group Saat Ini:bold_end\n\n🏡 bold_startNatureland Kiano 3:bold_end\n• Pilihan: Full Furnished atau Gratis Umrah\n• Booking Fee 1 Juta (Sudah All-in)\n• Tanpa DP (DP 0%)\n• KPR Zero di Bank BTN\n\n🌳 bold_startGreen Jonggol Village:bold_end\n• Khusus Rumah Komersil: Full Furnished\n• Tanpa DP (DP 0%)\n• KPR Zero di Bank BTN\n{{/all_promos}}",
+          "{{#Natureland Kiano 3}}bold_startPromo Natureland Kiano 3:bold_end\n• Pilihan: Full Furnished atau Gratis Umrah\n• Booking Fee 1 Juta (Sudah All-in)\n• Tanpa DP (DP 0%)\n• KPR Zero di Bank BTN{{/Natureland Kiano 3}}",
+          "{{#Green Jonggol Village}}bold_startPromo Green Jonggol Village:bold_end\n• Khusus Rumah Komersil: Full Furnished\n• Tanpa DP (DP 0%)\n• KPR Zero di Bank BTN{{/Green Jonggol Village}}",
+          "{{#fallback}}Tentu, promo untuk proyek mana yang ingin Anda ketahui?\n\nProyek yang tersedia:\n• Natureland Kiano 3\n• Green Jonggol Village{{/fallback}}"
         ]
       }
     }

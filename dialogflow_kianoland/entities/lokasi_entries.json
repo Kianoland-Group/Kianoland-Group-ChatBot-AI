@@ -3,13 +3,14 @@
     "value": "Cibarusah",
     "synonyms": [
       "cibarusah", "cibarusah bekasi", "dekat cibarusah", "dekat dengan cibarusah",
-      "sekitar cibarusah", "area cibarusah", "lokasi dekat cibarusah", "perumahan cibarusah"
+      "sekitar cibarusah", "area cibarusah", "lokasi dekat cibarusah", "perumahan cibarusah",
+      "cikarang selatan", "serang baru", "bojongmangu", "cibucil", "mega regency"
     ]
   },
   {
     "value": "Jatisampurna",
     "synonyms": [
-      "jatisampurna", "jatirangon", "jatiranggon",
+      "jatisampurna", "jatirangon", "jatiranggon", "kranggan", "ujung aspal", "pondok gede",
       "dekat jatisampurna", "dekat jatirangon", "dekat jatiranggon",
       "sekitar jatirangon", "sekitar jatiranggon",
       "perumahan dekat jatiranggon", "rumah di jatiranggon",
@@ -19,23 +20,39 @@
   {
     "value": "Jonggol",
     "synonyms": [
-      "jonggol", "bogor", "cileungsi", "dekat jonggol", "sekitar cileungsi", "sekitar bogor",
-      "perumahan jonggol", "lokasi di bogor", "rumah bogor", "rumah cileungsi",
-      "daerah jonggol", "jonggol bogor"
+      "jonggol", "jonggol bogor", "dekat jonggol", "sekitar jonggol",
+      "perumahan jonggol", "daerah jonggol", "cariu", "sukamakmur",
+      "taman buah mekasari", "jonggol waterpark"
     ]
   },
   {
-    "value": "Bekasi",
+    "value": "Cileungsi",
     "synonyms": [
-      "bekasi", "kota bekasi", "dekat bekasi", "sekitar bekasi",
-      "yang cocok di bekasi", "cocoknya di bekasi", "perumahan bekasi", "rumah bekasi"
+      "cileungsi", "klapanunggal", "gunung putri", "cikeas", "kota wisata",
+      "legenda wisata", "metland transyogi", "rumah cileungsi", "sekitar cileungsi"
     ]
   },
   {
     "value": "Cibubur",
     "synonyms": [
-      "cibubur", "dekat cibubur", "sekitar cibubur", "lokasi dekat cibubur", 
-      "rumah dekat cibubur", "cibubur area", "kawasan cibubur", "dekat dengan cibubur"
+      "cibubur", "dekat cibubur", "sekitar cibubur", "lokasi dekat cibubur",
+      "rumah dekat cibubur", "cibubur area", "kawasan cibubur", "dekat dengan cibubur",
+      "alternatif cibubur", "transyogi", "plaza cibubur"
+    ]
+  },
+  {
+    "value": "Bekasi",
+    "synonyms": [
+      "bekasi", "kota bekasi", "kabupaten bekasi", "dekat bekasi", "sekitar bekasi",
+      "yang cocok di bekasi", "cocoknya di bekasi", "perumahan bekasi", "rumah bekasi",
+      "cikarang", "tambun"
+    ]
+  },
+  {
+    "value": "Bogor",
+    "synonyms": [
+      "bogor", "kota bogor", "kabupaten bogor", "rumah bogor", "lokasi di bogor",
+      "sekitar bogor", "area bogor"
     ]
   }
 ]

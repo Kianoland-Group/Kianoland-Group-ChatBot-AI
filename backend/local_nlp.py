@@ -88,9 +88,8 @@ def similar(a: str, b: str) -> float:
 
 # 1. Dapatkan daftar proyek valid dari entitas
 def get_valid_projects():
-    """Mendapatkan daftar proyek valid yang tersedia (tanpa Kiano 1)"""
+    """Mendapatkan daftar proyek valid yang tersedia (tanpa Kiano 1 dan 2)"""
     available_projects = [
-        "Natureland Kiano 2",
         "Natureland Kiano 3",
         "Green Jonggol Village"
     ]
@@ -205,326 +204,99 @@ def detect_entities(text: str) -> Dict[str, str]:
     return detected
 
 def detect_intent_local(user_input: str) -> Dict[str, str]:
-    """Detect intent from user input with improved entity handling"""
-    # Normalize input
-    user_input = re.sub(r'\s+', ' ', user_input).strip()
-    user_input_normalized = re.sub(r'(\w)\1{2,}', r'\1', user_input.lower())
+    """Detect intent using a final, robust, rule-based priority system."""
+    user_input_normalized = re.sub(r'(\w)\1{2,}', r'\1', user_input.lower().strip())
     print(f"\n🔍 User input: '{user_input}' → Normalized: '{user_input_normalized}'")
 
-    # --- START PERBAIKAN: Handle "lihat saja" ---
-    if user_input_normalized == "saya ingin lihat":
-        bantuan_intent = next((i for i in INTENTS if i['name'] == 'bantuan'), None)
-        if bantuan_intent:
-            return format_response(bantuan_intent['responses'][0])
-    # --- AKHIR PERBAIKAN ---
-
-    # --- START PERBAIKAN ---
-    # 1. Deteksi entitas di awal untuk semua kasus.
     entities = detect_entities(user_input)
     project = entities.get('proyek')
-
-    # 2. Validasi proyek jika terdeteksi, sebelum memproses intent apapun.
-    if project:
-        # Handle kasus khusus untuk Kiano 1 (sold out)
-        if "kiano 1" in project.lower():
-            return format_response(
-                "bold_startNatureland Kiano 1:bold_end\n"
-                "Maaf, proyek ini sudah sold out. Kami merekomendasikan proyek terbaru kami:\n\n"
-                "🏡 Natureland Kiano 2 (Jatisampurna, Bekasi)\n"
-                "🏡 Natureland Kiano 3 (Cibarusah, Bekasi)\n"
-                "🌳 Green Jonggol Village (Jonggol, Bogor)\n\n"
-                "Ketik 'info [nama_proyek]' untuk detail lebih lanjut."
-            )
-        
-        # Handle proyek tidak valid lainnya (misal: Kiano 4)
-        if not is_valid_project(project):
-            projects_list = "\n".join(f"• {p}" for p in get_valid_projects())
-            return format_response(
-                f"Maaf, proyek '{project}' tidak tersedia di Kianoland Group.\n\n"
-                f"Proyek yang tersedia:\n{projects_list}\n\n"
-                f"Ketik 'info [nama_proyek]' untuk detail lebih lanjut."
-            )
-    # --- AKHIR PERBAIKAN ---
-
-    # --- PERBAIKAN 1: Prioritaskan Rekomendasi Berbasis Lokasi ---
-    rekomendasi_keywords = ['rekomendasi', 'rekom', 'sarankan', 'saran', 'cocok', 'daerah', 'kawasan']
     lokasi = entities.get('lokasi')
+
+    # ===== ATURAN #1: VALIDASI PROYEK TIDAK VALID =====
+    if project and not is_valid_project(project):
+        print("🎯 ATURAN #1: Proyek Tidak Valid Terdeteksi.")
+        projects_list = "\n".join(f"• {p}" for p in get_valid_projects())
+        return format_response(
+            f"Maaf, proyek '{project}' tidak tersedia di Kianoland Group.\n\n"
+            f"Proyek yang tersedia saat ini:\n{projects_list}"
+        )
     
-    if any(kw in user_input_normalized for kw in rekomendasi_keywords) and lokasi:
+    # ===== ATURAN #2: PERTANYAAN SPESIFIK (PROMO, HARGA, FASILITAS, LOKASI) =====
+    specific_keywords = {
+        'info_promo': ['promo', 'diskon', 'dp', 'uang muka'],
+        'info_harga': ['harga', 'kpr', 'cicilan', 'angsuran', 'biaya'],
+        'info_fasilitas': ['fasilitas'],
+        'info_lokasi': ['lokasi', 'alamat', 'peta', 'letak', 'dimana']
+    }
+    for intent_name, keywords in specific_keywords.items():
+        if any(kw in user_input_normalized for kw in keywords):
+            
+            # --- Logika Khusus untuk PROMO ---
+            if intent_name == 'info_promo':
+                latest_promo_keywords = ['terbaru', 'saat ini', 'berjalan', 'sekarang']
+                # Jika pengguna menanyakan promo terkini -> tampilkan semua
+                if any(kw in user_input_normalized for kw in latest_promo_keywords):
+                    print("🎯 ATURAN #2.A: Info Semua Promo Terkini.")
+                    promo_intent = next((i for i in INTENTS if i['name'] == 'info_promo'), None)
+                    if promo_intent:
+                        response_text = promo_intent['responses'][0]
+                        # Gunakan kunci 'all_promos' untuk memanggil template yang benar
+                        processed_response = process_conditional_templates(response_text, project='all_promos')
+                        return format_response(processed_response)
+            
+            # Jika tidak ada nama proyek, minta klarifikasi (berlaku untuk semua)
+            if not project:
+                print(f"🎯 ATURAN #2.B: Klarifikasi untuk '{intent_name}'.")
+                # Untuk 'promo', fallback-nya ada di dalam template. Untuk yg lain, kita buat manual.
+                forced_intent = next((i for i in INTENTS if i['name'] == intent_name), None)
+                if forced_intent:
+                    response_text = forced_intent['responses'][0]
+                    processed_response = process_conditional_templates(response_text, project=None)
+                    return format_response(processed_response)
+
+            # Jika ada nama proyek, paksa intent yang benar.
+            print(f"🎯 ATURAN #2.C: Intent Spesifik '{intent_name}' Terdeteksi.")
+            forced_intent = next((i for i in INTENTS if i['name'] == intent_name), None)
+            if forced_intent:
+                response_text = forced_intent['responses'][0]
+                processed_response = process_conditional_templates(response_text, project, lokasi)
+                return format_response(processed_response)
+
+    # ===== ATURAN #3: REKOMENDASI LOKASI =====
+    rekomendasi_keywords = ['rekomendasi', 'rekom', 'sarankan', 'saran', 'cocok', 'daerah', 'kawasan']
+    if lokasi and any(kw in user_input_normalized for kw in rekomendasi_keywords):
+        print("🎯 ATURAN #3: Rekomendasi Lokasi Terdeteksi.")
         rekomendasi_intent = next((i for i in INTENTS if i['name'] == 'rekomendasi_proyek'), None)
         if rekomendasi_intent:
             response_text = rekomendasi_intent['responses'][0]
-            # Gunakan lokasi sebagai parameter utama untuk memicu template yang benar
-            processed_response = process_conditional_templates(response_text, lokasi, lokasi)
+            processed_response = process_conditional_templates(response_text, project=lokasi, lokasi=lokasi)
             return format_response(processed_response)
-    # --- AKHIR PERBAIKAN 1 ---
 
-    # ===== Logika Intent Lanjutan =====
-    purchase_keywords = [
-        'mau beli', 'ingin beli', 'minat beli', 'pesan rumah', 'booking rumah',
-        'beli rumah', 'pembelian rumah', 'booking unit', 'lihat rumah', 'kunjung'
-    ]
-    # Jika intent adalah pembelian dan proyek sudah tervalidasi
-    if any(phrase in user_input_normalized for phrase in purchase_keywords) and project:
-        contact = marketing_contacts.get(project, "Bp. Toni - 0896 3823 0725")
-        return format_response(
-            f"Terima kasih atas minat Anda pada proyek {project}!\n\n"
-            f"Untuk proses pembelian atau kunjungan proyek, silakan hubungi marketing kami:\n"
-            f"📞 {contact}\n\n"
-            "Atau kunjungi website resmi kami:\n"
-            "🌐 https://kianolandgroup.com"
-        )
-    
-    # Intent matching logic
+    # ===== ATURAN #4: FALLBACK KE PENCOCOKAN KEMIRIPAN =====
+    print("🚦 Lanjut ke Aturan #4: Pencocokan Berbasis Kemiripan.")
     best_match = None
     highest_score = 0
-    matched_phrase = ""
-
     for intent in INTENTS:
         for phrase in intent.get('phrases', []):
-            phrase_normalized = phrase.lower()
-            similarity = SequenceMatcher(None, user_input_normalized, phrase_normalized).ratio()
-            
-            # Apply keyword boosts only if base similarity is above threshold
-            base_similarity = similarity
-            if base_similarity > 0.4:  # Only apply boosts if already somewhat similar
-                if intent['name'] == 'info_lokasi' and any(kw in user_input_normalized for kw in ['lokasi', 'alamat', 'letak', 'peta', 'dimana']):
-                    similarity += 0.3                
-                # 'lihat' dihapus karena terlalu umum
-                elif intent['name'] == 'info_proyek' and any(kw in user_input_normalized for kw in ['info', 'informasi', 'detail', 'beli', 'rumah']):
-                    similarity += 0.2
-                elif intent['name'] == 'daftar_proyek' and any(kw in user_input_normalized for kw in ['daftar', 'list', 'semua', 'tersedia', 'ada', 'apa saja', 'yang ada']):
-                    similarity += 0.3  # Only one boost
-                elif intent['name'] == 'bantuan' and any(kw in user_input_normalized for kw in ['bantu', 'tolong', 'panduan', 'tidak mengerti', 'ga ngerti', 'help']):
-                    similarity += 0.2                
-                # Skor dinaikkan agar lebih prioritas saat kata 'promo' muncul
-                elif intent['name'] == 'info_promo' and any(kw in user_input_normalized for kw in ['dp', 'promo', 'diskon', 'uang muka', 'persen']):
-                    similarity += 0.4
-                elif intent['name'] == 'syarat_dokumen' and any(kw in user_input_normalized for kw in ['bayar', 'pembayaran', 'kpr', 'cicil', 'angsuran', 'proses', 'alur', 'tahap', 'langkah', 'sistem']):
-                    similarity += 0.3
-                elif intent['name'] == 'rekomendasi_proyek' and any(kw in user_input_normalized for kw in ['rekomendasi', 'rekom', 'sarankan', 'saran', 'cocok', 'daerah', 'kawasan']):
-                    similarity += 0.2
-
-            similarity = min(similarity, 1.0)
-            
+            boost = 0.2 if project and intent['name'] == 'info_proyek' else 0
+            similarity = SequenceMatcher(None, user_input_normalized, phrase).ratio() + boost
             if similarity > highest_score:
                 highest_score = similarity
                 best_match = intent
-                matched_phrase = phrase
-
-    # Adjust threshold for specific intents
-    # PERBAIKAN: Turunkan threshold untuk rekomendasi_proyek
-    required_score = 0.65 if best_match and best_match['name'] in ['info_proyek', 'rekomendasi_proyek'] else 0.55
-
-    # Generate response
-    if best_match and highest_score > required_score:
-        print(f"🎯 Best match: {best_match['name']} (score: {highest_score:.2f})")
-        response_text = best_match['responses'][0] if best_match['responses'] else ""
-
-        # Detect entities
-        entities = detect_entities(user_input)
-        project = entities.get('proyek')
-        lokasi = entities.get('lokasi')
-        print(f"🧩 Detected entities: {entities}")
-
-        # Dapatkan daftar proyek valid
-        VALID_PROJECTS = get_valid_projects()
-
-        # ===== FALLBACK 1: Info tanpa proyek (LOGIKA BARU) =====
-        specific_intents = ['info_fasilitas', 'info_harga', 'info_lokasi', 'info_proyek']
-        if best_match and best_match['name'] in specific_intents and not project:
-            # Minta klarifikasi kepada pengguna
-            # Mengambil topik dari nama intent (misal, 'info_fasilitas' -> 'fasilitas')
-            topic = best_match['name'].split('_')[-1]
-            return format_response(
-                f"Tentu, informasi {topic} untuk proyek mana yang ingin Anda ketahui?\n\n"
-                f"Proyek yang tersedia:\n"
-                f"• Natureland Kiano 2\n"
-                f"• Natureland Kiano 3\n"
-                f"• Green Jonggol Village"
-            )
-        
-        # ===== FALLBACK 2: Proyek tidak valid =====
-        if project and not is_valid_project(project):
-            # Ambil nama asli dari input user (dari teks normalized)
-            user_project = re.search(r'info\s+(.+)', user_input_normalized, re.IGNORECASE)
-            project_name = user_project.group(1).strip() if user_project else project
-            
-            # Handle khusus untuk Kiano 1
-            if "kiano 1" in project_name.lower() or "natureland kiano 1" in project_name.lower():
-                return format_response(
-                    "bold_startNatureland Kiano 1:bold_end\n"
-                    "Maaf, proyek ini sudah sold out. Kami merekomendasikan proyek terbaru kami:\n\n"
-                    "🏡 Natureland Kiano 2 (Jatisampurna, Bekasi)\n"
-                    "🏡 Natureland Kiano 3 (Cibarusah, Bekasi)\n"
-                    "🌳 Green Jonggol Village (Jonggol, Bogor)\n\n"
-                    "Ketik 'info [nama_proyek]' untuk detail lebih lanjut."
-                )
-            
-            projects_list = "\n".join(f"• {p}" for p in VALID_PROJECTS)
-            return format_response(
-                "Maaf, proyek yang Anda maksud tidak tersedia di Kianoland Group.\n\n"
-                "Proyek yang tersedia:\n"
-                f"{projects_list}\n\n"
-                "Ketik 'info [nama_proyek]' untuk detail lebih lanjut."
-            )
-        
-        # TAMBAHKAN pengecualian khusus untuk minat_beli:
-        if best_match['name'] == 'minat_beli':
-            # Gunakan respons daftar proyek, bukan respons asli minat_beli
-            daftar_intent = next((i for i in INTENTS if i['name'] == 'daftar_proyek'), None)
-            if daftar_intent:
-                return format_response(daftar_intent['responses'][0])
-
-        # Handle info_harga intent specifically
-        if best_match['name'] == 'info_harga':
-            # Jika proyek Kiano 1 terdeteksi
-            if project == "Natureland Kiano 1":
-                response_text = (
-                    "bold_startHarga Natureland Kiano 1:bold_end\n"
-                    "Maaf, proyek ini sudah sold out. Berikut harga proyek terbaru kami:\n\n"
-                    "🏡 Natureland Kiano 2: Rp 600 Juta\n"
-                    "🏡 Natureland Kiano 3: Rp 465 Juta\n"
-                    "🌳 Green Jonggol Village: Rp 400 Juta\n\n"
-                    "Ketik 'info [nama_proyek]' untuk detail lebih lanjut."
-                )
-            else:
-                # Proses template khusus info_harga
-                response_text = process_conditional_templates(response_text, project, lokasi)
-            return format_response(response_text)
-
-        # Special handling for location intent
-        if best_match['name'] == 'info_lokasi':
-            # If no project detected, show project selection message
-            if not project:
-                return format_response(
-                    "Silakan sebutkan proyek yang ingin Anda ketahui lokasinya.\n"
-                    "Contoh: 'lokasi Natureland Kiano 3'\n\n"
-                    "Proyek yang tersedia:\n"
-                    "- Natureland Kiano 2\n"
-                    "- Natureland Kiano 3\n"
-                    "- Green Jonggol Village"
-                )
-            
-            # Process templates with the detected project
-            response_text = process_conditional_templates(response_text, project, lokasi)
-            return format_response(response_text)
-
-        # Handle DP/promo questions
-        if any(kw in user_input_normalized for kw in ['dp', 'uang muka']):
-            project_name = project or "Kianoland"
-            response_text = (
-                f"Untuk pembelian rumah di {project_name}, kami menyediakan promo khusus:\n\n"
-                "• DP 0% untuk KPR BTN Zero\n"
-                "• Tanpa Biaya Administrasi\n"
-                "• Gratis Kanopi dan Carport\n\n"
-                "Info detail promo ketik 'promo'"
-            )
-        else:
-            # PERBAIKAN: Tangani khusus untuk Kiano 1
-            if project == "Natureland Kiano 1":
-                response_text = (
-                    "bold_startNatureland Kiano 1:bold_end\n"
-                    "Maaf, proyek ini sudah sold out. Kami merekomendasikan proyek terbaru kami:\n\n"
-                    "🏡 Natureland Kiano 2 (Jatisampurna, Bekasi)\n"
-                    "🏡 Natureland Kiano 3 (Cibarusah, Bekasi)\n"
-                    "🌳 Green Jonggol Village (Jonggol, Bogor)\n\n"
-                    "Ketik 'info [nama_proyek]' untuk detail lebih lanjut."
-                )
-
-            # PERBAIKAN KHUSUS UNTUK REKOMENDASI_PROYEK
-            if best_match['name'] == 'rekomendasi_proyek':
-
-                    # Gunakan lokasi sebagai parameter utama
-                    response_text = process_conditional_templates(response_text, lokasi, lokasi)
-                    return format_response(response_text)
-            else:
-                response_text = process_conditional_templates(response_text, project, lokasi)
-            
-            # Fix duplicate text
-            response_text = re.sub(
-                r'(?P<project>[\w\s]+) - Detail Proyek:[\s\n]*(bold_start\s*)?\1 - Detail Proyek:',
-                r'\1 - Detail Proyek:',
-                response_text,
-                flags=re.IGNORECASE
-            )
-        
-        print(f"✅ Processed response: {response_text}")
-        return format_response(response_text)
-
-    # Deteksi khusus minat beli/kunjungan proyek
-    minat_keywords = ['beli', 'kunjung', 'proyek', 'rumah', 'minat']
-    if any(kw in user_input_normalized for kw in minat_keywords):
-        # Cek apakah ada proyek yang disebutkan
-        project = None
-        # Use more robust regex patterns that account for word boundaries
-        if re.search(r'\b(kiano\s*2|natureland\s*2|nlk2)\b', user_input_normalized):
-            project = "Natureland Kiano 2"
-        elif re.search(r'\b(kiano\s*3|natureland\s*3|nlk3)\b', user_input_normalized):
-            project = "Natureland Kiano 3"
-        elif re.search(r'\b(green\s*jonggol|jonggol\s*village|gjv|jonggol)\b', user_input_normalized):
-            project = "Green Jonggol Village"
-        
-        if project:
-            # ✅ Validasi proyek
-            if not is_valid_project(project):
-                projects_list = "\n".join(f"• {p}" for p in get_valid_projects())
-                return format_response(
-                    f"Maaf, proyek yang Anda maksud tidak tersedia di Kianoland Group.\n\n"
-                    f"Proyek yang tersedia:\n{projects_list}\n\n"
-                    f"Ketik 'info [nama_proyek]' untuk detail lebih lanjut."
-                )
-
-            # Jika valid
-            contact = marketing_contacts.get(project, "Bp. Toni - 0896 3823 0725")
-            return format_response(
-                f"Terima kasih atas minat Anda pada proyek {project}!\n\n"
-                f"Untuk proses pembelian atau kunjungan proyek, silakan hubungi marketing kami:\n"
-                f"📞 {contact}\n\n"
-                "Atau kunjungi website resmi kami:\n"
-                "🌐 https://kianolandgroup.com"
-            )
-        else:
-            # Gunakan respons dari daftar_proyek.json
-            daftar_intent = next((i for i in INTENTS if i['name'] == 'daftar_proyek'), None)
-            if daftar_intent:
-                return format_response(daftar_intent['responses'][0])
-
-    # Special fallbacks - only trigger if keywords are prominent
-    payment_keywords = ['bayar', 'pembayaran', 'kpr', 'cicil', 'angsuran', 'proses', 'alur', 'tahap', 'langkah']
-    if (any(kw in user_input_normalized for kw in payment_keywords) and
-        any(kw in user_input_normalized.split() for kw in payment_keywords)):
-        payment_intent = next((i for i in INTENTS if i['name'] == 'syarat_dokumen'), None)
-        if payment_intent:
-            return format_response(payment_intent['responses'][0])
     
-    # Replace the current bantuan fallback block with:
-    if len(user_input_normalized.split()) <= 4:
-        bantuan_keywords = ['bantu', 'tolong', 'panduan', 'help', 'bantuan']
-        if any(kw in user_input_normalized for kw in bantuan_keywords):
-            bantuan_intent = next((i for i in INTENTS if i['name'] == 'bantuan'), None)
-            if bantuan_intent:
-                return format_response(bantuan_intent['responses'][0])
+    required_score = 0.65
+    if best_match and highest_score > required_score:
+        print(f"🎯 Best match by similarity: {best_match['name']} (score: {highest_score:.2f})")
+        response_text = best_match['responses'][0] if best_match['responses'] else ""
+        processed_response = process_conditional_templates(response_text, project, lokasi)
+        return format_response(processed_response)
 
-    # ===== Logika Fallback yang Diperbaiki =====
-
-    # Jika ada intent yang cocok (walaupun skornya rendah), prioritaskan fallback dari intent tersebut.
-    if best_match:
-        # Untuk intent spesifik yang butuh nama proyek, minta klarifikasi.
-        specific_intents_needing_project = ['info_fasilitas', 'info_harga', 'info_lokasi', 'info_proyek']
-        if best_match['name'] in specific_intents_needing_project:
-            # Ambil respons dari intent yang terdeteksi
-            response_text = best_match['responses'][0] if best_match['responses'] else ""
-            # Gunakan template fallback dari intent tersebut, yang akan meminta pengguna menyebutkan proyek
-            processed_response = process_conditional_templates(response_text, project=None)
-            return format_response(processed_response)
-
-    # Jika setelah semua pengecekan masih tidak ada intent yang jelas, baru gunakan fallback umum.
+    # ===== ATURAN #5: FALLBACK TERAKHIR =====
+    print("🛑 Fallback Terakhir.")
     fallback_intent = next((i for i in INTENTS if i['name'] == 'default_fallback'), None)
     if fallback_intent:
         return format_response(fallback_intent['responses'][0])
     
-    # Fallback terakhir jika file default_fallback.json tidak ada
     return format_response("Maaf, saya tidak memahami pertanyaan Anda. Ketik 'bantuan' untuk panduan.")
 
 def process_conditional_templates(text: str, project: str = None, lokasi: str = None, primary: str = None, secondary: str = None) -> str:

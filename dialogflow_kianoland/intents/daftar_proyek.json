@@ -1,13 +1,17 @@
 {
   "displayName": "daftar_proyek",
   "trainingPhrases": [
+    {"parts": [{"text": "info"}]},
+    {"parts": [{"text": "informasi"}]},
+    {"parts": [{"text": "berikan saya informasi"}]},
+    {"parts": [{"text": "info properti"}]},
+    {"parts": [{"text": "saya ingin lihat info"}]},
     {"parts": [{"text": "daftar proyek"}]},
     {"parts": [{"text": "proyek apa saja"}]},
     {"parts": [{"text": "list proyek"}]},
     {"parts": [{"text": "tampilkan semua proyek"}]},
     {"parts": [{"text": "perumahan apa yang ada"}]},
     {"parts": [{"text": "pilihan proyek"}]},
-    {"parts": [{"text": "rekomendasi proyek"}]},
     {"parts": [{"text": "proyek yang tersedia"}]},
     {"parts": [{"text": "daftar rumah"}]},
     {"parts": [{"text": "berikan saya daftar rumah"}]},
@@ -18,25 +22,21 @@
     {"parts": [{"text": "list perumahan"}]},
     {"parts": [{"text": "tampilkan proyek"}]},
     {"parts": [{"text": "pilihan rumah"}]},
-    {"parts": [{"text": "proyek-proyek kianoland"}]},
     {"parts": [{"text": "semua proyek"}]},
     {"parts": [{"text": "katalog proyek"}]},
-    {"parts": [{"text": "jenis perumahan yang ada"}]},
     {"parts": [{"text": "rumah apa saja yang dijual"}]},
-    {"parts": [{"text": "proyek properti"}]},
     {"parts": [{"text": "proyek yang masih tersedia"}]},
     {"parts": [{"text": "project yang ada di kianoland"}]},
-    {"parts": [{"text": "berikan saya proyek yang masih tersedia di kianoland"}]},
-    {"parts": [{"text": "apa saja proyek yang masih ada"}]},
-    {"parts": [{"text": "list proyek kianoland yang tersedia"}]},
-    {"parts": [{"text": "daftar proyek yang masih ada"}]},
-    {"parts": [{"text": "proyek kianoland apa saja yang tersedia"}]}
+    {"parts": [{"text": "saya ingin lihat proyek yang ada"}]},
+    {"parts": [{"text": "saya ingin lihat lihat"}]},
+    {"parts": [{"text": "saya ingin lihat project"}]},
+    {"parts": [{"text": "saya ingin lihat rumah yang ada"}]}
   ],
   "messages": [
     {
       "text": {
         "text": [
-          "Kianoland Group memiliki 3 proyek utama:\n\n🏡 Natureland Kiano 3 (Cibarusah, Bekasi) - Harga mulai Rp 465 Juta\n🏡 Natureland Kiano 2 (Jatisampurna, Bekasi) - Harga mulai Rp 600 Juta\n🌳 Green Jonggol Village (Jonggol, Bogor) - Harga mulai Rp 400 Juta\n\nKetik 'info [nama_proyek]' untuk detail lebih lanjut"
+          "Kianoland Group memiliki 2 proyek utama yang tersedia:\n\n🏡 Natureland Kiano 3 (Cibarusah, Bekasi) - Harga mulai Rp 465 Juta\n🌳 Green Jonggol Village (Jonggol, Bogor) - Harga mulai Rp 400 Juta\n\nKetik 'info [nama_proyek]' untuk detail lebih lanjut.\n\n_Proyek Natureland Kiano 1 & 2 sudah sold out._"
         ]
       }
     }
