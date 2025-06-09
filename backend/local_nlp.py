@@ -262,6 +262,22 @@ def detect_intent_local(user_input: str) -> Dict[str, str]:
                 processed_response = process_conditional_templates(response_text, project, lokasi)
                 return format_response(processed_response)
 
+    # ===== ATURAN #2.5: RUMAH SUBSIDI =====
+    if 'subsidi' in user_input_normalized:
+        print("🎯 ATURAN #2.5: Pertanyaan Rumah Subsidi Terdeteksi.")
+        project = "Green Jonggol Village"
+        # Cari intent info_proyek
+        info_intent = next((i for i in INTENTS if i['name'] == 'info_proyek'), None)
+        if info_intent:
+            response_text = info_intent['responses'][0]
+            # Buat teks pengantar
+            intro_text = "Untuk rumah subsidi, kami merekomendasikan **Green Jonggol Village**.\n\nBerikut informasinya:\n"
+            # Proses template untuk GJV
+            processed_response = process_conditional_templates(response_text, project=project, lokasi=None)
+            # Gabungkan dan format
+            full_response = intro_text + processed_response
+            return format_response(full_response)
+
     # ===== ATURAN #3: REKOMENDASI LOKASI =====
     rekomendasi_keywords = ['rekomendasi', 'rekom', 'sarankan', 'saran', 'cocok', 'daerah', 'kawasan']
     if lokasi and any(kw in user_input_normalized for kw in rekomendasi_keywords):
