@@ -279,7 +279,7 @@ def detect_intent_local(user_input: str) -> Dict[str, str]:
             return format_response(full_response)
 
     # ===== ATURAN #3: REKOMENDASI LOKASI =====
-    rekomendasi_keywords = ['rekomendasi', 'rekom', 'sarankan', 'saran', 'cocok', 'daerah', 'kawasan']
+    rekomendasi_keywords = ['rekomendasi', 'rekom', 'sarankan', 'saran', 'cocok', 'daerah', 'kawasan', 'cari', 'beli', 'cari rumah', 'beli rumah', 'hunian']
     if lokasi and any(kw in user_input_normalized for kw in rekomendasi_keywords):
         print("🎯 ATURAN #3: Rekomendasi Lokasi Terdeteksi.")
         rekomendasi_intent = next((i for i in INTENTS if i['name'] == 'rekomendasi_proyek'), None)
