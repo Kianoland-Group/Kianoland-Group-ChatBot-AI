@@ -112,7 +112,11 @@ def run_discord_bot():
         await ctx.send(response['discord'])
 
     @discord_bot.command()
-    async def konsul(ctx, *, question: str):
+    async def konsul(ctx, *, question: str = None):
+        if not question:
+            await ctx.send("Silakan ajukan pertanyaan Anda setelah perintah `!konsul`. Contoh: `!konsul info harga Kiano 3`")
+            return
+
         thread = await ctx.channel.create_thread(
             name=f"Konsul-{ctx.author.display_name}",
             type=discord.ChannelType.private_thread,
