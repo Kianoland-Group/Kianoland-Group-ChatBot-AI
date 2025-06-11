@@ -186,7 +186,7 @@ def detect_entities(text: str) -> Dict[str, str]:
             generic_terms = ['proyek', 'project', 'properti', 'rumah', 'perumahan', 'yang', 'ada', 'tersedia']
             if project_candidate.lower() not in generic_terms:
                 # Check if it might be a list request
-                if any(kw in project_candidate for kw in ['semua', 'list', 'daftar', 'apa saja', 'yang ada']):
+                if any(kw in project_candidate for kw in ['semua', 'list', 'daftar', 'yang ada']):
                     # Don't treat as project name
                     print(f"⚠️ Skipped project candidate (list request): {project_candidate}")
                 else:

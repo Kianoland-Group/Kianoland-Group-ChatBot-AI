@@ -21,7 +21,7 @@ app.add_middleware(
         "https://kianolandgroup.netlify.app", 
         "http://localhost:8000",  # Untuk development
         "https://79c8-157-15-46-172.ngrok-free.app",
-        "http://127.0.0.1:3000"
+        "http://127.0.0.1:3000",
     ],
     allow_methods=["POST", "GET", "OPTIONS"],
     allow_headers=["*"],
