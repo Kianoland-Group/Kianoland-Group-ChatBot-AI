@@ -228,16 +228,22 @@ def detect_intent_local(user_input: str) -> Dict[str, str]:
                 processed_response = process_conditional_templates(response_text, project, lokasi)
                 return format_response(processed_response)
 
-    # ===== ATURAN #2.5: RUMAH SUBSIDI =====
-    if 'subsidi' in user_input_normalized:
-        print("🎯 ATURAN #2.5: Pertanyaan Rumah Subsidi Terdeteksi.")
+    # ===== ATURAN #2.5: RUMAH SUBSIDI & KOMERSIL =====
+    if 'subsidi' in user_input_normalized or 'komersil' in user_input_normalized:
         project = "Green Jonggol Village"
-        # Cari intent info_proyek
         info_intent = next((i for i in INTENTS if i['name'] == 'info_proyek'), None)
+        
         if info_intent:
             response_text = info_intent['responses'][0]
-            # Buat teks pengantar
-            intro_text = "Untuk rumah subsidi, kami merekomendasikan **Green Jonggol Village**.\n\nBerikut informasinya:\n"
+            
+            # Tentukan teks pengantar berdasarkan kata kunci
+            if 'subsidi' in user_input_normalized:
+                print("🎯 ATURAN #2.5: Pertanyaan Rumah Subsidi Terdeteksi.")
+                intro_text = "Untuk rumah subsidi, kami merekomendasikan **Green Jonggol Village**.\n\nBerikut informasinya:\n"
+            else: # Jika bukan subsidi, pasti komersil
+                print("🎯 ATURAN #2.5: Pertanyaan Rumah Komersil Terdeteksi.")
+                intro_text = "Untuk rumah komersil, kami merekomendasikan **Green Jonggol Village**.\n\nBerikut informasinya:\n"
+
             # Proses template untuk GJV
             processed_response = process_conditional_templates(response_text, project=project, lokasi=None)
             # Gabungkan dan format
@@ -328,6 +334,25 @@ def detect_intent_local(user_input: str) -> Dict[str, str]:
     }
     for intent_name, keywords in specific_keywords_map.items():
         if any(kw in user_input_normalized for kw in keywords):
+
+            # Jika intent adalah 'info_harga' dan proyek adalah 'Green Jonggol Village'
+            if intent_name == 'info_harga' and project == 'Green Jonggol Village':
+                primary_key = None
+                # Cek kata kunci tambahan
+                if 'subsidi' in user_input_normalized:
+                    primary_key = 'GJV_subsidi'  # Gunakan blok template subsidi
+                elif 'komersil' in user_input_normalized:
+                    primary_key = 'GJV_komersil' # Gunakan blok template komersil
+
+                # Dapatkan intent 'info_harga'
+                forced_intent = next((i for i in INTENTS if i['name'] == 'info_harga'), None)
+                if forced_intent:
+                    response_text = forced_intent['responses'][0]
+                    # Proses template. Jika primary_key ada, ia akan digunakan. 
+                    # Jika tidak, ia akan menggunakan 'project' sebagai fallback.
+                    processed_response = process_conditional_templates(response_text, project='Green Jonggol Village', primary=primary_key)
+                    return format_response(processed_response)
+            # --- AKHIR DARI KODE MODIFIKASI ---
             
             # --- Logika Khusus untuk PROMO ---
             if intent_name == 'info_promo':

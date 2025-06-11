@@ -74,7 +74,17 @@
     {
       "text": {
         "text": [
-          "{{#Natureland Kiano 1}}bold_startHarga Natureland Kiano 1:bold_end\nMaaf, proyek ini sudah sold out. Berikut harga proyek terbaru kami:\n\n🏡 Natureland Kiano 3: Rp 465 Juta\n🌳 Green Jonggol Village: Rp 400 Juta\n\nKetik 'info [nama_proyek]' untuk detail lebih lanjut.{{/Natureland Kiano 1}}{{#Natureland Kiano 2}}bold_startHarga Natureland Kiano 2:bold_end\nMaaf, proyek ini sudah sold out. Berikut harga proyek terbaru kami:\n\n🏡 Natureland Kiano 3: Rp 465 Juta\n🌳 Green Jonggol Village: Rp 400 Juta\n\nKetik 'info [nama_proyek]' untuk detail lebih lanjut.{{/Natureland Kiano 2}}{{#Natureland Kiano 3}}bold_startHarga & Pembiayaan Natureland Kiano 3:bold_end\n• Harga: Rp 465.000.000\n• DP: 0% (Tanpa Uang Muka)\n• Angsuran Tahun 1: Rp 771.000/bulan\n• Angsuran Tahun 2: Rp 1.546.125/bulan{{/Natureland Kiano 3}}{{#Green Jonggol Village}}bold_startHarga & Pembiayaan Green Jonggol Village:bold_end\n• Harga Mulai: Rp 400.000.000\n• Cicilan: Rp 1.663.400/bulan{{/Green Jonggol Village}}{{#fallback}}bold_startPromo Pembiayaan:bold_end\n• KPR Zero di Bank BTN\n• Tanpa Biaya Administrasi\n• Gratis Kanopi & Carport\n\nUntuk info harga, sebutkan nama proyeknya. Contoh: 'harga Natureland Kiano 3'{{/fallback}}"
+          "{{#Natureland Kiano 1}}bold_startHarga Natureland Kiano 1:bold_end\nMaaf, proyek ini sudah sold out.{{/Natureland Kiano 1}}",
+          "{{#Natureland Kiano 2}}bold_startHarga Natureland Kiano 2:bold_end\nMaaf, proyek ini sudah sold out.{{/Natureland Kiano 2}}",
+          "{{#Natureland Kiano 3}}bold_startHarga & Pembiayaan Natureland Kiano 3:bold_end\n• Harga: Rp 465.000.000\n• DP: 0% (Tanpa Uang Muka)\n• Angsuran Tahun 1: Rp 771.000/bulan\n• Angsuran Tahun 2: Rp 1.546.125/bulan{{/Natureland Kiano 3}}",
+          
+          "{{#Green Jonggol Village}}bold_startAngsuran Tetap Green Jonggol Village:bold_end\n ✔ Subsidi = \t10 Tahun : Rp1.996.600,-/bulan\n\t\t15 Tahun : Rp1.485.300,-/bulan\n\t\t20 Tahun : Rp1.237.100,-/bulan\n\t\t25 Tahun : Rp1.093.900,-/bulan\n\n ✔ Komersil =\tTahun pertama\t: Rp 2.051.250\n\t\tTahun selanjutnya: Mengikuti suku bunga bank{{/Green Jonggol Village}}",
+          
+          "{{#GJV_subsidi}}bold_startAngsuran Rumah Subsidi Green Jonggol Village:bold_end\n✔ 10 Tahun : Rp1.996.600,-/bulan\n✔ 15 Tahun : Rp1.485.300,-/bulan\n✔ 20 Tahun : Rp1.237.100,-/bulan\n✔ 25 Tahun : Rp1.093.900,-/bulan{{/GJV_subsidi}}",
+          
+          "{{#GJV_komersil}}bold_startAngsuran Rumah Komersil Green Jonggol Village:bold_end\n✔ Tahun pertama\t: Rp 2.051.250\n✔ Tahun selanjutnya: Mengikuti suku bunga bank{{/GJV_komersil}}",
+
+          "{{#fallback}}bold_startPromo Pembiayaan:bold_end\n• KPR Zero di Bank BTN\n• Tanpa Biaya Administrasi\n• Gratis Kanopi & Carport\n\nUntuk info harga, sebutkan nama proyeknya. Contoh: 'harga Natureland Kiano 3'{{/fallback}}"
         ]
       }
     }
