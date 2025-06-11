@@ -96,7 +96,11 @@ def run_discord_bot():
                 if not response or 'discord' not in response:
                     await message.reply("Maaf, terjadi kesalahan saat memproses permintaan Anda")
                 else:
-                    await message.reply(response['discord'])
+                    # Pecah pesan dan kirim satu per satu
+                    messages_to_send = response['discord'].split('|||')
+                    for msg in messages_to_send:
+                        if msg.strip(): # Pastikan pesan tidak kosong
+                            await message.reply(msg.strip())
         except Exception as e:
             print(f"Error processing message: {str(e)}")
             await message.reply("Maaf, terjadi kesalahan. Silakan coba lagi.")
@@ -179,10 +183,13 @@ class ChatRequest(BaseModel):
 async def chat(request: ChatRequest):
     try:
         result = detect_intent(request.user_input)
+        # Pecah respons menjadi beberapa pesan jika ada pemisah '|||'
+        formatted_responses = result['web'].split('|||')
+        
         return {
             "response": {
                 "raw": result['raw'],
-                "formatted": result['web']
+                "formatted": formatted_responses # Kirim sebagai list
             }
         }
     except Exception as e:
@@ -197,12 +204,14 @@ async def telegram_webhook(request: Request):
         if "message" in update:
             chat_id = update["message"]["chat"]["id"]
             text = update["message"].get("text", "")
-            print(f"Processing message from {chat_id}: {text}")  # Log pesan
-            
+
             result = detect_intent(text)
-            print("Intent detection result:", result)  # Log hasil deteksi
-            
-            await send_telegram_message(chat_id, result['telegram'])
+
+            # Pecah pesan dan kirim satu per satu
+            messages_to_send = result['telegram'].split('|||')
+            for msg in messages_to_send:
+                if msg.strip(): # Pastikan pesan tidak kosong
+                    await send_telegram_message(chat_id, msg.strip())
             
         return {"ok": True}
     except Exception as e:

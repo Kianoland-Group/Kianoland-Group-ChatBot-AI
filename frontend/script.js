@@ -45,20 +45,24 @@ function scrollToBottom() {
 
 // Fungsi untuk memproses respons kaya (rich response)
 function handleRichResponse(response) {
-    // Jika response adalah string biasa
-    if (typeof response === 'string') {
-        const formattedMessage = formatBotMessage(response);
-        addBotMessage(formattedMessage);
-        return;
-    }
-    
-    // Jika response adalah object (dari Dialogflow yang sudah dimodifikasi)
-    if (response.formatted) {
-        addBotMessage(response.formatted);
+    const responses = response.formatted;
+
+    if (Array.isArray(responses)) {
+        // Jika backend mengirim sebuah array/list pesan
+        responses.forEach((msg, index) => {
+            // Beri jeda 1 detik untuk setiap pesan baru agar terlihat alami
+            setTimeout(() => {
+                if (msg.trim()) { // Pastikan pesan tidak kosong
+                    addBotMessage(msg.trim());
+                }
+            }, index * 1000);
+        });
+    } else if (typeof responses === 'string') {
+        // Jika backend mengirim pesan tunggal (sebagai fallback)
+        addBotMessage(responses);
     } else if (response.raw) {
-        // Fallback ke raw response jika formatted tidak ada
-        const formattedMessage = formatBotMessage(response.raw);
-        addBotMessage(formattedMessage);
+        // Fallback jika 'formatted' tidak ada
+        addBotMessage(response.raw);
     }
 }
 
