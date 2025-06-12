@@ -114,7 +114,7 @@ def is_valid_project(project_name: str) -> bool:
     return False
 
 def detect_entities(text: str) -> Dict[str, str]:
-    """Detects projects and locations from user input using entity lists."""
+    """Detects projects, locations, and house types from user input."""
     detected = {}
     text_lower = text.lower()
 
@@ -124,7 +124,7 @@ def detect_entities(text: str) -> Dict[str, str]:
         'info', 'harga', 'promo', 'fasilitas', 'lokasi'
     ]
 
-    # --- Deteksi Proyek (Logika ini tetap sama) ---
+    # --- Deteksi Proyek ---
     for entry in ENTITIES.get('proyek', []):
         for synonym in entry.get('synonyms', []):
             pattern = r'\b' + re.escape(synonym.lower()) + r'\b'
@@ -145,17 +145,48 @@ def detect_entities(text: str) -> Dict[str, str]:
             detected['proyek'] = constructed_name
             print(f"⚠️  Proyek terdeteksi via pola (mungkin tidak valid): '{match.group(0)}' → {constructed_name}")
 
-    # --- PERBAIKAN TOTAL: Deteksi Lokasi dari Entitas ---
-    # Logika lama yang salah telah dihapus dan diganti dengan yang ini.
+    # --- Deteksi Lokasi ---
     for entry in ENTITIES.get('lokasi', []):
         for synonym in entry.get('synonyms', []):
-            # Menggunakan word boundaries (\b) untuk pencocokan yang akurat
             pattern = r'\b' + re.escape(synonym.lower()) + r'\b'
             if re.search(pattern, text_lower):
                 detected['lokasi'] = entry['value']
                 print(f"✅ Lokasi terdeteksi (dari entitas): '{synonym}' → {entry['value']}")
                 break
         if 'lokasi' in detected:
+            break
+
+    # --- PERBAIKAN BARU: Deteksi Tipe Rumah ---
+    for entry in ENTITIES.get('tipe_rumah', []):
+        for synonym in entry.get('synonyms', []):
+            pattern = r'\b' + re.escape(synonym.lower()) + r'\b'
+            if re.search(pattern, text_lower):
+                detected['tipe_rumah'] = entry['value']
+                print(f"✅ Tipe Rumah terdeteksi: '{synonym}' → {entry['value']}")
+                break
+        if 'tipe_rumah' in detected:
+            break
+
+    # --- PERBAIKAN BARU: Deteksi Tipe Rumah Kiano 3 (Manual) ---
+    kiano3_types = {
+        'K3_1_Lantai': ['1 lantai', 'satu lantai', '40/60'],
+        'K3_Mezzanine': ['mezzanine', '1,5 lantai', 'satu setengah lantai', '60/60'],
+        'K3_2_Lantai': ['2 lantai', 'dua lantai', '90/60']
+    }
+    # Lakukan perulangan untuk setiap tipe
+    for key, synonyms in kiano3_types.items():
+        # Lakukan perulangan untuk setiap sinonim
+        for synonym in synonyms:
+            # Cek apakah sinonim ada di dalam kalimat pengguna
+            if synonym in text_lower:
+                # Jika ditemukan, simpan entitasnya dengan nama internal (key)
+                detected['tipe_kiano3'] = key
+                print(f"✅ Tipe Kiano 3 terdeteksi (manual): '{synonym}' → {key}")
+                # Hentikan pencarian sinonim untuk tipe ini
+                break 
+        
+        # Jika entitas sudah ditemukan, hentikan pencarian tipe lainnya
+        if 'tipe_kiano3' in detected:
             break
 
     print(f"🧩 Entitas terdeteksi final: {detected}")
@@ -169,6 +200,8 @@ def detect_intent_local(user_input: str) -> Dict[str, str]:
     entities = detect_entities(user_input)
     project = entities.get('proyek')
     lokasi = entities.get('lokasi')
+    tipe_rumah = entities.get('tipe_rumah')
+    tipe_kiano3 = entities.get('tipe_kiano3')
 
     # ===== ATURAN #1A: TANGANI PROYEK YANG TIDAK ADA SAMA SEKALI (contoh: Kiano 4) =====
     if project and not is_valid_project(project):
@@ -202,22 +235,58 @@ def detect_intent_local(user_input: str) -> Dict[str, str]:
     
     for intent_name, keywords in specific_keywords_map.items():
         if any(kw in user_input_normalized for kw in keywords):
+            
             if intent_name == 'info_promo' and not project:
+                # ... (Logika promo umum)
                 print("🎯 ATURAN #2.A: Permintaan Promo Umum Terdeteksi.")
                 promo_intent = next((i for i in INTENTS if i['name'] == 'info_promo'), None)
                 if promo_intent:
                     response_text = process_conditional_templates(promo_intent['responses'][0], project='all_promos')
                     return format_response(response_text)
+
+            # --- PERBAIKAN FINAL: Logika Cerdas untuk Harga berdasarkan Proyek & Tipe Rumah ---
+            if intent_name == 'info_harga':
+                primary_key = None
+                
+                if project == 'Green Jonggol Village':
+                    print("🎯 ATURAN #2.B: Permintaan Harga Spesifik GJV Terdeteksi.")
+                    if tipe_rumah == '30/60': primary_key = 'GJV_subsidi'
+                    elif tipe_rumah == '36/72': primary_key = 'GJV_komersil'
+                    elif 'subsidi' in user_input_normalized: primary_key = 'GJV_subsidi'
+                    elif 'komersil' in user_input_normalized: primary_key = 'GJV_komersil'
+                    
+                    if tipe_rumah and not primary_key:
+                        return format_response(f"Maaf, tipe rumah {tipe_rumah} tidak tersedia di Green Jonggol Village.\nTipe yang tersedia: 30/60 (Subsidi) & 36/72 (Komersil).")
+
+                elif project == 'Natureland Kiano 3':
+                    print("🎯 ATURAN #2.B: Permintaan Harga Spesifik Kiano 3 Terdeteksi.")
+                    if tipe_kiano3 == 'K3_1_Lantai': primary_key = 'K3_1_Lantai'
+                    elif tipe_kiano3 == 'K3_Mezzanine': primary_key = 'K3_Mezzanine'
+                    elif tipe_kiano3 == 'K3_2_Lantai': primary_key = 'K3_2_Lantai'
+                
+                forced_intent = next((i for i in INTENTS if i['name'] == 'info_harga'), None)
+                if forced_intent:
+                    response_text = process_conditional_templates(forced_intent['responses'][0], project=project, primary=primary_key)
+                    return format_response(response_text)
             
-            print(f"🎯 ATURAN #2.B: Intent Spesifik '{intent_name}' Terdeteksi.")
+            # --- Logika umum untuk intent spesifik lainnya ---
+            print(f"🎯 ATURAN #2.C: Intent Spesifik Umum '{intent_name}' Terdeteksi.")
             forced_intent = next((i for i in INTENTS if i['name'] == intent_name), None)
             if forced_intent:
                 response_text = process_conditional_templates(forced_intent['responses'][0], project, lokasi)
                 return format_response(response_text)
+    
+    # ===== ATURAN #2B.5 (BARU): INFO SPESIFIK TIPE RUMAH KIANO 3 =====
+    # Aturan ini menangani pertanyaan seperti "info rumah 1 lantai di kiano 3"
+    if project == 'Natureland Kiano 3' and tipe_kiano3:
+        print(f"🎯 ATURAN #2B.5: Info spesifik untuk Kiano 3 tipe '{tipe_kiano3}'")
+        info_intent = next((i for i in INTENTS if i['name'] == 'info_proyek'), None)
+        if info_intent:
+            # Gunakan 'tipe_kiano3' sebagai kunci untuk memilih blok respons yang benar
+            response_text = process_conditional_templates(info_intent['responses'][0], project='Natureland Kiano 3', primary=tipe_kiano3)
+            return format_response(response_text)
 
-    # ===== ATURAN #2C (BARU): INFO PROYEK VALID (contoh: info kiano 3) =====
-    # Jika ada proyek valid terdeteksi DAN tidak ada kata kunci spesifik lain,
-    # maka asumsikan pengguna ingin info umum proyek tersebut.
+    # ===== ATURAN #2C: INFO PROYEK VALID =====
     if project and project not in sold_out_projects:
         print(f"🎯 ATURAN #2C: Permintaan Info Umum untuk Proyek Valid '{project}'.")
         info_intent = next((i for i in INTENTS if i['name'] == 'info_proyek'), None)
