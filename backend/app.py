@@ -2,7 +2,7 @@ from fastapi import FastAPI, HTTPException, Request
 from pydantic import BaseModel
 from fastapi.middleware.cors import CORSMiddleware
 import httpx
-from local_nlp import detect_intent_local as detect_intent, load_intents
+from .local_nlp import detect_intent_local as detect_intent, load_intents
 import discord
 from discord.ext import commands
 import asyncio
