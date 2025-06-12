@@ -34,8 +34,7 @@ app.add_middleware(
         "https://www.kianolandgroup.com",
         "https://kianolandgroup.netlify.app", 
         "http://localhost:8000",  # Untuk development
-        "https://79c8-157-15-46-172.ngrok-free.app",
-        "http://127.0.0.1:3000",
+        "kianoland-group-chattbot-ai-production.up.railway.app",
     ],
     allow_methods=["POST", "GET", "OPTIONS"],
     allow_headers=["*"],
@@ -44,6 +43,7 @@ app.add_middleware(
 
 # 🛠️ Configurations from .env
 load_dotenv()
+
 DISCORD_TOKEN = os.getenv("DISCORD_TOKEN")
 if not DISCORD_TOKEN:
     raise ValueError("FATAL ERROR: DISCORD_TOKEN is not set!")
@@ -54,8 +54,14 @@ if not TELEGRAM_TOKEN:
 
 dedicated_channel_id_str = os.getenv("DEDICATED_CHANNEL_ID")
 if not dedicated_channel_id_str:
-    raise ValueError("FATAL ERROR: Environment variable DEDICATED_CHANNEL_ID is not set!")
+    raise ValueError("FATAL ERROR: DEDICATED_CHANNEL_ID is not set!")
 DEDICATED_CHANNEL_ID = int(dedicated_channel_id_str)
+
+TELEGRAM_WEBHOOK_URL = os.getenv("TELEGRAM_WEBHOOK_URL")
+if not TELEGRAM_WEBHOOK_URL:
+    raise ValueError("FATAL ERROR: TELEGRAM_WEBHOOK_URL is not set!")
+
+TELEGRAM_API_URL = f"https://api.telegram.org/bot{TELEGRAM_TOKEN}"
 
 BOT_PREFIXES = ('!', '/', '$')
 
@@ -160,21 +166,6 @@ def run_discord_bot():
 
     discord_bot.run(DISCORD_TOKEN)
 
-@app.on_event("startup")
-async def startup_event():
-    load_intents()
-    thread = threading.Thread(target=run_discord_bot, daemon=True)
-    thread.start()
-    
-    # Pindahkan inisialisasi Telegram webhook ke sini
-    webhook_url = os.getenv("TELEGRAM_WEBHOOK_URL")
-    async with httpx.AsyncClient() as client:
-        res = await client.post(
-            f"{TELEGRAM_API_URL}/setWebhook",
-            json={"url": webhook_url}
-        )
-        print("Telegram setWebhook result:", res.json())
-
 # REST API Endpoints
 @app.post("/discord-webhook")
 async def discord_webhook(message: DiscordMessage):
@@ -243,14 +234,18 @@ async def telegram_webhook(request: Request):
         raise HTTPException(500, "Internal Server Error")
 
 @app.on_event("startup")
-async def on_startup():
-    webhook_url = os.getenv("TELEGRAM_WEBHOOK_URL")
+async def startup_event():
+    load_intents()
+    thread = threading.Thread(target=run_discord_bot, daemon=True)
+    thread.start()
+
+    # Telegram webhook setup
     async with httpx.AsyncClient() as client:
         res = await client.post(
             f"{TELEGRAM_API_URL}/setWebhook",
-            json={"url": webhook_url}
+            json={"url": TELEGRAM_WEBHOOK_URL}
         )
-        print("setWebhook result:", res.json())
+        print("Telegram setWebhook result:", res.json())
 
 @app.get("/health")
 async def health_check():
