@@ -45,8 +45,18 @@ app.add_middleware(
 # 🛠️ Configurations from .env
 load_dotenv()
 DISCORD_TOKEN = os.getenv("DISCORD_TOKEN")
+if not DISCORD_TOKEN:
+    raise ValueError("FATAL ERROR: DISCORD_TOKEN is not set!")
+
 TELEGRAM_TOKEN = os.getenv("TELEGRAM_TOKEN")
-DEDICATED_CHANNEL_ID = int(os.getenv("DEDICATED_CHANNEL_ID"))
+if not TELEGRAM_TOKEN:
+    raise ValueError("FATAL ERROR: TELEGRAM_TOKEN is not set!")
+
+dedicated_channel_id_str = os.getenv("DEDICATED_CHANNEL_ID")
+if not dedicated_channel_id_str:
+    raise ValueError("FATAL ERROR: Environment variable DEDICATED_CHANNEL_ID is not set!")
+DEDICATED_CHANNEL_ID = int(dedicated_channel_id_str)
+
 BOT_PREFIXES = ('!', '/', '$')
 
 @app.post("/detect-intent")
