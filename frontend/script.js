@@ -74,7 +74,7 @@ async function sendMessage() {
         userInput.value = '';
         
         try {
-            const response = await fetch('http://localhost:8000/chat', {
+            const response = await fetch('/chat', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -127,7 +127,7 @@ function addBotMessage(message) {
 // Fungsi untuk memeriksa status server
 async function checkServerStatus() {
     try {
-        const response = await fetch('http://localhost:8000/health');
+        const response = await fetch('/health');
         if (response.ok) {
             updateStatusIndicator(true);
         } else {

@@ -1,5 +1,4 @@
 from fastapi import FastAPI, HTTPException, Request
-from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 from fastapi.middleware.cors import CORSMiddleware
 import httpx
@@ -9,10 +8,24 @@ from discord.ext import commands
 import asyncio
 import threading
 from dotenv import load_dotenv
+from fastapi.responses import FileResponse
+from fastapi.staticfiles import StaticFiles
 import os
 
 # 🚀 Initialize FastAPI
 app = FastAPI()
+
+# Menentukan path absolut ke direktori frontend
+frontend_dir = os.path.join(os.path.dirname(__file__), "..", "frontend")
+
+# Mount direktori frontend sebagai file statis
+# Pastikan path ini benar: /static akan menunjuk ke folder 'frontend' Anda
+app.mount("/static", StaticFiles(directory=frontend_dir), name="static")
+
+# Endpoint untuk menyajikan index.html dari root
+@app.get("/")
+async def serve_index():
+    return FileResponse(os.path.join(frontend_dir, "index.html"))
 
 app.add_middleware(
     CORSMiddleware,
@@ -35,17 +48,6 @@ DISCORD_TOKEN = os.getenv("DISCORD_TOKEN")
 TELEGRAM_TOKEN = os.getenv("TELEGRAM_TOKEN")
 DEDICATED_CHANNEL_ID = int(os.getenv("DEDICATED_CHANNEL_ID"))
 BOT_PREFIXES = ('!', '/', '$')
-
-# Ini adalah endpoint untuk Health Check
-@app.get("/health")
-def health_check():
-    """Endpoint sederhana untuk diperiksa oleh Railway."""
-    return JSONResponse(content={"status": "ok"})
-
-# Endpoint utama untuk tes
-@app.get("/")
-def read_root():
-    return {"message": "Aplikasi minimalis berhasil berjalan!"}
 
 @app.post("/detect-intent")
 async def detect_intent_endpoint(text: str):
