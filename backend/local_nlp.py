@@ -203,6 +203,22 @@ def detect_intent_local(user_input: str) -> Dict[str, str]:
     tipe_rumah = entities.get('tipe_rumah')
     tipe_kiano3 = entities.get('tipe_kiano3')
 
+    # ===== ATURAN #0: Prioritaskan 'daftar_proyek' jika ada keyword yang jelas =====
+    daftar_proyek_keywords = [
+        'daftar proyek', 'proyek apa saja', 'list proyek', 'semua proyek',
+        'perumahan apa yang ada', 'pilihan proyek', 'proyek yang tersedia',
+        'daftar rumah', 'daftar perumahan', 'properti apa saja', 'property apa yang tersedia',
+        'list perumahan', 'tampilkan proyek', 'pilihan rumah', 'katalog proyek',
+        'rumah apa saja yang dijual', 'proyek yang masih tersedia', 'project yang ada di kianoland',
+        'ingin lihat proyek', 'lihat project', 'lihat rumah yang ada', 'ada rumah apa aja',
+        'list proyek nya', 'mau lihat rumah', 'lihat properti'
+    ]
+    if any(keyword in user_input_normalized for keyword in daftar_proyek_keywords):
+        print("🎯 ATURAN #0: Keyword 'daftar_proyek' Terdeteksi, memicu intent 'daftar_proyek'.")
+        daftar_intent = next((i for i in INTENTS if i['name'] == 'daftar_proyek'), None)
+        if daftar_intent:
+            return format_response(daftar_intent['responses'][0])
+
     # ===== ATURAN #1A: TANGANI PROYEK YANG TIDAK ADA SAMA SEKALI (contoh: Kiano 4) =====
     if project and not is_valid_project(project):
         print(f"🎯 ATURAN #1A: Proyek Tidak Dikenal '{project}' Terdeteksi.")
