@@ -1,4 +1,5 @@
 from fastapi import FastAPI, HTTPException, Request
+from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 from fastapi.middleware.cors import CORSMiddleware
 import httpx
@@ -34,6 +35,17 @@ DISCORD_TOKEN = os.getenv("DISCORD_TOKEN")
 TELEGRAM_TOKEN = os.getenv("TELEGRAM_TOKEN")
 DEDICATED_CHANNEL_ID = int(os.getenv("DEDICATED_CHANNEL_ID"))
 BOT_PREFIXES = ('!', '/', '$')
+
+# Ini adalah endpoint untuk Health Check
+@app.get("/health")
+def health_check():
+    """Endpoint sederhana untuk diperiksa oleh Railway."""
+    return JSONResponse(content={"status": "ok"})
+
+# Endpoint utama untuk tes
+@app.get("/")
+def read_root():
+    return {"message": "Aplikasi minimalis berhasil berjalan!"}
 
 @app.post("/detect-intent")
 async def detect_intent_endpoint(text: str):
