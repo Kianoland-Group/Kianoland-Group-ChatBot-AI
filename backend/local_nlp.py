@@ -206,31 +206,38 @@ def detect_intent_local(user_input: str) -> Dict[str, str]:
 
     # ===== NEW ATTEMPT - ATURAN #0: Prioritaskan 'daftar_proyek' with strong keywords =====
     # Define a more specific set of keywords for 'daftar_proyek' that are less likely to be generic stop words
-    # --- PERUBAHAN DI SINI: Menambahkan keyword yang lebih spesifik dan umum untuk daftar proyek ---
+    # --- PERUBAHAN UTAMA: MENAMBAHKAN FRASA-FRASA YANG GAGAL DI LOG SEBELUMNYA ---
     strong_daftar_proyek_keywords = [
         'daftar proyek', 'proyek apa saja', 'list proyek', 'semua proyek',
         'perumahan apa yang ada', 'pilihan proyek', 'proyek yang tersedia',
-        'daftar rumah', 'daftar perumahan', 'properti apa saja', 'property apa yang tersedia',
+        'daftar rumah', 'daftar perumahan', 
+        'properti apa saja', 'property apa yang tersedia', # Ini sudah ada
         'list perumahan', 'tampilkan proyek', 'pilihan rumah', 'katalog proyek',
         'rumah apa saja yang dijual', 'proyek yang masih tersedia', 'project yang ada di kianoland',
         'ingin lihat proyek', 'lihat project', 'lihat rumah yang ada', 'ada rumah apa aja',
         'list proyek nya', 'mau lihat rumah', 'lihat properti', 
-        'proyek kianoland', # Keyword baru
-        'informasi properti kianoland', # Keyword baru
-        'properti kianoland group', # Keyword baru
-        'sebutkan property', # Keyword baru
-        'sebutkan proyek', # Keyword baru
-        'properti apa', # Keyword baru
-        'rumah apa' # Keyword baru
+        'proyek kianoland', 'informasi properti kianoland', 'properti kianoland group',
+        'sebutkan property', 'sebutkan proyek', 'properti apa', 'rumah apa',
+        # --- PENAMBAHAN FRASA BARU BERDASARKAN LOG GAGAL ---
+        'property apa aja', # Dari "property apa aja yang ada di kianoland group?"
+        'berikan list property', # Dari "berikan list property"
+        'property apa aja yang ada di kiano', # Dari "property apa aja yang ada di kiano"
+        'properti yang ada', # Variasi umum
+        'property yang ada', # Variasi umum
+        'kianoland property', # Variasi umum
+        'list properti kianoland', # Variasi umum
+        'daftar properti kianoland' # Variasi umum
     ]
 
-    # --- PERUBAHAN UTAMA DI SINI: Menggunakan regex untuk pencocokan yang lebih fleksibel ---
+    # Menggunakan regex untuk pencocokan kata utuh agar lebih robust
     # Ini akan mencari salah satu keyword dalam user_input_normalized
-    if any(re.search(r'\b' + re.escape(keyword) + r'\b', user_input_normalized) for keyword in strong_daftar_proyek_keywords):
-        print(f"🎯 ATURAN #0 (NEW): Strong keyword for 'daftar_proyek' detected. Triggering 'daftar_proyek' intent.")
-        daftar_intent = next((i for i in INTENTS if i['name'] == 'daftar_proyek'), None)
-        if daftar_intent:
-            return format_response(daftar_intent['responses'][0])
+    for keyword in strong_daftar_proyek_keywords:
+        # Gunakan re.search dengan word boundary (\b) untuk memastikan pencocokan kata penuh
+        if re.search(r'\b' + re.escape(keyword) + r'\b', user_input_normalized):
+            print(f"🎯 ATURAN #0 (NEW): Strong keyword '{keyword}' for 'daftar_proyek' detected. Triggering 'daftar_proyek' intent.")
+            daftar_intent = next((i for i in INTENTS if i['name'] == 'daftar_proyek'), None)
+            if daftar_intent:
+                return format_response(daftar_intent['responses'][0])
 
     # ===== ATURAN #1A: TANGANI PROYEK YANG TIDAK ADA SAMA SEKALI (contoh: Kiano 4) =====
     if project and not is_valid_project(project):
