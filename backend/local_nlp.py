@@ -206,6 +206,7 @@ def detect_intent_local(user_input: str) -> Dict[str, str]:
 
     # ===== NEW ATTEMPT - ATURAN #0: Prioritaskan 'daftar_proyek' with strong keywords =====
     # Define a more specific set of keywords for 'daftar_proyek' that are less likely to be generic stop words
+    # --- PERUBAHAN DI SINI: Menambahkan keyword yang lebih spesifik dan umum untuk daftar proyek ---
     strong_daftar_proyek_keywords = [
         'daftar proyek', 'proyek apa saja', 'list proyek', 'semua proyek',
         'perumahan apa yang ada', 'pilihan proyek', 'proyek yang tersedia',
@@ -213,16 +214,23 @@ def detect_intent_local(user_input: str) -> Dict[str, str]:
         'list perumahan', 'tampilkan proyek', 'pilihan rumah', 'katalog proyek',
         'rumah apa saja yang dijual', 'proyek yang masih tersedia', 'project yang ada di kianoland',
         'ingin lihat proyek', 'lihat project', 'lihat rumah yang ada', 'ada rumah apa aja',
-        'list proyek nya', 'mau lihat rumah', 'lihat properti', 'proyek kianoland',
-        'informasi properti kianoland', 'properti kianoland group' # Added more specific keywords
+        'list proyek nya', 'mau lihat rumah', 'lihat properti', 
+        'proyek kianoland', # Keyword baru
+        'informasi properti kianoland', # Keyword baru
+        'properti kianoland group', # Keyword baru
+        'sebutkan property', # Keyword baru
+        'sebutkan proyek', # Keyword baru
+        'properti apa', # Keyword baru
+        'rumah apa' # Keyword baru
     ]
 
-    for keyword in strong_daftar_proyek_keywords:
-        if keyword in user_input_normalized:
-            print(f"🎯 ATURAN #0 (NEW): Strong keyword '{keyword}' for 'daftar_proyek' detected. Triggering 'daftar_proyek' intent.")
-            daftar_intent = next((i for i in INTENTS if i['name'] == 'daftar_proyek'), None) #
-            if daftar_intent:
-                return format_response(daftar_intent['responses'][0]) #
+    # --- PERUBAHAN UTAMA DI SINI: Menggunakan regex untuk pencocokan yang lebih fleksibel ---
+    # Ini akan mencari salah satu keyword dalam user_input_normalized
+    if any(re.search(r'\b' + re.escape(keyword) + r'\b', user_input_normalized) for keyword in strong_daftar_proyek_keywords):
+        print(f"🎯 ATURAN #0 (NEW): Strong keyword for 'daftar_proyek' detected. Triggering 'daftar_proyek' intent.")
+        daftar_intent = next((i for i in INTENTS if i['name'] == 'daftar_proyek'), None)
+        if daftar_intent:
+            return format_response(daftar_intent['responses'][0])
 
     # ===== ATURAN #1A: TANGANI PROYEK YANG TIDAK ADA SAMA SEKALI (contoh: Kiano 4) =====
     if project and not is_valid_project(project):
@@ -285,14 +293,14 @@ def detect_intent_local(user_input: str) -> Dict[str, str]:
                     elif tipe_kiano3 == 'K3_Mezzanine': primary_key = 'K3_Mezzanine'
                     elif tipe_kiano3 == 'K3_2_Lantai': primary_key = 'K3_2_Lantai'
                 
-                forced_intent = next((i for i in INTENTS if i['name'] == 'info_harga'), None) #
+                forced_intent = next((i for i in INTENTS if i['name'] == 'info_harga'), None)
                 if forced_intent:
                     response_text = process_conditional_templates(forced_intent['responses'][0], project=project, primary=primary_key)
                     return format_response(response_text)
             
             # --- Logika umum untuk intent spesifik lainnya ---
             print(f"🎯 ATURAN #2.C: General Specific Intent '{intent_name}' Detected.")
-            forced_intent = next((i for i in INTENTS if i['name'] == intent_name), None) #
+            forced_intent = next((i for i in INTENTS if i['name'] == intent_name), None)
             if forced_intent:
                 response_text = process_conditional_templates(forced_intent['responses'][0], project, lokasi)
                 return format_response(response_text)
@@ -301,7 +309,7 @@ def detect_intent_local(user_input: str) -> Dict[str, str]:
     # Aturan ini menangani pertanyaan seperti "info rumah 1 lantai di kiano 3"
     if project == 'Natureland Kiano 3' and tipe_kiano3:
         print(f"🎯 ATURAN #2B.5: Specific info for Kiano 3 type '{tipe_kiano3}'")
-        info_intent = next((i for i in INTENTS if i['name'] == 'info_proyek'), None) #
+        info_intent = next((i for i in INTENTS if i['name'] == 'info_proyek'), None)
         if info_intent:
             # Gunakan 'tipe_kiano3' sebagai kunci untuk memilih blok respons yang benar
             response_text = process_conditional_templates(info_intent['responses'][0], project='Natureland Kiano 3', primary=tipe_kiano3)
@@ -310,7 +318,7 @@ def detect_intent_local(user_input: str) -> Dict[str, str]:
     # ===== ATURAN #2C: INFO PROYEK VALID =====
     if project and project not in sold_out_projects:
         print(f"🎯 ATURAN #2C: General Info Request for Valid Project '{project}'.")
-        info_intent = next((i for i in INTENTS if i['name'] == 'info_proyek'), None) #
+        info_intent = next((i for i in INTENTS if i['name'] == 'info_proyek'), None)
         if info_intent:
             response_text = process_conditional_templates(info_intent['responses'][0], project)
             return format_response(response_text)
@@ -318,7 +326,7 @@ def detect_intent_local(user_input: str) -> Dict[str, str]:
     # ===== ATURAN #3: RUMAH SUBSIDI & KOMERSIL =====
     if 'subsidi' in user_input_normalized or 'komersil' in user_input_normalized:
         project = "Green Jonggol Village"
-        info_intent = next((i for i in INTENTS if i['name'] == 'info_proyek'), None) #
+        info_intent = next((i for i in INTENTS if i['name'] == 'info_proyek'), None)
         if info_intent:
             intro_text = "Untuk rumah subsidi, kami merekomendasikan **Green Jonggol Village**.\n\nBerikut informasinya:\n" if 'subsidi' in user_input_normalized else "Untuk rumah komersil, kami merekomendasikan **Green Jonggol Village**.\n\nBerikut informasinya:\n"
             processed_response = process_conditional_templates(info_intent['responses'][0], project=project)
@@ -328,13 +336,13 @@ def detect_intent_local(user_input: str) -> Dict[str, str]:
     rekomendasi_keywords = ['rekomendasi', 'rekom', 'sarankan', 'saran', 'cocok', 'rumah', 'proyek', 'properti', 'hunian']
     if lokasi and any(kw in user_input_normalized for kw in rekomendasi_keywords):
         print(f"🎯 ATURAN #4A: Recommendation for Known Location '{lokasi}' detected.")
-        rekomendasi_intent = next((i for i in INTENTS if i['name'] == 'rekomendasi_proyek'), None) #
+        rekomendasi_intent = next((i for i in INTENTS if i['name'] == 'rekomendasi_proyek'), None)
         if rekomendasi_intent:
             response_text = process_conditional_templates(rekomendasi_intent['responses'][0], lokasi=lokasi)
             return format_response(response_text)
     elif not lokasi and any(kw in user_input_normalized for kw in rekomendasi_keywords):
         print("🎯 ATURAN #4B: Recommendation for Unknown Location detected.")
-        rekomendasi_intent = next((i for i in INTENTS if i['name'] == 'rekomendasi_proyek'), None) #
+        rekomendasi_intent = next((i for i in INTENTS if i['name'] == 'rekomendasi_proyek'), None)
         if rekomendasi_intent:
             response_text = process_conditional_templates(rekomendasi_intent['responses'][0], lokasi="tersebut")
             return format_response(response_text)
@@ -359,9 +367,9 @@ def detect_intent_local(user_input: str) -> Dict[str, str]:
     
     # ===== ATURAN #6: FALLBACK TERAKHIR =====
     print("🛑 Final Fallback.")
-    fallback_intent = next((i for i in INTENTS if i['name'] == 'default_fallback'), None) #
+    fallback_intent = next((i for i in INTENTS if i['name'] == 'default_fallback'), None)
     if fallback_intent:
-        return format_response(fallback_intent['responses'][0]) #
+        return format_response(fallback_intent['responses'][0])
     return format_response("Maaf, saya tidak dapat memproses permintaan Anda saat ini.")
 
 def process_conditional_templates(text: str, project: str = None, lokasi: str = None, primary: str = None, secondary: str = None) -> str:
@@ -393,8 +401,8 @@ def process_conditional_templates(text: str, project: str = None, lokasi: str = 
         return fallback_text
 
     # 3. Jika tidak ada blok yang cocok sama sekali, bersihkan template dan kembalikan teks asli
-    text = re.sub(r'\{\{#[^}]+\}\}', '', text)
-    text = re.sub(r'\{\{/[^}]+\}\}', '', text)
+    text = re.sub(r'\{\{#[^}]+\}\\}', '', text)
+    text = re.sub(r'\{\{/[^}]+\}\\}', '', text)
     return text.strip()
 
 def format_response(text: str) -> Dict[str, str]:
