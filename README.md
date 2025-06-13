@@ -1,4 +1,4 @@
-# Kianoland Group ChattBot AI 🤖
+# Kianoland Group ChatBot AI 🤖
 
 A multi-platform chatbot for property consultations, integrated with Any Website Discord and Telegram using Hybrid AI with NLP and Rule-Based System.
 
@@ -32,8 +32,8 @@ A multi-platform chatbot for property consultations, integrated with Any Website
 1. Clone repositori:
 
 ```bash
-git clone https://github.com/fatonyahmadfauzi/Kianoland-Group-ChattBot-AI.git
-cd Kianoland-Group-ChattBot-AI
+git clone https://github.com/Kianoland-Group/Kianoland-Group-ChatBot-AI.git
+cd Kianoland-Group-ChatBot-AI
 ```
 
 2. Buat virtual environment:
