@@ -193,8 +193,6 @@ def detect_entities(text: str) -> Dict[str, str]:
     print(f"🧩 Detected entities: {detected}")
     return detected
 
-# ... (previous code) ...
-
 def detect_intent_local(user_input: str) -> Dict[str, str]:
     """Detect intent using a final, robust, rule-based priority system."""
     user_input_normalized = re.sub(r'(\w)\1{2,}', r'\1', user_input.lower().strip())
@@ -208,6 +206,7 @@ def detect_intent_local(user_input: str) -> Dict[str, str]:
 
     # ===== NEW ATTEMPT - ATURAN #0: Prioritaskan 'daftar_proyek' with strong keywords =====
     # Define a more specific set of keywords for 'daftar_proyek' that are less likely to be generic stop words
+    # Added "available properties", "list of houses", "what projects are there"
     strong_daftar_proyek_keywords = [
         'daftar proyek', 'proyek apa saja', 'list proyek', 'semua proyek',
         'perumahan apa yang ada', 'pilihan proyek', 'proyek yang tersedia',
@@ -222,7 +221,8 @@ def detect_intent_local(user_input: str) -> Dict[str, str]:
         'property apa aja', 'berikan list property', 'property apa aja yang ada di kiano',
         'properti yang ada', 'property yang ada', 'kianoland property', 'list properti kianoland',
         'daftar properti kianoland', 'info', 'informasi', 'berikan saya info',
-        'info properti', 'saya ingin lihat info'
+        'info properti', 'saya ingin lihat info', 'rumah yang tersedia', 'project yang ada',
+        'daftar hunian', 'hunian apa saja', 'list hunian', 'perumahan', 'rumah' # Added 'perumahan' and 'rumah'
     ]
 
     # Menggunakan regex untuk pencocokan kata utuh agar lebih robust
@@ -354,7 +354,7 @@ def detect_intent_local(user_input: str) -> Dict[str, str]:
             return format_response(intro_text + processed_response) # <--- This will return and exit
 
     # ===== ATURAN #4: REKOMENDASI LOKASI =====
-    rekomendasi_keywords = ['rekomendasi', 'rekom', 'sarankan', 'saran', 'cocok', 'rumah', 'proyek', 'properti', 'hunian']
+    rekomendasi_keywords = ['rekomendasi', 'rekom', 'sarankan', 'saran', 'cocok', 'hunian'] # Removed 'rumah', 'proyek', 'properti' to prevent false positives with daftar_proyek
     if lokasi and any(kw in user_input_normalized for kw in rekomendasi_keywords):
         print(f"🎯 ATURAN #4A: Recommendation for Known Location '{lokasi}' detected.")
         rekomendasi_intent = next((i for i in INTENTS if i['name'] == 'rekomendasi_proyek'), None)
