@@ -202,7 +202,7 @@ def detect_intent_local(user_input: str) -> Dict[str, str]:
         if daftar_intent:
             return format_response(daftar_intent['responses'][0])
 
-    # ===== ATURAN UTAMA: Prioritaskan pertanyaan yang mengandung nama proyek =====
+    # ===== ATURAN #1: Prioritaskan pertanyaan yang mengandung nama proyek =====
     if project:
         # ===== ATURAN #1A: TANGANI PROYEK YANG TIDAK ADA SAMA SEKALI (contoh: Kiano 4) =====
         if not is_valid_project(project):
@@ -226,7 +226,7 @@ def detect_intent_local(user_input: str) -> Dict[str, str]:
         # ===== ATURAN #2: PERTANYAAN SPESIFIK BERDASARKAN KATA KUNCI (dengan proyek terdeteksi) =====
         specific_keywords_map = {
             'info_promo': ['promo', 'diskon', 'dp', 'uang muka'],
-            'info_harga': ['harga', 'cicilan', 'angsuran', 'biaya', 'pl', 'pricelist'],
+            'info_harga': ['harga', 'cicilan', 'angsuran', 'biaya', 'pl', 'pricelist'], # 'pl', 'pricelist' here too
             'info_fasilitas': ['fasilitas'],
             'info_lokasi': ['lokasi', 'alamat', 'peta', 'letak'],
             'syarat_dokumen': ['syarat', 'persyaratan', 'dokumen', 'kpr'],
@@ -273,11 +273,10 @@ def detect_intent_local(user_input: str) -> Dict[str, str]:
 
         # ===== ATURAN #2C: INFO PROYEK VALID (catch-all for "info [project]" or just "[project]") =====
         # Jika proyek terdeteksi tetapi tidak ada kata kunci spesifik lainnya, asumsikan 'info_proyek'
-        # Tambahkan kata-kata umum seperti "info", "tentang", "detail"
         general_info_keywords = ['info', 'informasi', 'detail', 'tentang', 'apa itu']
         if project and (
             any(kw in user_input_normalized for kw in general_info_keywords) or 
-            not any(kw in user_input_normalized for kw in sum(specific_keywords_map.values(), [])) # Jika tidak ada keyword spesifik lainnya
+            not any(kw in user_input_normalized for kw in sum(specific_keywords_map.values(), [])) 
         ):
             print(f"🎯 ATURAN #2C: General Info Request for Valid Project '{project}'.")
             info_intent = next((i for i in INTENTS if i['name'] == 'info_proyek'), None)
@@ -286,6 +285,19 @@ def detect_intent_local(user_input: str) -> Dict[str, str]:
                 return format_response(response_text)
 
     # ===== ATURAN FALLBACK (Jika tidak ada proyek spesifik yang terdeteksi) =====
+
+    # ===== ATURAN #2.X: General Info Harga (tanpa proyek spesifik) =====
+    # Ini harus di atas daftar_proyek agar "pl" atau "pricelist" tanpa proyek tidak jatuh ke daftar_proyek
+    general_harga_keywords = ['harga', 'cicilan', 'angsuran', 'biaya', 'pl', 'pricelist']
+    if any(kw in user_input_normalized for kw in general_harga_keywords) and not project:
+        print("🎯 ATURAN #2.X: General Price/Pricelist Request Detected (no project).")
+        # Kita bisa meminta user untuk menyebutkan proyeknya, atau menampilkan harga untuk semua proyek jika ada
+        # Untuk saat ini, kita akan meminta klarifikasi
+        return format_response(
+            "Untuk proyek mana Anda ingin melihat pricelist?\n"
+            "Misal: 'harga Natureland Kiano 3' atau 'pricelist Green Jonggol Village'."
+        )
+
 
     # ===== ATURAN #0: General 'daftar_proyek' dengan kata kunci yang kuat (jika tidak ada proyek terdeteksi) =====
     strong_daftar_proyek_keywords = [
@@ -302,7 +314,7 @@ def detect_intent_local(user_input: str) -> Dict[str, str]:
         'property apa aja', 'berikan list property', 'property apa aja yang ada di kiano',
         'properti yang ada', 'property yang ada', 'kianoland property', 'list properti kianoland',
         'daftar properti kianoland', 'daftar hunian', 'hunian apa saja', 'list hunian',
-        'info', 'informasi', 'rumah', 'properti', 'perumahan' # Tambahkan kembali keywords umum di sini
+        'info', 'informasi', 'rumah', 'properti', 'perumahan' 
     ]
 
     for keyword in strong_daftar_proyek_keywords:
@@ -324,7 +336,7 @@ def detect_intent_local(user_input: str) -> Dict[str, str]:
 
     # ===== ATURAN #3: RUMAH SUBSIDI & KOMERSIL (if no specific project was given) =====
     if ('subsidi' in user_input_normalized or 'komersil' in user_input_normalized) and not project:
-        project_for_subsidi_komersil = "Green Jonggol Village" # Assume GJV for these general queries
+        project_for_subsidi_komersil = "Green Jonggol Village"
         info_intent = next((i for i in INTENTS if i['name'] == 'info_proyek'), None)
         if info_intent:
             intro_text = "Untuk rumah subsidi, kami merekomendasikan **Green Jonggol Village**.\n\nBerikut informasinya:\n" if 'subsidi' in user_input_normalized else "Untuk rumah komersil, kami merekomendasikan **Green Jonggol Village**.\n\nBerikut informasinya:\n"
@@ -353,7 +365,7 @@ def detect_intent_local(user_input: str) -> Dict[str, str]:
     highest_score = 0.75 
     for intent in INTENTS:
         if intent['name'] in [
-            'default_fallback', 'daftar_proyek', 'info_promo', 'info_harga', 
+            'default_fallback', 'daftar_proyek', 'info_promo', 'info_harga', # Tambahkan info_harga di sini juga
             'info_fasilitas', 'info_lokasi', 'syarat_dokumen', 'rekomendasi_proyek'
             ]:
             continue
