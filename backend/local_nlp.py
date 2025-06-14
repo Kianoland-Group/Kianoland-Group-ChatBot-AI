@@ -206,38 +206,46 @@ def detect_intent_local(user_input: str) -> Dict[str, str]:
 
     # ===== NEW ATTEMPT - ATURAN #0: Prioritaskan 'daftar_proyek' with strong keywords =====
     # Define a more specific set of keywords for 'daftar_proyek' that are less likely to be generic stop words
-    # --- PERUBAHAN UTAMA: MENAMBAHKAN FRASA-FRASA YANG GAGAL DI LOG SEBELUMNYA ---
     strong_daftar_proyek_keywords = [
         'daftar proyek', 'proyek apa saja', 'list proyek', 'semua proyek',
         'perumahan apa yang ada', 'pilihan proyek', 'proyek yang tersedia',
         'daftar rumah', 'daftar perumahan', 
-        'properti apa saja', 'property apa yang tersedia', # Ini sudah ada
+        'properti apa saja', 'property apa yang tersedia', 
         'list perumahan', 'tampilkan proyek', 'pilihan rumah', 'katalog proyek',
         'rumah apa saja yang dijual', 'proyek yang masih tersedia', 'project yang ada di kianoland',
         'ingin lihat proyek', 'lihat project', 'lihat rumah yang ada', 'ada rumah apa aja',
         'list proyek nya', 'mau lihat rumah', 'lihat properti', 
         'proyek kianoland', 'informasi properti kianoland', 'properti kianoland group',
         'sebutkan property', 'sebutkan proyek', 'properti apa', 'rumah apa',
-        # --- PENAMBAHAN FRASA BARU BERDASARKAN LOG GAGAL ---
-        'property apa aja', # Dari "property apa aja yang ada di kianoland group?"
-        'berikan list property', # Dari "berikan list property"
-        'property apa aja yang ada di kiano', # Dari "property apa aja yang ada di kiano"
-        'properti yang ada', # Variasi umum
-        'property yang ada', # Variasi umum
-        'kianoland property', # Variasi umum
-        'list properti kianoland', # Variasi umum
-        'daftar properti kianoland' # Variasi umum
+        'property apa aja', 'berikan list property', 'property apa aja yang ada di kiano',
+        'properti yang ada', 'property yang ada', 'kianoland property', 'list properti kianoland',
+        'daftar properti kianoland', 'info', 'informasi', 'berikan saya info',
+        'info properti', 'saya ingin lihat info'
     ]
 
     # Menggunakan regex untuk pencocokan kata utuh agar lebih robust
     # Ini akan mencari salah satu keyword dalam user_input_normalized
     for keyword in strong_daftar_proyek_keywords:
-        # Gunakan re.search dengan word boundary (\b) untuk memastikan pencocokan kata penuh
-        if re.search(r'\b' + re.escape(keyword) + r'\b', user_input_normalized):
-            print(f"🎯 ATURAN #0 (NEW): Strong keyword '{keyword}' for 'daftar_proyek' detected. Triggering 'daftar_proyek' intent.")
+        # Use re.search with word boundaries (\b) for full word match,
+        # but also allow partial match for short keywords like "info" if it's the whole input
+        if len(keyword.split()) == 1 and user_input_normalized == keyword: # Exact match for single words
+            print(f"🎯 ATURAN #0 (NEW - Exact Match): Single keyword '{keyword}' for 'daftar_proyek' detected. Triggering 'daftar_proyek' intent.")
             daftar_intent = next((i for i in INTENTS if i['name'] == 'daftar_proyek'), None)
             if daftar_intent:
                 return format_response(daftar_intent['responses'][0])
+        elif re.search(r'\b' + re.escape(keyword) + r'\b', user_input_normalized):
+            print(f"🎯 ATURAN #0 (NEW - Keyword Match): Strong keyword '{keyword}' for 'daftar_proyek' detected. Triggering 'daftar_proyek' intent.")
+            daftar_intent = next((i for i in INTENTS if i['name'] == 'daftar_proyek'), None)
+            if daftar_intent:
+                return format_response(daftar_intent['responses'][0])
+
+    # Handle Discord-specific !info command explicitly at the beginning if needed
+    if user_input_normalized == '!info':
+        print(f"🎯 ATURAN #0 (Discord Command): '!info' detected. Triggering 'daftar_proyek' intent.")
+        daftar_intent = next((i for i in INTENTS if i['name'] == 'daftar_proyek'), None)
+        if daftar_intent:
+            return format_response(daftar_intent['responses'][0])
+
 
     # ===== ATURAN #1A: TANGANI PROYEK YANG TIDAK ADA SAMA SEKALI (contoh: Kiano 4) =====
     if project and not is_valid_project(project):
@@ -249,14 +257,17 @@ def detect_intent_local(user_input: str) -> Dict[str, str]:
 
     # ===== ATURAN #1B: TANGANI PROYEK YANG ADA TAPI SUDAH SOLD OUT (contoh: Kiano 1) =====
     sold_out_projects = ["Natureland Kiano 1", "Natureland Kiano 2"]
-    is_asking_lokasi = 'lokasi' in user_input_normalized or 'alamat' in user_input_normalized
-    if project in sold_out_projects and not is_asking_lokasi:
+    # Check if a project is mentioned AND it's a sold-out project.
+    # Also, ensure it's not a query specifically asking for its location, as that might still be relevant.
+    is_asking_lokasi = any(kw in user_input_normalized for kw in ['lokasi', 'alamat', 'peta', 'letak'])
+    if project and project in sold_out_projects and not is_asking_lokasi:
         print(f"🎯 ATURAN #1B: Sold Out Project '{project}' detected.")
         return format_response(
             f"Maaf, proyek {project} sudah sold out. Kami merekomendasikan proyek terbaru kami:\n\n"
             f"🏡 Natureland Kiano 3 (Cibarusah, Bekasi)\n🌳 Green Jonggol Village (Jonggol, Bogor)\n\n"
             f"Ketik 'info [nama_proyek]' untuk detail lebih lanjut."
         )
+
 
     # ===== ATURAN #2: PERTANYAAN SPESIFIK BERDASARKAN KATA KUNCI =====
     specific_keywords_map = {
@@ -277,6 +288,7 @@ def detect_intent_local(user_input: str) -> Dict[str, str]:
                 print("🎯 ATURAN #2.A: General Promo Request Detected.")
                 promo_intent = next((i for i in INTENTS if i['name'] == 'info_promo'), None)
                 if promo_intent:
+                    # Pass a special keyword 'all_promos' to process_conditional_templates
                     response_text = process_conditional_templates(promo_intent['responses'][0], project='all_promos')
                     return format_response(response_text)
 
@@ -351,7 +363,8 @@ def detect_intent_local(user_input: str) -> Dict[str, str]:
         print("🎯 ATURAN #4B: Recommendation for Unknown Location detected.")
         rekomendasi_intent = next((i for i in INTENTS if i['name'] == 'rekomendasi_proyek'), None)
         if rekomendasi_intent:
-            response_text = process_conditional_templates(rekomendasi_intent['responses'][0], lokasi="tersebut")
+            # Ensure 'lokasi' is explicitly passed as None or empty to prevent incorrect block matching
+            response_text = process_conditional_templates(rekomendasi_intent['responses'][0], lokasi=None) # Changed to None
             return format_response(response_text)
 
     # ===== ATURAN #5: PENCOCOKAN KEMIRIPAN UMUM (FALLBACK) =====
@@ -382,35 +395,43 @@ def detect_intent_local(user_input: str) -> Dict[str, str]:
 def process_conditional_templates(text: str, project: str = None, lokasi: str = None, primary: str = None, secondary: str = None) -> str:
     """Process conditional templates with intelligent block selection based on project or location."""
 
-    # --- Tentukan kunci selektor utama (bisa proyek atau lokasi) ---
+    # --- Tentukan kunci selektor utama (bisa primary, project, atau lokasi) ---
     selector = primary or project or lokasi
 
     # 1. Coba cari blok spesifik menggunakan selektor
     if selector:
         escaped_selector = re.escape(selector)
+        # Ensure that only the exact selector block is matched
         pattern = r'\{\{#' + escaped_selector + r'\}\}(.*?)\{\{/' + escaped_selector + r'\}\}'
         match = re.search(pattern, text, re.DOTALL)
         if match:
             content = match.group(1).strip()
-            # Ganti placeholder di dalam konten yang sudah dipilih
+            # Replace placeholder in the selected content
             content = content.replace("{{proyek}}", project if project else "")
             content = content.replace("{{lokasi}}", lokasi if lokasi else "")
             return content
 
     # 2. Jika tidak ada blok spesifik, coba cari blok fallback
+    # THIS IS THE CRITICAL PART: The previous `fallback` in `rekomendasi_proyek`
+    # was triggered when `lokasi` was None or empty, leading to "Maaf, kami belum memiliki proyek di lokasi tersebut."
+    # We need to ensure that the general fallback is used if no specific project/location block is found,
+    # OR if the original text does not contain any of the conditional blocks.
     fallback_pattern = r'\{\{#fallback\}\}(.*?)\{\{/fallback\}\}'
     fallback_match = re.search(fallback_pattern, text, re.DOTALL)
     if fallback_match:
         fallback_text = fallback_match.group(1).strip()
-        # Ganti placeholder di dalam teks fallback
+        # Replace placeholder in the fallback text
         fallback_text = fallback_text.replace("{{proyek}}", project if project else "")
         fallback_text = fallback_text.replace("{{lokasi}}", lokasi if lokasi else "")
         return fallback_text
 
-    # 3. Jika tidak ada blok yang cocok sama sekali, bersihkan template dan kembalikan teks asli
-    text = re.sub(r'\{\{#[^}]+\}\\}', '', text)
-    text = re.sub(r'\{\{/[^}]+\}\\}', '', text)
+    # 3. If no matching block (specific or fallback) is found, return the original text
+    # after removing any remaining template tags. This should ideally not be reached
+    # if all intents have proper fallbacks or specific responses.
+    text = re.sub(r'\{\{#[^}]+\}\}', '', text)
+    text = re.sub(r'\{\{/[^}]+\}\}', '', text)
     return text.strip()
+
 
 def format_response(text: str) -> Dict[str, str]:
     """Format response for all platforms"""
