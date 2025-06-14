@@ -161,7 +161,7 @@ def detect_entities(text: str) -> Dict[str, str]:
             pattern = r'\b' + re.escape(synonym.lower()) + r'\b'
             if re.search(pattern, text_lower):
                 detected['tipe_rumah'] = entry['value']
-                print(f"✅ Tipe Rumah terdeteksi: '{synonym}' -> {entry['value']}")
+                print(f"✅ Tipe Rumah terdeteksi: '{synonym}' -> {key}")
                 break
         if 'tipe_rumah' in detected:
             break
@@ -214,12 +214,11 @@ def detect_intent_local(user_input: str) -> Dict[str, str]:
 
         # ===== ATURAN #1B: TANGANI PROYEK YANG ADA TAPI SUDAH SOLD OUT (contoh: Kiano 1) =====
         sold_out_projects = ["Natureland Kiano 1", "Natureland Kiano 2"]
-        is_asking_lokasi_specific_project = (
-            project in get_valid_projects() and # Hanya cek lokasi untuk proyek yang valid
-            any(kw in user_input_normalized for kw in ['lokasi', 'alamat', 'peta', 'letak'])
+        is_asking_specific_info = any(
+            kw in user_input_normalized for kw in ['lokasi', 'alamat', 'peta', 'letak', 'harga', 'cicilan', 'promo', 'fasilitas', 'syarat']
         )
-        if project in sold_out_projects and not is_asking_lokasi_specific_project:
-            print(f"🎯 ATURAN #1B: Sold Out Project '{project}' detected.")
+        if project in sold_out_projects and not is_asking_specific_info:
+            print(f"🎯 ATURAN #1B: Sold Out Project '{project}' detected and no specific info requested.")
             return format_response(
                 f"Maaf, proyek {project} sudah sold out. Kami merekomendasikan proyek terbaru kami:\n\n"
                 f"🏡 Natureland Kiano 3 (Cibarusah, Bekasi)\n🌳 Green Jonggol Village (Jonggol, Bogor)\n\n"
@@ -275,7 +274,6 @@ def detect_intent_local(user_input: str) -> Dict[str, str]:
                     return format_response(response_text)
 
         # ===== ATURAN #2C: INFO PROYEK VALID (catch-all for "info [project]" or just "[project]") =====
-        # Jika proyek terdeteksi tetapi tidak ada kata kunci spesifik lainnya, asumsikan 'info_proyek'
         general_info_keywords = ['info', 'informasi', 'detail', 'tentang', 'apa itu']
         if project and (
             any(kw in user_input_normalized for kw in general_info_keywords) or 
@@ -298,12 +296,23 @@ def detect_intent_local(user_input: str) -> Dict[str, str]:
             "Misal: 'harga Natureland Kiano 3' atau 'pricelist Green Jonggol Village'."
         )
 
-    # ===== ATURAN #2.Y: General Info Lokasi (tanpa proyek spesifik) - BARU =====
+    # ===== ATURAN #2.Y: General Info Lokasi (tanpa proyek spesifik) =====
     general_lokasi_keywords = ['lokasi', 'alamat', 'peta', 'letak', 'dimana', 'lihat lokasi']
     if any(kw in user_input_normalized for kw in general_lokasi_keywords) and not project:
         print("🎯 ATURAN #2.Y: General Location Request Detected (no project).")
         return format_response(
             "Tentu, lokasi untuk proyek mana yang ingin Anda ketahui?\n\n"
+            "Proyek yang tersedia:\n"
+            "• Natureland Kiano 3\n"
+            "• Green Jonggol Village"
+        )
+    
+    # ===== ATURAN #2.Z: General Info Fasilitas (tanpa proyek spesifik) - BARU =====
+    general_fasilitas_keywords = ['fasilitas', 'fasilitasnya apa', 'apa fasilitasnya']
+    if any(kw in user_input_normalized for kw in general_fasilitas_keywords) and not project:
+        print("🎯 ATURAN #2.Z: General Facility Request Detected (no project).")
+        return format_response(
+            "Tentu, informasi fasilitas untuk proyek mana yang ingin Anda ketahui?\n\n"
             "Proyek yang tersedia:\n"
             "• Natureland Kiano 3\n"
             "• Green Jonggol Village"
@@ -375,10 +384,9 @@ def detect_intent_local(user_input: str) -> Dict[str, str]:
     best_match = None
     highest_score = 0.75 
     for intent in INTENTS:
-        # Pengecualian ini memastikan intent yang sudah di-handle tidak di-re-match
         if intent['name'] in [
-            'default_fallback', 'daftar_proyek', 'info_promo', 'info_harga', 'info_lokasi',
-            'info_fasilitas', 'syarat_dokumen', 'rekomendasi_proyek'
+            'default_fallback', 'daftar_proyek', 'info_promo', 'info_harga', 'info_lokasi', 'info_fasilitas',
+            'syarat_dokumen', 'rekomendasi_proyek'
             ]:
             continue
         
