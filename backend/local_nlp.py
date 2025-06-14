@@ -214,8 +214,11 @@ def detect_intent_local(user_input: str) -> Dict[str, str]:
 
         # ===== ATURAN #1B: TANGANI PROYEK YANG ADA TAPI SUDAH SOLD OUT (contoh: Kiano 1) =====
         sold_out_projects = ["Natureland Kiano 1", "Natureland Kiano 2"]
-        is_asking_lokasi = any(kw in user_input_normalized for kw in ['lokasi', 'alamat', 'peta', 'letak'])
-        if project in sold_out_projects and not is_asking_lokasi:
+        is_asking_lokasi_specific_project = (
+            project in get_valid_projects() and # Hanya cek lokasi untuk proyek yang valid
+            any(kw in user_input_normalized for kw in ['lokasi', 'alamat', 'peta', 'letak'])
+        )
+        if project in sold_out_projects and not is_asking_lokasi_specific_project:
             print(f"🎯 ATURAN #1B: Sold Out Project '{project}' detected.")
             return format_response(
                 f"Maaf, proyek {project} sudah sold out. Kami merekomendasikan proyek terbaru kami:\n\n"
@@ -226,7 +229,7 @@ def detect_intent_local(user_input: str) -> Dict[str, str]:
         # ===== ATURAN #2: PERTANYAAN SPESIFIK BERDASARKAN KATA KUNCI (dengan proyek terdeteksi) =====
         specific_keywords_map = {
             'info_promo': ['promo', 'diskon', 'dp', 'uang muka'],
-            'info_harga': ['harga', 'cicilan', 'angsuran', 'biaya', 'pl', 'pricelist'], # 'pl', 'pricelist' here too
+            'info_harga': ['harga', 'cicilan', 'angsuran', 'biaya', 'pl', 'pricelist'],
             'info_fasilitas': ['fasilitas'],
             'info_lokasi': ['lokasi', 'alamat', 'peta', 'letak'],
             'syarat_dokumen': ['syarat', 'persyaratan', 'dokumen', 'kpr'],
@@ -287,15 +290,23 @@ def detect_intent_local(user_input: str) -> Dict[str, str]:
     # ===== ATURAN FALLBACK (Jika tidak ada proyek spesifik yang terdeteksi) =====
 
     # ===== ATURAN #2.X: General Info Harga (tanpa proyek spesifik) =====
-    # Ini harus di atas daftar_proyek agar "pl" atau "pricelist" tanpa proyek tidak jatuh ke daftar_proyek
     general_harga_keywords = ['harga', 'cicilan', 'angsuran', 'biaya', 'pl', 'pricelist']
     if any(kw in user_input_normalized for kw in general_harga_keywords) and not project:
         print("🎯 ATURAN #2.X: General Price/Pricelist Request Detected (no project).")
-        # Kita bisa meminta user untuk menyebutkan proyeknya, atau menampilkan harga untuk semua proyek jika ada
-        # Untuk saat ini, kita akan meminta klarifikasi
         return format_response(
             "Untuk proyek mana Anda ingin melihat pricelist?\n"
             "Misal: 'harga Natureland Kiano 3' atau 'pricelist Green Jonggol Village'."
+        )
+
+    # ===== ATURAN #2.Y: General Info Lokasi (tanpa proyek spesifik) - BARU =====
+    general_lokasi_keywords = ['lokasi', 'alamat', 'peta', 'letak', 'dimana', 'lihat lokasi']
+    if any(kw in user_input_normalized for kw in general_lokasi_keywords) and not project:
+        print("🎯 ATURAN #2.Y: General Location Request Detected (no project).")
+        return format_response(
+            "Tentu, lokasi untuk proyek mana yang ingin Anda ketahui?\n\n"
+            "Proyek yang tersedia:\n"
+            "• Natureland Kiano 3\n"
+            "• Green Jonggol Village"
         )
 
 
@@ -364,9 +375,10 @@ def detect_intent_local(user_input: str) -> Dict[str, str]:
     best_match = None
     highest_score = 0.75 
     for intent in INTENTS:
+        # Pengecualian ini memastikan intent yang sudah di-handle tidak di-re-match
         if intent['name'] in [
-            'default_fallback', 'daftar_proyek', 'info_promo', 'info_harga', # Tambahkan info_harga di sini juga
-            'info_fasilitas', 'info_lokasi', 'syarat_dokumen', 'rekomendasi_proyek'
+            'default_fallback', 'daftar_proyek', 'info_promo', 'info_harga', 'info_lokasi',
+            'info_fasilitas', 'syarat_dokumen', 'rekomendasi_proyek'
             ]:
             continue
         
