@@ -34,7 +34,7 @@ app.add_middleware(
         "https://www.kianolandgroup.com",
         "https://kianolandgroup.netlify.app", 
         "http://localhost:8000",  # Untuk development
-        "kianoland-group-chattbot-ai-production.up.railway.app",
+        "kianoland-group-chatbot-ai-production.up.railway.app",
     ],
     allow_methods=["POST", "GET", "OPTIONS"],
     allow_headers=["*"],
