@@ -276,7 +276,7 @@ def detect_intent_local(user_input: str) -> Dict[str, str]:
     # ===== ATURAN #2: PERTANYAAN SPESIFIK BERDASARKAN KATA KUNCI =====
     specific_keywords_map = {
         'info_promo': ['promo', 'diskon', 'dp', 'uang muka'],
-        'info_harga': ['harga', 'cicilan', 'angsuran', 'biaya'],
+        'info_harga': ['harga', 'cicilan', 'angsuran', 'biaya', 'pl', 'pricelist'],
         'info_fasilitas': ['fasilitas'],
         'info_lokasi': ['lokasi', 'alamat', 'peta', 'letak'],
         'syarat_dokumen': ['syarat', 'persyaratan', 'dokumen', 'kpr'],
