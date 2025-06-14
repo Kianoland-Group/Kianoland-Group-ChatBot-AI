@@ -207,6 +207,7 @@ def detect_intent_local(user_input: str) -> Dict[str, str]:
     # ===== NEW ATTEMPT - ATURAN #0: Prioritaskan 'daftar_proyek' with strong keywords =====
     # Define a more specific set of keywords for 'daftar_proyek' that are less likely to be generic stop words
     # Added "available properties", "list of houses", "what projects are there"
+    # ENHANCED: Added more common phrases and variations.
     strong_daftar_proyek_keywords = [
         'daftar proyek', 'proyek apa saja', 'list proyek', 'semua proyek',
         'perumahan apa yang ada', 'pilihan proyek', 'proyek yang tersedia',
@@ -222,7 +223,8 @@ def detect_intent_local(user_input: str) -> Dict[str, str]:
         'properti yang ada', 'property yang ada', 'kianoland property', 'list properti kianoland',
         'daftar properti kianoland', 'info', 'informasi', 'berikan saya info',
         'info properti', 'saya ingin lihat info', 'rumah yang tersedia', 'project yang ada',
-        'daftar hunian', 'hunian apa saja', 'list hunian', 'perumahan', 'rumah' # Added 'perumahan' and 'rumah'
+        'daftar hunian', 'hunian apa saja', 'list hunian', 'perumahan', 'rumah',
+        'list', 'daftar', 'apa aja' # Added more generic but relevant keywords
     ]
 
     # Menggunakan regex untuk pencocokan kata utuh agar lebih robust
@@ -230,8 +232,8 @@ def detect_intent_local(user_input: str) -> Dict[str, str]:
     for keyword in strong_daftar_proyek_keywords:
         # Use re.search with word boundaries (\b) for full word match,
         # but also allow partial match for short keywords like "info" if it's the whole input
-        if len(keyword.split()) == 1 and user_input_normalized == keyword: # Exact match for single words
-            print(f"🎯 ATURAN #0 (NEW - Exact Match): Single keyword '{keyword}' for 'daftar_proyek' detected. Triggering 'daftar_proyek' intent.")
+        if user_input_normalized == keyword: # Exact match for any keyword (single or multi-word)
+            print(f"🎯 ATURAN #0 (NEW - Exact Match): Full input '{keyword}' for 'daftar_proyek' detected. Triggering 'daftar_proyek' intent.")
             daftar_intent = next((i for i in INTENTS if i['name'] == 'daftar_proyek'), None)
             if daftar_intent:
                 return format_response(daftar_intent['responses'][0]) # <--- THIS RETURN IS CRUCIAL
