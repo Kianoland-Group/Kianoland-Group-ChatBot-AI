@@ -251,6 +251,21 @@ def detect_intent_local(user_input: str) -> Dict[str, str]:
             'minat_beli': ['beli', 'minat', 'lihat']
         }
 
+        # Check for specific project info (including types like subsidi/komersil) FIRST
+        if project == 'Natureland Kiano 3' and tipe_kiano3:
+            print(f"🎯 ATURAN #2 (Specific Kiano 3 Type Info): Project '{project}' and Type '{tipe_kiano3}' Detected.")
+            info_intent = next((i for i in INTENTS if i['name'] == 'info_proyek'), None)
+            if info_intent:
+                response_text = process_conditional_templates(info_intent['responses'][0], project=project, primary=tipe_kiano3)
+                return format_response(response_text)
+        elif project == 'Green Jonggol Village' and tipe_gjv: # NEW: Handle GJV specific types
+            print(f"🎯 ATURAN #2 (Specific GJV Type Info): Project '{project}' and Type '{tipe_gjv}' Detected.")
+            info_intent = next((i for i in INTENTS if i['name'] == 'info_proyek'), None)
+            if info_intent:
+                response_text = process_conditional_templates(info_intent['responses'][0], project=project, primary=tipe_gjv)
+                return format_response(response_text)
+        
+        # Now, proceed with other specific keywords
         for intent_name, keywords in specific_keywords_map.items():
             if any(kw in user_input_normalized for kw in keywords):
                 print(f"🎯 ATURAN #2: Specific Intent '{intent_name}' with Project '{project}' Detected.")
@@ -282,37 +297,29 @@ def detect_intent_local(user_input: str) -> Dict[str, str]:
                         response_text = process_conditional_templates(forced_intent['responses'][0], project=project, primary=primary_key)
                         return format_response(response_text)
                 
-                # Info Spesifik Tipe Rumah Kiano 3 & Green Jonggol Village (for info_proyek)
-                if intent_name == 'info_proyek':
-                    primary_key = None
-                    if project == 'Natureland Kiano 3' and tipe_kiano3:
-                        primary_key = tipe_kiano3
-                    elif project == 'Green Jonggol Village' and tipe_gjv:
-                        primary_key = tipe_gjv # This will directly select GJV_subsidi or GJV_komersil block
-                    
-                    info_intent = next((i for i in INTENTS if i['name'] == 'info_proyek'), None)
-                    if info_intent:
-                        # Pass the specific primary_key if found, otherwise pass the project name as primary for general project info
-                        response_text = process_conditional_templates(info_intent['responses'][0], project=project, primary=primary_key if primary_key else project)
+                # Logika umum untuk intent spesifik lainnya (dengan proyek)
+                # For info_proyek, it's already handled above for specific types.
+                # If it's a general info_proyek (e.g., "info Natureland Kiano 3" without specific type)
+                # it will fall through to ATURAN #2C below.
+                
+                # We only need to handle other intents here if they weren't covered by specific type logic above.
+                if intent_name != 'info_proyek': # Ensure info_proyek isn't re-handled here if it was a type-specific query
+                    forced_intent = next((i for i in INTENTS if i['name'] == intent_name), None)
+                    if forced_intent:
+                        response_text = process_conditional_templates(forced_intent['responses'][0], project, lokasi)
                         return format_response(response_text)
 
-                # Logika umum untuk intent spesifik lainnya (dengan proyek)
-                forced_intent = next((i for i in INTENTS if i['name'] == intent_name), None)
-                if forced_intent:
-                    response_text = process_conditional_templates(forced_intent['responses'][0], project, lokasi)
-                    return format_response(response_text)
-
         # ===== ATURAN #2C: INFO PROYEK VALID (catch-all for "info [project]" or just "[project]") =====
-        # This rule should still trigger the general project info if no specific type is detected.
-        general_info_keywords = ['info', 'informasi', 'detail', 'tentang', 'apa itu']
+        # This rule only fires if no specific type info was requested AND project is detected.
+        general_info_keywords = ['info', 'informasi', 'detail', 'tentang', 'apa itu', 'apakah', 'ada'] # added 'apakah', 'ada'
         if project and (
             any(kw in user_input_normalized for kw in general_info_keywords) or 
             not any(kw in user_input_normalized for kw in sum(specific_keywords_map.values(), [])) 
         ):
-            # This ensures that if it's just "info Green Jonggol Village", it uses the general GJV block
             print(f"🎯 ATURAN #2C: General Info Request for Valid Project '{project}'.")
             info_intent = next((i for i in INTENTS if i['name'] == 'info_proyek'), None)
             if info_intent:
+                # For general project info, the project name itself becomes the primary selector
                 response_text = process_conditional_templates(info_intent['responses'][0], project=project, primary=project)
                 return format_response(response_text)
 
