@@ -1,18 +1,8 @@
 [
-  {
-    "value": "40/60",
-    "synonyms": ["40/60", "40 60", "40 per 60"]
-  },
-  {
-    "value": "36/60",
-    "synonyms": ["36/60", "36 60", "36 per 60"]
-  },
-  {
-    "value": "36/72",
-    "synonyms": ["36/72", "36 72", "36 per 72"]
-  },
-  {
-    "value": "30/60",
-    "synonyms": ["30/60", "30 60", "30 per 60"]
-  }
+  {"value": "40/60", "synonyms": ["40/60", "40 60", "40 per 60"]},
+  {"value": "36/60", "synonyms": ["36/60", "36 60", "36 per 60"]},
+  {"value": "36/72", "synonyms": ["36/72", "36 72", "36 per 72"]},
+  {"value": "30/60", "synonyms": ["30/60", "30 60", "30 per 60"]},
+  {"value": "subsidi", "synonyms": ["subsidi", "rumah subsidi", "tipe subsidi", "kpr subsidi"]},
+  {"value": "komersil", "synonyms": ["komersil", "rumah komersil", "tipe komersil", "kpr komersil"]}
 ]
