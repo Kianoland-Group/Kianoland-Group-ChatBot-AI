@@ -155,18 +155,18 @@ def detect_entities(text: str) -> Dict[str, str]:
         if 'lokasi' in detected:
             break
 
-    # --- Deteksi Tipe Rumah ---
+    # --- Deteksi Tipe Rumah (umum, misal "30/60") ---
     for entry in ENTITIES.get('tipe_rumah', []):
         for synonym in entry.get('synonyms', []):
             pattern = r'\b' + re.escape(synonym.lower()) + r'\b'
             if re.search(pattern, text_lower):
                 detected['tipe_rumah'] = entry['value']
-                print(f"✅ Tipe Rumah terdeteksi: '{synonym}' -> {entry['value']}") # Changed 'key' to 'entry['value']'
+                print(f"✅ Tipe Rumah terdeteksi: '{synonym}' -> {entry['value']}")
                 break
         if 'tipe_rumah' in detected:
             break
 
-    # --- Deteksi Tipe Rumah Kiano 3 (Manual) ---
+    # --- Deteksi Tipe Rumah Kiano 3 (Manual - untuk selector di template) ---
     kiano3_types = {
         'K3_1_Lantai': ['1 lantai', 'satu lantai', '40/60'],
         'K3_Mezzanine': ['mezzanine', '1,5 lantai', 'satu setengah lantai', '60/60'],
@@ -181,7 +181,7 @@ def detect_entities(text: str) -> Dict[str, str]:
         if 'tipe_kiano3' in detected:
             break
             
-    # --- Deteksi Tipe Green Jonggol Village (Manual) ---
+    # --- Deteksi Tipe Green Jonggol Village (Manual - untuk selector di template) ---
     gjv_types = {
         'GJV_subsidi': ['subsidi', 'tipe 30/60', '30/60'],
         'GJV_komersil': ['komersil', 'tipe 36/72', '36/72']
@@ -207,10 +207,9 @@ def detect_intent_local(user_input: str) -> Dict[str, str]:
     entities = detect_entities(user_input)
     project = entities.get('proyek')
     lokasi = entities.get('lokasi')
-    tipe_rumah = entities.get('tipe_rumah') # This can be 30/60, 36/72, 40/60, etc.
-    tipe_kiano3 = entities.get('tipe_kiano3') # This is specific Kiano 3 internal type (K3_1_Lantai, etc.)
-    tipe_gjv = entities.get('tipe_gjv') # This is specific GJV internal type (GJV_subsidi, GJV_komersil)
-
+    tipe_rumah = entities.get('tipe_rumah')
+    tipe_kiano3 = entities.get('tipe_kiano3')
+    tipe_gjv = entities.get('tipe_gjv')
 
     # Handle Discord-specific !info command explicitly at the beginning if needed
     if user_input_normalized == '!info':
@@ -260,49 +259,42 @@ def detect_intent_local(user_input: str) -> Dict[str, str]:
                 if intent_name == 'info_harga':
                     primary_key = None
                     if project == 'Green Jonggol Village':
-                        if tipe_gjv: # Use the detected GJV specific type
+                        if tipe_gjv: 
                             primary_key = tipe_gjv
-                        elif 'subsidi' in user_input_normalized:
-                            primary_key = 'GJV_subsidi'
-                        elif 'komersil' in user_input_normalized:
-                            primary_key = 'GJV_komersil'
+                        elif 'subsidi' in user_input_normalized: primary_key = 'GJV_subsidi'
+                        elif 'komersil' in user_input_normalized: primary_key = 'GJV_komersil'
                         
-                        if tipe_rumah and not primary_key: # If a general type like '30/60' was detected but not a GJV-specific type
+                        if tipe_rumah and not primary_key:
                             if tipe_rumah == '30/60': primary_key = 'GJV_subsidi'
                             elif tipe_rumah == '36/72': primary_key = 'GJV_komersil'
                             else:
                                 return format_response(f"Maaf, tipe rumah {tipe_rumah} tidak tersedia di Green Jonggol Village.\nTipe yang tersedia: 30/60 (Subsidi) & 36/72 (Komersil).")
 
                     elif project == 'Natureland Kiano 3':
-                        if tipe_kiano3: # Use the detected Kiano 3 specific type
+                        if tipe_kiano3: 
                             primary_key = tipe_kiano3
-                        elif '40/60' in user_input_normalized or '1 lantai' in user_input_normalized:
-                            primary_key = 'K3_1_Lantai'
-                        elif '60/60' in user_input_normalized or 'mezzanine' in user_input_normalized or '1.5 lantai' in user_input_normalized:
-                            primary_key = 'K3_Mezzanine'
-                        elif '90/60' in user_input_normalized or '2 lantai' in user_input_normalized:
-                            primary_key = 'K3_2_Lantai'
-
+                        elif '40/60' in user_input_normalized or '1 lantai' in user_input_normalized: primary_key = 'K3_1_Lantai'
+                        elif '60/60' in user_input_normalized or 'mezzanine' in user_input_normalized or '1.5 lantai' in user_input_normalized: primary_key = 'K3_Mezzanine'
+                        elif '90/60' in user_input_normalized or '2 lantai' in user_input_normalized: primary_key = 'K3_2_Lantai'
+                    
                     forced_intent = next((i for i in INTENTS if i['name'] == 'info_harga'), None)
                     if forced_intent:
                         response_text = process_conditional_templates(forced_intent['responses'][0], project=project, primary=primary_key)
                         return format_response(response_text)
                 
-                # Special handling for info_proyek based on project and specific types
+                # Info Spesifik Tipe Rumah Kiano 3 & Green Jonggol Village (for info_proyek)
                 if intent_name == 'info_proyek':
                     primary_key = None
                     if project == 'Natureland Kiano 3' and tipe_kiano3:
                         primary_key = tipe_kiano3
                     elif project == 'Green Jonggol Village' and tipe_gjv:
-                        primary_key = tipe_gjv
-                    elif project == 'Green Jonggol Village': # If only project is detected but not specific type, use the general GJV block
-                        primary_key = 'Green Jonggol Village'
-
+                        primary_key = tipe_gjv # This will directly select GJV_subsidi or GJV_komersil block
+                    
                     info_intent = next((i for i in INTENTS if i['name'] == 'info_proyek'), None)
                     if info_intent:
-                        response_text = process_conditional_templates(info_intent['responses'][0], project=project, primary=primary_key)
+                        # Pass the specific primary_key if found, otherwise pass the project name as primary for general project info
+                        response_text = process_conditional_templates(info_intent['responses'][0], project=project, primary=primary_key if primary_key else project)
                         return format_response(response_text)
-
 
                 # Logika umum untuk intent spesifik lainnya (dengan proyek)
                 forced_intent = next((i for i in INTENTS if i['name'] == intent_name), None)
@@ -311,15 +303,16 @@ def detect_intent_local(user_input: str) -> Dict[str, str]:
                     return format_response(response_text)
 
         # ===== ATURAN #2C: INFO PROYEK VALID (catch-all for "info [project]" or just "[project]") =====
+        # This rule should still trigger the general project info if no specific type is detected.
         general_info_keywords = ['info', 'informasi', 'detail', 'tentang', 'apa itu']
         if project and (
             any(kw in user_input_normalized for kw in general_info_keywords) or 
             not any(kw in user_input_normalized for kw in sum(specific_keywords_map.values(), [])) 
         ):
+            # This ensures that if it's just "info Green Jonggol Village", it uses the general GJV block
             print(f"🎯 ATURAN #2C: General Info Request for Valid Project '{project}'.")
             info_intent = next((i for i in INTENTS if i['name'] == 'info_proyek'), None)
             if info_intent:
-                # Ensure the correct project is passed as 'primary' for general info, so it picks the project-specific block
                 response_text = process_conditional_templates(info_intent['responses'][0], project=project, primary=project)
                 return format_response(response_text)
 
@@ -462,7 +455,10 @@ def process_conditional_templates(text: str, project: str = None, lokasi: str = 
         match = re.search(pattern, text, re.DOTALL)
         if match:
             content = match.group(1).strip()
-            # Replace placeholders within the selected content
+            # Remove any other conditional blocks within the selected content
+            content = re.sub(r'\{\{#[^}]+\}\}', '', content)
+            content = re.sub(r'\{\{/[^}]+\}\}', '', content)
+            # Replace remaining placeholders (like {{proyek}}, {{lokasi}} if any)
             content = content.replace("{{proyek}}", project if project else "")
             content = content.replace("{{lokasi}}", lokasi if lokasi else "")
             return content
