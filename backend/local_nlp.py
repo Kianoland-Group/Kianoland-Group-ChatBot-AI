@@ -218,6 +218,14 @@ def detect_intent_local(user_input: str) -> Dict[str, str]:
         if daftar_intent:
             return format_response(daftar_intent['responses'][0])
 
+    # ===== NEW ATURAN #1 (Bantuan/Help) - Prioritize help requests =====
+    help_keywords = ['bantuan', 'panduan', 'cara pakai', 'menu', 'apa saja yang bisa ditanyakan', 'saya perlu bantuan', 'tolong bantu saya', 'bagaimana cara menggunakan bot ini', 'saya butuh panduan', 'tutorial penggunaan', 'tolong', 'bantu', 'saya tidak mengerti', 'saya tidak paham', 'ga ngerti', 'gimana caranya', 'cara penggunaan', 'mau tanya', 'bisa tanya apa', 'fitur apa saja', 'help', 'assist', 'saya bingung', 'bingung', 'petunjuk', 'instruksi', 'cara bertanya', 'gimana nanya', 'bantu saya', 'aku tidak paham fungsi nya']
+    if any(kw in user_input_normalized for kw in help_keywords):
+        print(f"🎯 NEW ATURAN #1 (Help/Bantuan): Explicit help keyword detected. Triggering 'bantuan' intent.")
+        bantuan_intent = next((i for i in INTENTS if i['name'] == 'bantuan'), None)
+        if bantuan_intent:
+            return format_response(bantuan_intent['responses'][0])
+
     # ===== ATURAN #1: Prioritaskan pertanyaan yang mengandung nama proyek =====
     if project:
         # ===== ATURAN #1A: TANGANI PROYEK YANG TIDAK ADA SAMA SEKALI (contoh: Kiano 4) =====
@@ -382,15 +390,6 @@ def detect_intent_local(user_input: str) -> Dict[str, str]:
             daftar_intent = next((i for i in INTENTS if i['name'] == 'daftar_proyek'), None)
             if daftar_intent:
                 return format_response(daftar_intent['responses'][0])
-
-    # ===== NEW ATURAN #1 (Bantuan/Help) - Prioritize help requests =====
-    help_keywords = ['bantuan', 'panduan', 'cara pakai', 'menu', 'apa saja yang bisa ditanyakan', 'saya perlu bantuan', 'tolong bantu saya', 'bagaimana cara menggunakan bot ini', 'saya butuh panduan', 'tutorial penggunaan', 'tolong', 'bantu', 'saya tidak mengerti', 'saya tidak paham', 'ga ngerti', 'gimana caranya', 'cara penggunaan', 'mau tanya', 'bisa tanya apa', 'fitur apa saja', 'help', 'assist', 'saya bingung', 'bingung', 'petunjuk', 'instruksi', 'cara bertanya', 'gimana nanya', 'bantu saya', 'saya butuh bantuan']
-    if any(kw in user_input_normalized for kw in help_keywords):
-        print(f"🎯 NEW ATURAN #1 (Help/Bantuan): Explicit help keyword detected. Triggering 'bantuan' intent.")
-        bantuan_intent = next((i for i in INTENTS if i['name'] == 'bantuan'), None)
-        if bantuan_intent:
-            return format_response(bantuan_intent['responses'][0])
-
 
     # ===== ATURAN #2.A: General Promo Request (if no project mentioned) =====
     general_promo_keywords = ['promo', 'diskon', 'dp', 'uang muka']
