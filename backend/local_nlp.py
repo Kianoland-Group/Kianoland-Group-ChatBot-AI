@@ -420,20 +420,22 @@ def detect_intent_local(user_input: str) -> Dict[str, str]:
         if rekomendasi_intent:
             response_text = process_conditional_templates(rekomendasi_intent['responses'][0], lokasi=lokasi)
             return format_response(response_text)
+    # ... (bagian dari ATURAN #4)
     elif any(kw in user_input_normalized for kw in rekomendasi_keywords):
-        print("🎯 ATURAN #4B: General Recommendation Request detected (no specific location entity).")
-        rekomendasi_intent = next((i for i in INTENTS if i['name'] == 'rekomendasi_proyek'), None)
-        if rekomendasi_intent:
-            response_text = process_conditional_templates(rekomendasi_intent['responses'][0], lokasi=None)
-            return format_response(response_text)
+        print("🎯 ATURAN #4B: General Recommendation Request (no location). Triggering 'daftar_proyek' intent.")
+        daftar_intent = next((i for i in INTENTS if i['name'] == 'daftar_proyek'), None)
+        if daftar_intent:
+            # Mengambil respons dari intent daftar_proyek
+            return format_response(daftar_intent['responses'][0])
             
     # ===== ATURAN #5: PENCOCOKAN KEMIRIPAN UMUM (FALLBACK jika tidak ada yang lebih spesifik) =====
     print("🚦 Proceeding to Rule #5: Similarity-based matching.")
     best_match = None
     highest_score = 0.75 
     for intent in INTENTS:
+        # 'daftar_proyek' telah dihapus dari daftar ini
         if intent['name'] in [
-            'default_fallback', 'daftar_proyek', 'info_promo', 'info_harga', 'info_lokasi', 'info_fasilitas',
+            'default_fallback', 'info_promo', 'info_harga', 'info_lokasi', 'info_fasilitas',
             'syarat_dokumen', 'rekomendasi_proyek'
             ]:
             continue

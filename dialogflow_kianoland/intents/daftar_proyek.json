@@ -40,7 +40,10 @@
     {"parts": [{"text": "lihat property"}]},
     {"parts": [{"text": "lihat properti"}]},
     {"parts": [{"text": "nama proyek nya apa?"}]},
-    {"parts": [{"text": "nama proyeknya apa?"}]}
+    {"parts": [{"text": "nama proyeknya apa?"}]},
+    {"parts": [{"text": "project nya namanya apa?"}]},
+    {"parts": [{"text": "apa saja proyek di kiano?"}]},
+    {"parts": [{"text": "sebutkan project di kianoland group?"}]}
   ],
   "messages": [
     {
