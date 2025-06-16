@@ -37,7 +37,8 @@
     {"parts": [{"text": "saya mau lihat"}]},
     {"parts": [{"text": "saya mau lihat rumah"}]},
     {"parts": [{"text": "mau lihat rumah"}]},
-    {"parts": [{"text": "lihat properti"}]}
+    {"parts": [{"text": "lihat properti"}]},
+    {"parts": [{"text": "nama proyek nya apa?"}]}
   ],
   "messages": [
     {
