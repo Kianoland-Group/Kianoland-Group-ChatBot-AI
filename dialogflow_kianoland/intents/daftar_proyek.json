@@ -32,13 +32,15 @@
     {"parts": [{"text": "saya ingin lihat project"}]},
     {"parts": [{"text": "saya ingin lihat rumah yang ada"}]},
     {"parts": [{"text": "ada rumah apa aja"}]},
-    {"parts": [{"text": "berikan saya list proyek nya"}]},
+    {"parts": [{"text": "berikan saya list project nya"}]},
     {"parts": [{"text": "berikan saya list proyek nya"}]},
     {"parts": [{"text": "saya mau lihat"}]},
     {"parts": [{"text": "saya mau lihat rumah"}]},
     {"parts": [{"text": "mau lihat rumah"}]},
+    {"parts": [{"text": "lihat property"}]},
     {"parts": [{"text": "lihat properti"}]},
-    {"parts": [{"text": "nama proyek nya apa?"}]}
+    {"parts": [{"text": "nama proyek nya apa?"}]},
+    {"parts": [{"text": "nama proyeknya apa?"}]}
   ],
   "messages": [
     {
