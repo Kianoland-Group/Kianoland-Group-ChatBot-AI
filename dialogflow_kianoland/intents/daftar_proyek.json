@@ -43,7 +43,56 @@
     {"parts": [{"text": "nama proyeknya apa?"}]},
     {"parts": [{"text": "project nya namanya apa?"}]},
     {"parts": [{"text": "apa saja proyek di kiano?"}]},
-    {"parts": [{"text": "sebutkan project di kianoland group?"}]}
+    {"parts": [{"text": "sebutkan project di kianoland group?"}]},
+    {
+      "parts": [
+        {
+          "text": "saya mau lihat property di kianoland group"
+        }
+      ]
+    },
+    {
+      "parts": [
+        {
+          "text": "produk apa yang di jual oleh kianoland group?"
+        }
+      ]
+    },
+    {
+      "parts": [
+        {
+          "text": "produk kianoland group"
+        }
+      ]
+    },
+    {
+      "parts": [
+        {
+          "text": "apa saja produk kianoland"
+        }
+      ]
+    },
+    {
+      "parts": [
+        {
+          "text": "produk yang dijual"
+        }
+      ]
+    },
+    {
+      "parts": [
+        {
+          "text": "jual produk apa saja"
+        }
+      ]
+    },
+    {
+      "parts": [
+        {
+          "text": "properti di kianoland group"
+        }
+      ]
+    }
   ],
   "messages": [
     {
