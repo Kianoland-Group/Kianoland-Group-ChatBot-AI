@@ -168,9 +168,9 @@ def detect_entities(text: str) -> Dict[str, str]:
 
     # --- Deteksi Tipe Rumah Kiano 3 (Manual - untuk selector di template) ---
     kiano3_types = {
-        'K3_1_Lantai': ['1 lantai', 'satu lantai', '40/60'],
-        'K3_Mezzanine': ['mezzanine', '1,5 lantai', 'satu setengah lantai', '60/60'],
-        'K3_2_Lantai': ['2 lantai', 'dua lantai', '90/60']
+        'K3_1_Lantai': ['1 lantai', 'satu lantai', '40/60', '40 per 60', 'empat puluh / enam puluh', 'empat puluh per enam puluh'],
+        'K3_Mezzanine': ['mezzanine', '1,5 lantai', 'satu setengah lantai', '60/60', '1 koma 5 lantai', 'satu koma lima lantai', '60 per 60', 'enam puluh / enam puluh', 'enam puluh per enam puluh'],
+        'K3_2_Lantai': ['2 lantai', 'dua lantai', '80/60', '80 per 60', 'delapan puluh / enam puluh', 'delapan puluh per enam puluh']
     }
     for key, synonyms in kiano3_types.items():
         for synonym in synonyms:
