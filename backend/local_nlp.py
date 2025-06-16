@@ -183,8 +183,8 @@ def detect_entities(text: str) -> Dict[str, str]:
             
     # --- Deteksi Tipe Green Jonggol Village (Manual - untuk selector di template) ---
     gjv_types = {
-        'GJV_subsidi': ['subsidi', 'tipe 30/60', '30/60'],
-        'GJV_komersil': ['komersil', 'tipe 36/72', '36/72']
+        'GJV_subsidi': ['subsidi', 'tipe 30/60', '30/60', '30 per 60', 'tiga puluh / enam puluh', 'tiga puluh per enam puluh'],
+        'GJV_komersil': ['komersil', 'tipe 36/72', '36/72', '36 per 72', 'tiga enam / tujuh dua', 'tiga enam per tujuh dua']
     }
     for key, synonyms in gjv_types.items():
         for synonym in synonyms:
