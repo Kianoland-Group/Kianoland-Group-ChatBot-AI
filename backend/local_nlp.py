@@ -227,34 +227,41 @@ def detect_intent_local(user_input: str) -> Dict[str, str]:
         'mau beli rumah', 'cara beli rumah di sini gimana', 'saya minat beli',
         'saya mau ambil satu unit', 'bagaimana cara booking', 'jadwalkan saya untuk survey',
         'ok saya deal', 'selanjutnya gimana', 'minta kontak salesnya dong',
-        'saya mau lanjut', 'proses lebih lanjut gimana', 'bisa bantu proses pembelian'
-    ]
+        'saya mau lanjut', 'proses lebih lanjut gimana', 'bisa bantu proses pembelian',
+        'gimana proses pembayaran', 'tahapan pembayaran rumah', 'sistem pembayaran di kianoland',
+        'cara pembayaran rumah', 'metode pembayaran', 'tahapan bayar rumah',
+        'langkah-langkah pembelian', 'prosedur pembelian rumahnya gimana', 'jelaskan alur pembelian'
+    ] # Menambahkan frasa terkait pembayaran dan alur pembelian
     if any(kw in user_input_normalized for kw in minat_beli_keywords):
-        print(f"🎯 NEW ATURAN #1 (Minat Beli): Explicit buying intent keyword detected. Triggering 'minat_beli' intent.")
+        print(f"🎯 NEW ATURAN #1 (Minat Beli): Explicit buying/process intent keyword detected. Triggering 'minat_beli' intent.")
         minat_beli_intent = next((i for i in INTENTS if i['name'] == 'minat_beli'), None)
         if minat_beli_intent:
             return format_response(minat_beli_intent['responses'][0])
 
-    # ===== NEW ATURAN #2 (Bantuan/Help) - Setelah minat beli agar tidak tumpang tindih =====
-    help_keywords = ['bantuan', 'panduan', 'cara pakai', 'menu', 'apa saja yang bisa ditanyakan', 'saya perlu bantuan', 'tolong bantu saya', 'bagaimana cara menggunakan bot ini', 'saya butuh panduan', 'tutorial penggunaan', 'tolong', 'bantu', 'saya tidak mengerti', 'saya tidak paham', 'ga ngerti', 'gimana caranya', 'cara penggunaan', 'mau tanya', 'bisa tanya apa', 'fitur apa saja', 'help', 'assist', 'saya bingung', 'bingung', 'petunjuk', 'instruksi', 'cara bertanya', 'gimana nanya', 'bantu saya', 'aku tidak paham fungsi nya']
-    if any(kw in user_input_normalized for kw in help_keywords):
-        print(f"🎯 NEW ATURAN #2 (Help/Bantuan): Explicit help keyword detected. Triggering 'bantuan' intent.")
-        bantuan_intent = next((i for i in INTENTS if i['name'] == 'bantuan'), None)
-        if bantuan_intent:
-            return format_response(bantuan_intent['responses'][0])
-
-    # ===== NEW ATURAN #3 (SYARAT DOKUMEN) - Prioritas Tinggi untuk Persyaratan =====
-    syarat_dokumen_keywords = ['syarat', 'persyaratan', 'dokumen', 'kpr', 'berkas', 'prosedur kredit']
+    # ===== NEW ATURAN #2 (SYARAT DOKUMEN) - Prioritas Tinggi untuk Persyaratan KPR =====
+    # Pastikan ini mendahului 'bantuan' jika ada tumpang tindih
+    syarat_dokumen_keywords = [
+        'syarat', 'persyaratan', 'dokumen', 'kpr', 'berkas', 'prosedur kredit',
+        'proses kredit pemilikan rumah', 'saya perlu siapkan apa saja untuk beli rumah'
+    ] # Menambahkan frasa yang sebelumnya salah terpicu
     if any(kw in user_input_normalized for kw in syarat_dokumen_keywords):
-        print(f"🎯 NEW ATURAN #3 (Syarat Dokumen): Explicit document requirement keyword detected. Triggering 'syarat_dokumen' intent.")
+        print(f"🎯 NEW ATURAN #2 (Syarat Dokumen): Explicit document requirement keyword detected. Triggering 'syarat_dokumen' intent.")
         syarat_dokumen_intent = next((i for i in INTENTS if i['name'] == 'syarat_dokumen'), None)
         if syarat_dokumen_intent:
             return format_response(syarat_dokumen_intent['responses'][0])
 
-    # ===== ATURAN #4: Info Kontak (Contact Info) - Setelah minat beli dan bantuan =====
+    # ===== NEW ATURAN #3 (Bantuan/Help) - Setelah niat beli dan dokumen =====
+    help_keywords = ['bantuan', 'panduan', 'cara pakai', 'menu', 'apa saja yang bisa ditanyakan', 'saya perlu bantuan', 'tolong bantu saya', 'bagaimana cara menggunakan bot ini', 'saya butuh panduan', 'tutorial penggunaan', 'tolong', 'bantu', 'saya tidak mengerti', 'saya tidak paham', 'ga ngerti', 'gimana caranya', 'cara penggunaan', 'mau tanya', 'bisa tanya apa', 'fitur apa saja', 'help', 'assist', 'saya bingung', 'bingung', 'petunjuk', 'instruksi', 'cara bertanya', 'gimana nanya', 'bantu saya', 'aku tidak paham fungsi nya']
+    if any(kw in user_input_normalized for kw in help_keywords):
+        print(f"🎯 NEW ATURAN #3 (Help/Bantuan): Explicit help keyword detected. Triggering 'bantuan' intent.")
+        bantuan_intent = next((i for i in INTENTS if i['name'] == 'bantuan'), None)
+        if bantuan_intent:
+            return format_response(bantuan_intent['responses'][0])
+
+    # ===== ATURAN #4: Info Kontak (Contact Info) =====
+    # Ini akan terpicu jika ada keyword kontak, tetapi minat_beli memiliki prioritas lebih tinggi untuk kasus yang tumpang tindih
     kontak_keywords = ['kontak', 'cs', 'customer service', 'admin', 'telepon', 'nomor', 'hubungi']
-    # Hanya picu info_kontak jika tidak ada niat beli yang terdeteksi, atau jika pertanyaan spesifik hanya tentang kontak
-    if any(kw in user_input_normalized for kw in kontak_keywords): # Hapus pengecekan minat_beli_keywords lagi karena minat_beli sudah di atas
+    if any(kw in user_input_normalized for kw in kontak_keywords):
         kontak_intent = next((i for i in INTENTS if i['name'] == 'info_kontak'), None)
         if kontak_intent:
             print("🎯 Aturan #4 Terpenuhi: Info Kontak")
@@ -272,10 +279,10 @@ def detect_intent_local(user_input: str) -> Dict[str, str]:
             
         # ===== ATURAN #5B: TANGANI PROYEK YANG ADA TAPI SUDAH SOLD OUT (contoh: Kiano 1) =====
         sold_out_projects = ["Natureland Kiano 1", "Natureland Kiano 2"]
-        # Jika proyek sold out dan TIDAK ada permintaan info spesifik (harga, fasilitas, lokasi)
-        if project in sold_out_projects and not any(
-            kw in user_input_normalized for kw in ['harga', 'cicilan', 'promo', 'fasilitas', 'lokasi', 'alamat', 'peta', 'letak']
-        ):
+        is_asking_specific_info = any(
+            kw in user_input_normalized for kw in ['lokasi', 'alamat', 'peta', 'letak', 'harga', 'cicilan', 'promo', 'fasilitas', 'syarat']
+        )
+        if project in sold_out_projects and not is_asking_specific_info:
             print(f"🎯 ATURAN #5B: Sold Out Project '{project}' detected and no specific info requested.")
             return format_response(
                 f"Maaf, proyek {project} sudah sold out. Kami merekomendasikan proyek terbaru kami:\n\n"
@@ -380,7 +387,7 @@ def detect_intent_local(user_input: str) -> Dict[str, str]:
             "• Green Jonggol Village"
         )
     
-    # ===== ATURAN #8: General Info Fasilitas (tanpa proyek spesifik) =====
+    # ===== ATURAN #8: General Info Fasilitas (tanpa proyek spesifik) - BARU =====
     general_fasilitas_keywords = ['fasilitas', 'fasilitasnya apa', 'apa fasilitasnya']
     if any(kw in user_input_normalized for kw in general_fasilitas_keywords) and not project:
         print("🎯 ATURAN #8: General Facility Request Detected (no project).")
@@ -441,7 +448,7 @@ def detect_intent_local(user_input: str) -> Dict[str, str]:
     rekomendasi_keywords = ['rekomendasi', 'rekom', 'sarankan', 'saran', 'cocok', 'hunian', 'cari', 'ada apa', 'pilihan']
     if lokasi and any(kw in user_input_normalized for kw in rekomendasi_keywords):
         print(f"🎯 ATURAN #12A: Recommendation for Known Location '{lokasi}' detected.")
-        rekomendasi_intent = next((i for i in INTENTS if i['name'] == 'rekomendasi_proyek'), None)
+        rekomendasi_intent = next((i for i in INTENTS if i['name'] == 'rekomendasi_proyek'), None) # Fix: Added 'in INTENTS'
         if rekomendasi_intent:
             response_text = process_conditional_templates(rekomendasi_intent['responses'][0], lokasi=lokasi)
             return format_response(response_text)
@@ -449,6 +456,7 @@ def detect_intent_local(user_input: str) -> Dict[str, str]:
         print("🎯 ATURAN #12B: General Recommendation Request (no location). Triggering 'daftar_proyek' intent.")
         daftar_intent = next((i for i in INTENTS if i['name'] == 'daftar_proyek'), None)
         if daftar_intent:
+            # Mengambil respons dari intent daftar_proyek
             return format_response(daftar_intent['responses'][0])
             
     # ===== ATURAN #13: PENCOCOKAN KEMIRIPAN UMUM (FALLBACK jika tidak ada yang lebih spesifik) =====
@@ -456,11 +464,11 @@ def detect_intent_local(user_input: str) -> Dict[str, str]:
     best_match = None
     highest_score = 0.75 
     for intent in INTENTS:
-        # 'daftar_proyek' telah dihapus dari daftar ini
+        # Exclude already handled high-priority intents from similarity matching
         if intent['name'] in [
             'default_fallback', 'info_promo', 'info_harga', 'info_lokasi', 'info_fasilitas',
-            'syarat_dokumen', 'rekomendasi_proyek', 'minat_beli', 'info_kontak', 'bantuan'
-            ]: # Exclude already handled high-priority intents
+            'syarat_dokumen', 'rekomendasi_proyek', 'minat_beli', 'info_kontak', 'bantuan', 'daftar_proyek'
+            ]: 
             continue
         
         for phrase in intent.get('phrases', []):
@@ -519,8 +527,8 @@ def process_conditional_templates(text: str, project: str = None, lokasi: str = 
         return fallback_text
 
     # If no specific or fallback block, remove all conditional tags
-    text = re.sub(r'\{\{#[^}]+\}\\}', '', text)
-    text = re.sub(r'\{\{/[^}]+\}\\}', '', text)
+    text = re.sub(r'\{\{#[^}]+\}\}', '', text)
+    text = re.sub(r'\{\{/[^}]+\}\}', '', text)
     return text.strip()
 
 
