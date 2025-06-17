@@ -15,7 +15,20 @@
     {"parts": [{"text": "mulai"}]},
     {"parts": [{"text": "/mulai"}]},
     {"parts": [{"text": "start"}]},
-    {"parts": [{"text": "/start"}]}
+    {"parts": [{"text": "/start"}]},
+    {"parts": [{"text": "apa kabar?"}]},
+    {"parts": [{"text": "hai bot"}]},
+    {"parts": [{"text": "hello kianoland"}]},
+    {"parts": [{"text": "awali chat"}]},
+    {"parts": [{"text": "bagaimana hari ini?"}]},
+    {"parts": [{"text": "bot"}]},
+    {"parts": [{"text": "kianoland bot"}]},
+    {"parts": [{"text": "kianoland group"}]},
+    {"parts": [{"text": "saya baru di sini"}]},
+    {"parts": [{"text": "perkenalkan diri"}]},
+    {"parts": [{"text": "siapa anda?"}]},
+    {"parts": [{"text": "ada yang bisa saya bantu?"}]},
+    {"parts": [{"text": "apakah ada yang bisa saya bantu hari ini?"}]}
   ],
   "messages": [
     {
