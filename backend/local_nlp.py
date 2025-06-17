@@ -216,16 +216,8 @@ def detect_intent_local(user_input: str) -> Dict[str, str]:
         if daftar_intent:
             return format_response(daftar_intent['responses'][0])
 
-    # ===== NEW ATURAN #1 (Bantuan/Help) - Prioritize help requests =====
-    help_keywords = ['bantuan', 'panduan', 'cara pakai', 'menu', 'apa saja yang bisa ditanyakan', 'saya perlu bantuan', 'tolong bantu saya', 'bagaimana cara menggunakan bot ini', 'saya butuh panduan', 'tutorial penggunaan', 'tolong', 'bantu', 'saya tidak mengerti', 'saya tidak paham', 'ga ngerti', 'gimana caranya', 'cara penggunaan', 'mau tanya', 'bisa tanya apa', 'fitur apa saja', 'help', 'assist', 'saya bingung', 'bingung', 'petunjuk', 'instruksi', 'cara bertanya', 'gimana nanya', 'bantu saya', 'aku tidak paham fungsi nya']
-    if any(kw in user_input_normalized for kw in help_keywords):
-        print(f"🎯 NEW ATURAN #1 (Help/Bantuan): Explicit help keyword detected. Triggering 'bantuan' intent.")
-        bantuan_intent = next((i for i in INTENTS if i['name'] == 'bantuan'), None)
-        if bantuan_intent:
-            return format_response(bantuan_intent['responses'][0])
-
-    # ===== NEW ATURAN #2 (MINAT BELI) - Paling Prioritas untuk Niat Pembelian =====
-    # Gabungkan kata kunci dari minat_beli.json dan tambahkan yang umum
+    # ===== NEW ATURAN #1 (MINAT BELI) - Paling Prioritas untuk Niat Pembelian =====
+    # Pastikan ini mendahului bantuan, karena 'bantu' bisa ada di 'minat_beli'
     minat_beli_keywords = [
         'saya ingin beli rumah', 'saya mau booking unit', 'ingin beli rumahnya',
         'bagaimana cara pembayarannya', 'langkah selanjutnya untuk pembelian apa',
@@ -238,10 +230,18 @@ def detect_intent_local(user_input: str) -> Dict[str, str]:
         'saya mau lanjut', 'proses lebih lanjut gimana', 'bisa bantu proses pembelian'
     ]
     if any(kw in user_input_normalized for kw in minat_beli_keywords):
-        print(f"🎯 NEW ATURAN #2 (Minat Beli): Explicit buying intent keyword detected. Triggering 'minat_beli' intent.")
+        print(f"🎯 NEW ATURAN #1 (Minat Beli): Explicit buying intent keyword detected. Triggering 'minat_beli' intent.")
         minat_beli_intent = next((i for i in INTENTS if i['name'] == 'minat_beli'), None)
         if minat_beli_intent:
             return format_response(minat_beli_intent['responses'][0])
+
+    # ===== NEW ATURAN #2 (Bantuan/Help) - Setelah minat beli agar tidak tumpang tindih =====
+    help_keywords = ['bantuan', 'panduan', 'cara pakai', 'menu', 'apa saja yang bisa ditanyakan', 'saya perlu bantuan', 'tolong bantu saya', 'bagaimana cara menggunakan bot ini', 'saya butuh panduan', 'tutorial penggunaan', 'tolong', 'bantu', 'saya tidak mengerti', 'saya tidak paham', 'ga ngerti', 'gimana caranya', 'cara penggunaan', 'mau tanya', 'bisa tanya apa', 'fitur apa saja', 'help', 'assist', 'saya bingung', 'bingung', 'petunjuk', 'instruksi', 'cara bertanya', 'gimana nanya', 'bantu saya', 'aku tidak paham fungsi nya']
+    if any(kw in user_input_normalized for kw in help_keywords):
+        print(f"🎯 NEW ATURAN #2 (Help/Bantuan): Explicit help keyword detected. Triggering 'bantuan' intent.")
+        bantuan_intent = next((i for i in INTENTS if i['name'] == 'bantuan'), None)
+        if bantuan_intent:
+            return format_response(bantuan_intent['responses'][0])
 
     # ===== NEW ATURAN #3 (SYARAT DOKUMEN) - Prioritas Tinggi untuk Persyaratan =====
     syarat_dokumen_keywords = ['syarat', 'persyaratan', 'dokumen', 'kpr', 'berkas', 'prosedur kredit']
@@ -251,10 +251,10 @@ def detect_intent_local(user_input: str) -> Dict[str, str]:
         if syarat_dokumen_intent:
             return format_response(syarat_dokumen_intent['responses'][0])
 
-    # ===== ATURAN #4: Info Kontak (Contact Info) - Setelah minat beli =====
+    # ===== ATURAN #4: Info Kontak (Contact Info) - Setelah minat beli dan bantuan =====
     kontak_keywords = ['kontak', 'cs', 'customer service', 'admin', 'telepon', 'nomor', 'hubungi']
     # Hanya picu info_kontak jika tidak ada niat beli yang terdeteksi, atau jika pertanyaan spesifik hanya tentang kontak
-    if any(kw in user_input_normalized for kw in kontak_keywords) and not any(kw in user_input_normalized for kw in minat_beli_keywords):
+    if any(kw in user_input_normalized for kw in kontak_keywords): # Hapus pengecekan minat_beli_keywords lagi karena minat_beli sudah di atas
         kontak_intent = next((i for i in INTENTS if i['name'] == 'info_kontak'), None)
         if kontak_intent:
             print("🎯 Aturan #4 Terpenuhi: Info Kontak")
@@ -346,7 +346,7 @@ def detect_intent_local(user_input: str) -> Dict[str, str]:
                         return format_response(response_text)
 
         # ===== ATURAN #5D: INFO PROYEK VALID (catch-all for "info [project]" or just "[project]") =====
-        general_info_keywords = ['info', 'informasi', 'detail', 'tentang', 'apa itu', 'apakah', 'ada'] # added 'apakah', 'ada'
+        general_info_keywords = ['info', 'informasi', 'detail', 'tentang', 'apa itu', 'apakah', 'ada']
         if project and (
             any(kw in user_input_normalized for kw in general_info_keywords) or 
             not any(kw in user_input_normalized for kw in sum(specific_keywords_map.values(), [])) 
