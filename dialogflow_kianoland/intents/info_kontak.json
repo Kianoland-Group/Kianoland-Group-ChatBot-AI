@@ -1,0 +1,24 @@
+{
+  "displayName": "info_kontak",
+  "trainingPhrases": [
+    {"parts": [{"text": "minta kontak CS"}]},
+    {"parts": [{"text": "bisa minta nomor admin?"}]},
+    {"parts": [{"text": "bagaimana cara menghubungi kianoland?"}]},
+    {"parts": [{"text": "ada nomor telepon yang bisa dihubungi?"}]},
+    {"parts": [{"text": "kontak person"}]},
+    {"parts": [{"text": "saya mau bicara dengan customer service"}]},
+    {"parts": [{"text": "bisa minta kontak marketing?"}]},
+    {"parts": [{"text": "nomor WA admin"}]},
+    {"parts": [{"text": "hubungi kemana ya?"}]},
+    {"parts": [{"text": "minta nomor telepon kantor"}]}
+  ],
+  "messages": [
+    {
+      "text": {
+        "text": [
+          "Tentu, Anda bisa menghubungi tim kami melalui kontak berikut:\n\n*Untuk Informasi Proyek, Booking, dan Pembelian:*\n\n- **Marketing & Informasi:** +62 811-1611-724\n\nJika ada pertanyaan umum lainnya, Anda bisa menyampaikannya di sini dan saya akan coba bantu jawab."
+        ]
+      }
+    }
+  ]
+}

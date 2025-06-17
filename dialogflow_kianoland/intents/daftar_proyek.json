@@ -40,59 +40,15 @@
     {"parts": [{"text": "lihat property"}]},
     {"parts": [{"text": "lihat properti"}]},
     {"parts": [{"text": "nama proyek nya apa?"}]},
-    {"parts": [{"text": "nama proyeknya apa?"}]},
-    {"parts": [{"text": "project nya namanya apa?"}]},
-    {"parts": [{"text": "apa saja proyek di kiano?"}]},
-    {"parts": [{"text": "sebutkan project di kianoland group?"}]},
-    {
-      "parts": [
-        {
-          "text": "saya mau lihat property di kianoland group"
-        }
-      ]
-    },
-    {
-      "parts": [
-        {
-          "text": "produk apa yang di jual oleh kianoland group?"
-        }
-      ]
-    },
-    {
-      "parts": [
-        {
-          "text": "produk kianoland group"
-        }
-      ]
-    },
-    {
-      "parts": [
-        {
-          "text": "apa saja produk kianoland"
-        }
-      ]
-    },
-    {
-      "parts": [
-        {
-          "text": "produk yang dijual"
-        }
-      ]
-    },
-    {
-      "parts": [
-        {
-          "text": "jual produk apa saja"
-        }
-      ]
-    },
-    {
-      "parts": [
-        {
-          "text": "properti di kianoland group"
-        }
-      ]
-    }
+    {"parts": [{"text": "produk apa yang di jual oleh kianoland group?"}]},
+    {"parts": [{"text": "produk kianoland group"}]},
+    {"parts": [{"text": "apa saja produk kianoland"}]},
+    {"parts": [{"text": "properti di kianoland group"}]},
+    {"parts": [{"text": "kasih lihat dong pilihan rumahnya"}]},
+    {"parts": [{"text": "ada pilihan properti apa aja?"}]},
+    {"parts": [{"text": "mau cek proyek yang ready"}]},
+    {"parts": [{"text": "saya mau tau produknya"}]},
+    {"parts": [{"text": "kalian jual rumah apa aja?"}]}
   ],
   "messages": [
     {

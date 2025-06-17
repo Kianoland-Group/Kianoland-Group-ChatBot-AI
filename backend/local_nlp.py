@@ -20,9 +20,7 @@ def load_resources():
     load_entities()
 
 marketing_contacts = {
-    "Natureland Kiano 2": "Bp. Toni - 0896 3823 0725",
-    "Natureland Kiano 3": "Bp. Toni - 0896 3823 0725",
-    "Green Jonggol Village": "0851-7955-3681"
+    "default": "+62 811-1611-724"
 }
 
 def load_intents():
@@ -226,6 +224,14 @@ def detect_intent_local(user_input: str) -> Dict[str, str]:
         if bantuan_intent:
             return format_response(bantuan_intent['responses'][0])
 
+    # ===== ATURAN #2: Info Kontak (Contact Info) =====
+    kontak_keywords = ['kontak', 'cs', 'customer service', 'admin', 'telepon', 'nomor', 'hubungi']
+    if any(kw in user_input_normalized for kw in kontak_keywords):
+        kontak_intent = next((i for i in INTENTS if i['name'] == 'info_kontak'), None)
+        if kontak_intent:
+            print("🎯 Aturan #2 Terpenuhi: Info Kontak")
+            return format_response(kontak_intent['responses'][0])
+
     # ===== ATURAN #1: Prioritaskan pertanyaan yang mengandung nama proyek =====
     if project:
         # ===== ATURAN #1A: TANGANI PROYEK YANG TIDAK ADA SAMA SEKALI (contoh: Kiano 4) =====
@@ -256,7 +262,7 @@ def detect_intent_local(user_input: str) -> Dict[str, str]:
             'info_fasilitas': ['fasilitas'],
             'info_lokasi': ['lokasi', 'alamat', 'peta', 'letak'],
             'syarat_dokumen': ['syarat', 'persyaratan', 'dokumen', 'kpr'],
-            'minat_beli': ['beli', 'minat', 'lihat']
+            'minat_beli': ['beli', 'booking', 'jadwal', 'kunjungan', 'bayar', 'ambil unit', 'deal', 'proses pembelian']
         }
 
         # Check for specific project info (including types like subsidi/komersil) FIRST
@@ -503,10 +509,12 @@ def process_conditional_templates(text: str, project: str = None, lokasi: str = 
 
 def format_response(text: str) -> Dict[str, str]:
     """Format response for all platforms"""
-    text = text.replace('\\n', '\n').replace('\\"', '"')
-    
+    # Ganti nomor telepon generik dengan nomor yang sudah diseragamkan
+    text_with_contact = text.replace('{{kontak_marketing}}', marketing_contacts['default'])
+    text_with_contact = text_with_contact.replace('\\n', '\n').replace('\\"', '"')
+
     return {
-        'raw': text,
+        'raw': text_with_contact,
         'discord': text.replace('bold_start', '**').replace('bold_end', '**'),
         'telegram': text.replace('**', '').replace('bold_start', '<b>').replace('bold_end', '</b>'),
         'web': text.replace('**', '').replace('bold_start', '<strong>').replace('bold_end', '</strong>')

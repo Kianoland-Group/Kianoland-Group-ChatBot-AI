@@ -18,29 +18,21 @@
     {"parts": [{"text": "metode pembayaran"}]},
     {"parts": [{"text": "tahapan bayar rumah"}]},
     {"parts": [{"text": "langkah-langkah pembelian"}]},
-    {"parts": [{"text": "proses pembayaran kpr"}]}
+    {"parts": [{"text": "proses pembayaran kpr"}]},
+    {"parts": [{"text": "persyaratan KPR apa aja ya?"}]},
+    {"parts": [{"text": "berkas-berkasnya apa aja?"}]},
+    {"parts": [{"text": "dokumen apa yang harus saya siapkan?"}]},
+    {"parts": [{"text": "kalau mau KPR butuh apa aja?"}]},
+    {"parts": [{"text": "prosedur pembelian rumahnya gimana?"}]},
+    {"parts": [{"text": "jelaskan alur pembelian"}]},
+    {"parts": [{"text": "saya perlu siapin apa aja untuk beli rumah?"}]},
+    {"parts": [{"text": "info syarat & ketentuan"}]}
   ],
   "messages": [
     {
       "text": {
         "text": [
-          "bold_startProses Pembelian Rumah & KPR di Kianoland Group:bold_end\n\n",
-          "1. Pilih Properti: Tentukan unit rumah yang diinginkan\n",
-          "2. Booking Fee: Bayar Rp 1.000.000 untuk mengamankan unit\n",
-          "3. Down Payment (DP): Pembayaran uang muka (bisa menggunakan promo DP 0%)\n",
-          "4. Pengajuan KPR: Siapkan dokumen dan ajukan ke bank mitra (BTN, Mandiri, dll)\n",
-          "5. Verifikasi Bank: Proses pengecekan dokumen dan survey oleh bank\n",
-          "6. Akad Kredit: Penandatanganan perjanjian kredit dengan bank\n",
-          "7. Pembangunan Rumah: Proses konstruksi dimulai setelah akad\n",
-          "8. Cicilan Bulanan: Mulai membayar angsuran setelah rumah selesai atau sesuai perjanjian\n\n",
-          "bold_startSyarat Dokumen KPR:bold_end\n",
-          "- KTP suami/istri\n",
-          "- Kartu Keluarga\n",
-          "- Surat Nikah (bagi yang menikah)\n",
-          "- Slip gaji/Surat keterangan penghasilan\n",
-          "- Rekening koran 3 bulan terakhir\n",
-          "- NPWP\n\n",
-          "Untuk info lebih detail, hubungi marketing kami di 0819-4655-3645"
+          "bold_startProses & Syarat Dokumen KPR:bold_end\n\nBerikut adalah dokumen yang umumnya diperlukan:\n- KTP suami/istri\n- Kartu Keluarga\n- Surat Nikah (jika sudah menikah)\n- Slip gaji & Surat Keterangan Kerja (untuk karyawan)\n- SKU / NIB & Laporan Keuangan (untuk wiraswasta)\n- Rekening koran 3-6 bulan terakhir\n- NPWP\n\nJika Anda sudah siap dengan dokumen ini atau butuh bantuan lebih lanjut untuk memulai proses pembelian, tim kami siap membantu.\n\nSilakan hubungi tim Marketing & Informasi di nomor berikut:\n- **Kontak:** +62 811-1611-724"
         ]
       }
     }

@@ -2,18 +2,37 @@
   "displayName": "minat_beli",
   "trainingPhrases": [
     {"parts": [{"text": "saya ingin beli rumah"}]},
-    {"parts": [{"text": "saya ingin beli rumah di "}, {"text": "kiano 2", "entityType": "@proyek"}]},
-    {"parts": [{"text": "ingin lihat rumah"}]},
+    {"parts": [{"text": "saya mau booking unit"}]},
+    {"parts": [{"text": "ingin beli rumahnya"}]},
+    {"parts": [{"text": "bagaimana cara pembayarannya?"}]},
+    {"parts": [{"text": "langkah selanjutnya untuk pembelian apa?"}]},
+    {"parts": [{"text": "saya minat serius, bisa hubungi saya?"}]},
+    {"parts": [{"text": "bisa jadwalkan kunjungan ke lokasi?"}]},
+    {"parts": [{"text": "bagaimana cara bayar booking fee?"}]},
+    {"parts": [{"text": "saya siap untuk proses KPR"}]},
+    {"parts": [{"text": "hubungkan saya dengan marketing"}]},
+    {"parts": [{"text": "saya mau mulai proses pembelian"}]},
     {"parts": [{"text": "mau beli rumah"}]},
-    {"parts": [{"text": "bisa lihat proyek"}]},
     {"parts": [{"text": "cara beli rumah di sini gimana"}]},
-    {"parts": [{"text": "saya minat beli"}]}
+    {"parts": [{"text": "saya minat beli"}]},
+    {"parts": [{"text": "saya mau ambil satu unit"}]},
+    {"parts": [{"text": "bagaimana cara booking?"}]},
+    {"parts": [{"text": "jadwalkan saya untuk survey"}]},
+    {"parts": [{"text": "ok saya deal, selanjutnya gimana?"}]},
+    {"parts": [{"text": "minta kontak salesnya dong"}]},
+    {"parts": [{"text": "saya mau lanjut"}]},
+    {"parts": [{"text": "proses lebih lanjut gimana?"}]},
+    {"parts": [
+        {"text": "saya ingin beli rumah di "}, 
+        {"text": "kiano 3", "entityType": "@proyek"}
+    ]},
+    {"parts": [{"text": "bisa bantu proses pembelian?"}]}
   ],
   "messages": [
     {
       "text": {
         "text": [
-          "Tentu! Kami siap membantu proses pembelian rumah impian Anda. Untuk memulai, Anda bisa:\n\n1. Sebutkan proyek yang Anda minati (contoh: 'info Natureland Kiano 3').\n2. Tanyakan langsung mengenai proses KPR dengan mengetik 'syarat kpr'.\n3. Hubungi tim marketing kami untuk konsultasi langsung di 0811-1611-724.\n\nProyek mana yang menarik perhatian Anda?"
+          "Senang mendengar Anda berminat! Tim marketing kami siap membantu Anda untuk proses selanjutnya, mulai dari booking unit, detail pembayaran, hingga jadwal kunjungan lokasi.\n\nSilakan hubungi tim Marketing & Informasi kami di nomor berikut:\n\n- **Kontak:** +62 811-1611-724\n\nSebutkan nama dan proyek yang Anda minati saat menghubungi kami ya. Terima kasih!"
         ]
       }
     }
