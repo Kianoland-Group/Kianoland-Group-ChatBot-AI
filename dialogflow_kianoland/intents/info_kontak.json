@@ -10,7 +10,19 @@
     {"parts": [{"text": "bisa minta kontak marketing?"}]},
     {"parts": [{"text": "nomor WA admin"}]},
     {"parts": [{"text": "hubungi kemana ya?"}]},
-    {"parts": [{"text": "minta nomor telepon kantor"}]}
+    {"parts": [{"text": "minta nomor telepon kantor"}]},
+    {"parts": [{"text": "nomor kontak kianoland"}]},
+    {"parts": [{"text": "bagaimana cara kontak kianoland?"}]},
+    {"parts": [{"text": "contact us"}]},
+    {"parts": [{"text": "berikan nomor telepon"}]},
+    {"parts": [{"text": "saya ingin menghubungi kianoland"}]},
+    {"parts": [{"text": "ada nomor yang bisa dihubungi?"}]},
+    {"parts": [{"text": "bagaimana cara bicara dengan orang?"}]},
+    {"parts": [{"text": "berapa nomor telepon marketing?"}]},
+    {"parts": [{"text": "wa marketing"}]},
+    {"parts": [{"text": "telepon kianoland"}]},
+    {"parts": [{"text": "kantor kianoland"}]},
+    {"parts": [{"text": "email kianoland"}]} 
   ],
   "messages": [
     {
