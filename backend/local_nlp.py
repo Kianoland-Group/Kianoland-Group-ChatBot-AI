@@ -271,17 +271,22 @@ def detect_intent_local(user_input: str) -> Dict[str, str]:
             return format_response(welcome_intent['responses'][0])
 
 
-    # ===== ATURAN #5: Info Kontak (Contact Info) =====
+    # ===== ATURAN #5: Info Kontak (Contact Info) - PRIORITAS SANGAT TINGGI UNTUK KONTAK SPESIFIK =====
     # Pastikan ini menangani semua permintaan kontak eksplisit
     kontak_keywords = [
-        'kontak', 'cs', 'customer service', 'admin', 'telepon', 'nomor', 'hubungi',
-        'contact us', 'bicara dengan orang', 'wa marketing', 'kantor kianoland', 'email kianoland', 'email', 'wa'
-    ] # Menambahkan frasa yang sebelumnya salah terpicu, dan kata kunci umum seperti 'email', 'wa'
+        'kontak', 'cs', 'customer service', 'admin', 'telepon', 'nomor', 'hubungi', 'hp', 'telp',
+        'contact us', 'bicara dengan orang', 'wa marketing', 'kantor kianoland', 'email kianoland', 'email', 'wa',
+        'berapa nomor', 'nomor berapa', 'telepon', 'nomor telepon', 'nomor hp'
+    ] # Menambahkan frasa yang sebelumnya salah terpicu, dan kata kunci umum seperti 'email', 'wa', 'hp', 'telp'
     if any(kw in user_input_normalized for kw in kontak_keywords):
-        kontak_intent = next((i for i in INTENTS if i['name'] == 'info_kontak'), None)
-        if kontak_intent:
-            print("🎯 Aturan #5 Terpenuhi: Info Kontak")
-            return format_response(kontak_intent['responses'][0])
+        # Tambahkan pengecualian jika ada kata 'alamat' yang kuat untuk info_lokasi
+        if 'alamat' in user_input_normalized and ('kantor' in user_input_normalized or 'lokasi' in user_input_normalized):
+            pass # Biarkan jatuh ke aturan lokasi jika ada "alamat kantor"
+        else:
+            kontak_intent = next((i for i in INTENTS if i['name'] == 'info_kontak'), None)
+            if kontak_intent:
+                print("🎯 Aturan #5 Terpenuhi: Info Kontak")
+                return format_response(kontak_intent['responses'][0])
 
     # ===== ATURAN #6: Prioritaskan pertanyaan yang mengandung nama proyek =====
     if project:
