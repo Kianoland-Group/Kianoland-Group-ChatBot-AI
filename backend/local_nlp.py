@@ -222,7 +222,7 @@ def detect_intent_local(user_input: str) -> Dict[str, str]:
         'contact us', 'bicara dengan orang', 'wa marketing', 'kantor kianoland', 'email kianoland', 'email', 'wa',
         'berapa nomor', 'nomor berapa', 'nomor telepon', 'nomor hp', 'nomor wa', 'berikan nomor telepon', 
         'berikan nomor hp', 'telepon kianoland', 'telepon marketing', 'telepon admin'
-    ] # Added direct phrases from failed tests, and more explicit phone/contact phrases
+    ] 
     # Pengecualian: jika ada "alamat" yang sangat spesifik, biarkan jatuh ke aturan lokasi.
     if any(kw in user_input_normalized for kw in kontak_keywords):
         if 'alamat' in user_input_normalized and ('kantor' in user_input_normalized or 'lokasi' in user_input_normalized):
@@ -290,7 +290,8 @@ def detect_intent_local(user_input: str) -> Dict[str, str]:
         'properti yang ada', 'property yang ada', 'kianoland property', 'list properti kianoland',
         'daftar hunian', 'hunian apa saja', 'list hunian',
         'info', 'informasi', 'rumah', 'properti', 'perumahan', # General info keywords that might fall here
-        'saya ingin lihat lihat', 'saya mau lihat', 'nama proyeknya apa' # Phrases from current failing tests
+        'saya ingin lihat lihat', 'saya mau lihat', 'nama proyeknya apa', # Phrases from current failing tests
+        'berikan saya list project-nya', 'berikan saya list proyek nya' # Explicit "list project" phrases
     ]
     for keyword in strong_daftar_proyek_keywords:
         if user_input_normalized == keyword or re.search(r'\b' + re.escape(keyword) + r'\b', user_input_normalized):
@@ -329,7 +330,7 @@ def detect_intent_local(user_input: str) -> Dict[str, str]:
         is_asking_specific_info = any(
             kw in user_input_normalized for kw in ['lokasi', 'alamat', 'peta', 'letak', 'harga', 'cicilan', 'promo', 'fasilitas', 'syarat']
         )
-        if project in sold_out_projects and not is_asking_specific_info: # Corrected variable name here
+        if project in sold_out_projects and not is_asking_specific_info:
             print(f"🎯 ATURAN #7B: Sold Out Project '{project}' detected and no specific info requested.")
             return format_response(
                 f"Maaf, proyek {project} sudah sold out. Kami merekomendasikan proyek terbaru kami:\n\n"
