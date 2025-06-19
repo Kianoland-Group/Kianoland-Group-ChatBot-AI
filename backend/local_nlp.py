@@ -308,7 +308,16 @@ def detect_intent_local(user_input: str) -> Dict[str, str]:
         'bot', 'kianoland bot', 'kianoland group', 'saya baru di sini', 'perkenalkan diri',
         'siapa anda', 'ada yang bisa saya bantu', 'apakah ada yang bisa saya bantu hari ini'
     ]
-    if any(kw in user_input_normalized for kw in welcome_keywords):
+    # Hapus frasa yang terlalu umum atau tumpang tindih dengan daftar_proyek
+    # Contoh: 'saya', 'lihat', 'apa' sebaiknya tidak ada di welcome_keywords jika tidak dalam konteks sapaan yang jelas
+    welcome_keywords_refined = [
+        'halo', 'hi', 'hai', 'selamat pagi', 'selamat siang', 'selamat sore', 'selamat malam',
+        'assalamualaikum', 'permisi', 'p', 'pe', 'mulai', '/mulai', 'start', '/start',
+        'apa kabar', 'hai bot', 'hello kianoland', 'bot', 'kianoland bot', 'kianoland group',
+        'saya baru di sini', 'perkenalkan diri', 'siapa anda', 'apakah ada yang bisa saya bantu hari ini'
+    ] # Menghapus 'awali chat', 'bagaimana hari ini' dan 'ada yang bisa saya bantu'
+    
+    if any(kw in user_input_normalized for kw in welcome_keywords_refined): # Use refined list
         print(f"🎯 NEW ATURAN #6 (Welcome): Greeting keyword detected. Triggering 'welcome' intent.")
         welcome_intent = next((i for i in INTENTS if i['name'] == 'welcome'), None)
         if welcome_intent:
