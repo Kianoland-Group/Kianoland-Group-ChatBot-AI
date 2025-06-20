@@ -287,16 +287,20 @@ def detect_intent_local(user_input: str) -> Dict[str, str]:
         'saya ingin lihat rumah yang ada', 'ada rumah apa aja',
         'berikan saya list project nya', 'berikan saya list proyek nya', 
         'saya mau lihat', 'saya mau lihat rumah', 'mau lihat rumah', 'lihat properti', 
-        'nama proyek nya apa', 'produk apa yang di jual oleh kianoland group', 
+        'nama proyeknya apa', # Tambahkan ini untuk mencocokkan "Nama proyeknya apa?"
+        'produk apa yang dijual oleh kianoland group', # Tambahkan ini untuk mencocokkan "Produk apa yang dijual oleh Kianoland Group?"
         'produk kianoland group', 'apa saja produk kianoland', 'properti di kianoland group',
         'kasih lihat dong pilihan rumahnya', 'ada pilihan properti apa aja', 
-        'mau cek proyek yang ready', 'saya mau tau produknya', 'kalian jual rumah apa aja',
-        'info properti', 'informasi properti', # Explicit info for properties
-        'info', 'informasi', 'rumah', 'properti', 'perumahan', # General info keywords that might fall here
-        'tampilkan proyek', 'lihat daftar', 'lihat proyek', # Added more generic "lihat" phrases
-        'saya ingin lihat-lihat', # Added exact failing phrase again for robustness
-        'nama proyek', 'produk apa' # Added for "Nama proyeknya apa?" and "Produk apa yang dijual..."
+        'mau cek proyek yang ready', 'saya mau tahu produknya', # Tambahkan ini untuk mencocokkan "Saya mau tahu produknya"
+        'kalian jual rumah apa aja',
+        'info properti', 'informasi properti', # Info eksplisit untuk properti
+        'info', 'informasi', 'rumah', 'properti', 'perumahan', # Kata kunci info umum yang mungkin masuk ke sini
+        'tampilkan proyek', 'lihat daftar', 'lihat proyek', # Menambahkan frasa "lihat" yang lebih umum
+        'saya ingin lihat-lihat', # Menambahkan frasa gagal yang persis lagi agar lebih kuat
+        'nama proyek', 'produk apa' # Menambahkan untuk "Nama proyeknya apa?" dan "Produk apa yang dijual..."
     ]
+
+    # Pastikan bagian ini berada di atas ATURAN #6 (Welcome Intent)
     for keyword in strong_daftar_proyek_keywords:
         # Menggunakan re.search dengan word boundary untuk pencocokan yang lebih tepat
         if re.search(r'\b' + re.escape(keyword) + r'\b', user_input_normalized):
@@ -306,6 +310,7 @@ def detect_intent_local(user_input: str) -> Dict[str, str]:
                 return format_response(daftar_intent['responses'][0])
 
     # ===== NEW ATURAN #6 (Welcome/Greeting) - Paling bawah setelah semua intent fungsional =====
+    # Pastikan ini berada di bawah ATURAN #5
     welcome_keywords_refined = [
         'halo', 'hi', 'hai', 'selamat pagi', 'selamat siang', 'selamat sore', 'selamat malam',
         'assalamualaikum', 'permisi', 'p', 'pe', 'mulai', '/mulai', 'start', '/start',
@@ -313,12 +318,11 @@ def detect_intent_local(user_input: str) -> Dict[str, str]:
         'bot', 'kianoland bot', 'kianoland group', 'saya baru di sini', 'perkenalkan diri',
         'siapa anda', 'ada yang bisa saya bantu', 'apakah ada yang bisa saya bantu hari ini'
     ] 
-    if any(kw in user_input_normalized for kw in welcome_keywords_refined): # Use refined list
+    if any(kw in user_input_normalized for kw in welcome_keywords_refined): # Gunakan daftar yang sudah disaring
         print(f"🎯 NEW ATURAN #6 (Welcome): Greeting keyword detected. Triggering 'welcome' intent.")
         welcome_intent = next((i for i in INTENTS if i['name'] == 'welcome'), None)
         if welcome_intent:
             return format_response(welcome_intent['responses'][0])
-
 
     # ===== ATURAN #7: Prioritaskan pertanyaan yang mengandung nama proyek =====
     if project:
