@@ -216,25 +216,39 @@ def detect_intent_local(user_input: str) -> Dict[str, str]:
         if daftar_intent:
             return format_response(daftar_intent['responses'][0])
 
-    # ===== NEW ATURAN #1 (INFO KONTAK) - PRIORITAS ABSOLUT UNTUK PERMINTAAN KONTAK EKPLISIT =====
+    # ===== NEW ATURAN #1 (WELCOME/GREETING) - POSISI PALING ATAS SETELAH !INFO =====
+    welcome_keywords = [
+        'halo', 'hi', 'hai', 'selamat pagi', 'selamat siang', 'selamat sore', 'selamat malam',
+        'assalamualaikum', 'permisi', 'p', 'pe', 'mulai', '/mulai', 'start', '/start',
+        'apa kabar', 'hai bot', 'hello kianoland', 'awali chat', 'bagaimana hari ini', # Added "awali chat" and "bagaimana hari ini?" back
+        'bot', 'kianoland bot', 'kianoland group', 'saya baru di sini', 'perkenalkan diri',
+        'siapa anda', 'apakah ada yang bisa saya bantu hari ini' # This is a bot's question, so it shouldn't be here if it's meant for user input
+    ] 
+    if any(kw in user_input_normalized for kw in welcome_keywords):
+        print(f"🎯 NEW ATURAN #1 (Welcome): Greeting keyword detected. Triggering 'welcome' intent.")
+        welcome_intent = next((i for i in INTENTS if i['name'] == 'welcome'), None)
+        if welcome_intent:
+            return format_response(welcome_intent['responses'][0])
+
+    # ===== NEW ATURAN #2 (INFO KONTAK) - PRIORITAS SANGAT TINGGI UNTUK PERMINTAAN KONTAK EKPLISIT =====
     kontak_keywords = [
         'kontak', 'cs', 'customer service', 'admin', 'telepon', 'nomor', 'hubungi', 'hp', 'telp',
         'contact us', 'bicara dengan orang', 'wa marketing', 'kantor kianoland', 'email kianoland', 'email', 'wa',
         'berapa nomor', 'nomor berapa', 'nomor telepon', 'nomor hp', 'nomor wa', 'berikan nomor telepon', 
-        'berikan nomor hp', 'telepon kianoland', 'telepon marketing', 'telepon admin'
-    ] 
+        'berikan nomor hp', 'telepon kianoland', 'telepon marketing', 'telepon admin',
+        'email marketing', 'email admin'
+    ]
     # Pengecualian: jika ada "alamat" yang sangat spesifik, biarkan jatuh ke aturan lokasi.
     if any(kw in user_input_normalized for kw in kontak_keywords):
         if 'alamat' in user_input_normalized and ('kantor' in user_input_normalized or 'lokasi' in user_input_normalized):
-            # Biarkan jatuh ke aturan lokasi
-            pass
+            pass # Biarkan jatuh ke aturan lokasi
         else:
             kontak_intent = next((i for i in INTENTS if i['name'] == 'info_kontak'), None)
             if kontak_intent:
-                print("🎯 NEW ATURAN #1 (Info Kontak): Explicit contact request detected. Triggering 'info_kontak' intent.")
+                print("🎯 NEW ATURAN #2 (Info Kontak): Explicit contact request detected. Triggering 'info_kontak' intent.")
                 return format_response(kontak_intent['responses'][0])
 
-    # ===== NEW ATURAN #2 (MINAT BELI) - Paling Prioritas setelah info kontak =====
+    # ===== NEW ATURAN #3 (MINAT BELI) - Paling Prioritas setelah info kontak dan welcome =====
     minat_beli_keywords = [
         'saya ingin beli rumah', 'saya mau booking unit', 'ingin beli rumahnya',
         'bagaimana cara pembayarannya', 'langkah selanjutnya untuk pembelian apa',
@@ -250,31 +264,31 @@ def detect_intent_local(user_input: str) -> Dict[str, str]:
         'langkah-langkah pembelian', 'prosedur pembelian rumahnya gimana', 'jelaskan alur pembelian'
     ]
     if any(kw in user_input_normalized for kw in minat_beli_keywords):
-        print(f"🎯 NEW ATURAN #2 (Minat Beli): Explicit buying/process intent keyword detected. Triggering 'minat_beli' intent.")
+        print(f"🎯 NEW ATURAN #3 (Minat Beli): Explicit buying/process intent keyword detected. Triggering 'minat_beli' intent.")
         minat_beli_intent = next((i for i in INTENTS if i['name'] == 'minat_beli'), None)
         if minat_beli_intent:
             return format_response(minat_beli_intent['responses'][0])
 
-    # ===== NEW ATURAN #3 (SYARAT DOKUMEN) - Prioritas Tinggi setelah minat beli =====
+    # ===== NEW ATURAN #4 (SYARAT DOKUMEN) - Prioritas Tinggi setelah minat beli =====
     syarat_dokumen_keywords = [
         'syarat', 'persyaratan', 'dokumen', 'kpr', 'berkas', 'prosedur kredit',
         'proses kredit pemilikan rumah', 'saya perlu siapkan apa saja untuk beli rumah'
     ]
     if any(kw in user_input_normalized for kw in syarat_dokumen_keywords):
-        print(f"🎯 NEW ATURAN #3 (Syarat Dokumen): Explicit document requirement keyword detected. Triggering 'syarat_dokumen' intent.")
+        print(f"🎯 NEW ATURAN #4 (Syarat Dokumen): Explicit document requirement keyword detected. Triggering 'syarat_dokumen' intent.")
         syarat_dokumen_intent = next((i for i in INTENTS if i['name'] == 'syarat_dokumen'), None)
         if syarat_dokumen_intent:
             return format_response(syarat_dokumen_intent['responses'][0])
 
-    # ===== NEW ATURAN #4 (Bantuan/Help) - Setelah yang lebih spesifik =====
+    # ===== NEW ATURAN #5 (Bantuan/Help) - Setelah yang lebih spesifik =====
     help_keywords = ['bantuan', 'panduan', 'cara pakai', 'menu', 'apa saja yang bisa ditanyakan', 'saya perlu bantuan', 'tolong bantu saya', 'bagaimana cara menggunakan bot ini', 'saya butuh panduan', 'tutorial penggunaan', 'tolong', 'bantu', 'saya tidak mengerti', 'saya tidak paham', 'ga ngerti', 'gimana caranya', 'cara penggunaan', 'mau tanya', 'bisa tanya apa', 'fitur apa saja', 'help', 'assist', 'saya bingung', 'bingung', 'petunjuk', 'instruksi', 'cara bertanya', 'gimana nanya', 'bantu saya', 'aku tidak paham fungsi nya']
     if any(kw in user_input_normalized for kw in help_keywords):
-        print(f"🎯 NEW ATURAN #4 (Help/Bantuan): Explicit help keyword detected. Triggering 'bantuan' intent.")
+        print(f"🎯 NEW ATURAN #5 (Help/Bantuan): Explicit help keyword detected. Triggering 'bantuan' intent.")
         bantuan_intent = next((i for i in INTENTS if i['name'] == 'bantuan'), None)
         if bantuan_intent:
             return format_response(bantuan_intent['responses'][0])
 
-    # ===== NEW ATURAN #5 (DAFTAR PROYEK) - Prioritas lebih tinggi dari welcome =====
+    # ===== NEW ATURAN #6 (DAFTAR PROYEK) - Pindah ke sini untuk prioritas lebih tinggi dari welcome =====
     strong_daftar_proyek_keywords = [
         'daftar proyek', 'proyek apa saja', 'list proyek', 'semua proyek',
         'perumahan apa yang ada', 'pilihan proyek', 'proyek yang tersedia',
@@ -297,26 +311,10 @@ def detect_intent_local(user_input: str) -> Dict[str, str]:
     ]
     for keyword in strong_daftar_proyek_keywords:
         if user_input_normalized == keyword or re.search(r'\b' + re.escape(keyword) + r'\b', user_input_normalized):
-            print(f"🎯 NEW ATURAN #5 (General List): Strong keyword '{keyword}' for 'daftar_proyek' detected. Triggering 'daftar_proyek' intent.")
+            print(f"🎯 NEW ATURAN #6 (General List): Strong keyword '{keyword}' for 'daftar_proyek' detected. Triggering 'daftar_proyek' intent.")
             daftar_intent = next((i for i in INTENTS if i['name'] == 'daftar_proyek'), None)
             if daftar_intent:
                 return format_response(daftar_intent['responses'][0])
-
-    # ===== NEW ATURAN #6 (Welcome/Greeting) - Setelah semua intent informatif lainnya =====
-    # Hapus frasa yang terlalu umum atau tumpang tindih dengan daftar_proyek
-    welcome_keywords_refined = [
-        'halo', 'hi', 'hai', 'selamat pagi', 'selamat siang', 'selamat sore', 'selamat malam',
-        'assalamualaikum', 'permisi', 'p', 'pe', 'mulai', '/mulai', 'start', '/start',
-        'apa kabar', 'hai bot', 'hello kianoland',
-        'bot', 'kianoland bot', 'kianoland group', 'saya baru di sini', 'perkenalkan diri',
-        'siapa anda', 'apakah ada yang bisa saya bantu hari ini', # Ini adalah pertanyaan dari bot, bukan user. Biarkan di welcome jika bot bertanya.
-        'awali chat', 'bagaimana hari ini?' # Ditambahkan kembali ke welcome karena lebih sesuai untuk pembukaan
-    ] 
-    if any(kw in user_input_normalized for kw in welcome_keywords_refined): # Use refined list
-        print(f"🎯 NEW ATURAN #6 (Welcome): Greeting keyword detected. Triggering 'welcome' intent.")
-        welcome_intent = next((i for i in INTENTS if i['name'] == 'welcome'), None)
-        if welcome_intent:
-            return format_response(welcome_intent['responses'][0])
 
 
     # ===== ATURAN #7: Prioritaskan pertanyaan yang mengandung nama proyek =====
