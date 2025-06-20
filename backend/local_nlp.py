@@ -221,9 +221,8 @@ def detect_intent_local(user_input: str) -> Dict[str, str]:
         'kontak', 'cs', 'customer service', 'admin', 'telepon', 'nomor', 'hubungi', 'hp', 'telp',
         'contact us', 'bicara dengan orang', 'wa marketing', 'kantor kianoland', 'email kianoland', 'email', 'wa',
         'berapa nomor', 'nomor berapa', 'nomor telepon', 'nomor hp', 'nomor wa', 'berikan nomor telepon', 
-        'berikan nomor hp', 'telepon kianoland', 'telepon marketing', 'telepon admin', # Added direct phrases from failed tests
-        'email marketing', 'email admin' # Added more explicit email phrases
-    ]
+        'berikan nomor hp', 'telepon kianoland', 'telepon marketing', 'telepon admin'
+    ] 
     # Pengecualian: jika ada "alamat" yang sangat spesifik, biarkan jatuh ke aturan lokasi.
     if any(kw in user_input_normalized for kw in kontak_keywords):
         if 'alamat' in user_input_normalized and ('kantor' in user_input_normalized or 'lokasi' in user_input_normalized):
@@ -275,7 +274,7 @@ def detect_intent_local(user_input: str) -> Dict[str, str]:
         if bantuan_intent:
             return format_response(bantuan_intent['responses'][0])
 
-    # ===== NEW ATURAN #5 (DAFTAR PROYEK) - Pindah ke sini untuk prioritas lebih tinggi dari welcome =====
+    # ===== NEW ATURAN #5 (DAFTAR PROYEK) - Prioritas lebih tinggi dari welcome =====
     strong_daftar_proyek_keywords = [
         'daftar proyek', 'proyek apa saja', 'list proyek', 'semua proyek',
         'perumahan apa yang ada', 'pilihan proyek', 'proyek yang tersedia',
@@ -294,7 +293,7 @@ def detect_intent_local(user_input: str) -> Dict[str, str]:
         'mau cek proyek yang ready', 'saya mau tau produknya', 'kalian jual rumah apa aja',
         'info', 'informasi', 'rumah', 'properti', 'perumahan', # General info keywords that might fall here
         'tampilkan proyek', 'lihat daftar', 'lihat proyek', # Added more generic "lihat" phrases
-        'saya ingin lihat-lihat' # Added exact failing phrase
+        'saya ingin lihat-lihat' # Added exact failing phrase again for robustness
     ]
     for keyword in strong_daftar_proyek_keywords:
         if user_input_normalized == keyword or re.search(r'\b' + re.escape(keyword) + r'\b', user_input_normalized):
@@ -310,7 +309,8 @@ def detect_intent_local(user_input: str) -> Dict[str, str]:
         'assalamualaikum', 'permisi', 'p', 'pe', 'mulai', '/mulai', 'start', '/start',
         'apa kabar', 'hai bot', 'hello kianoland',
         'bot', 'kianoland bot', 'kianoland group', 'saya baru di sini', 'perkenalkan diri',
-        'siapa anda', 'apakah ada yang bisa saya bantu hari ini'
+        'siapa anda', 'apakah ada yang bisa saya bantu hari ini', # Ini adalah pertanyaan dari bot, bukan user. Biarkan di welcome jika bot bertanya.
+        'awali chat', 'bagaimana hari ini?' # Ditambahkan kembali ke welcome karena lebih sesuai untuk pembukaan
     ] 
     if any(kw in user_input_normalized for kw in welcome_keywords_refined): # Use refined list
         print(f"🎯 NEW ATURAN #6 (Welcome): Greeting keyword detected. Triggering 'welcome' intent.")
@@ -434,7 +434,7 @@ def detect_intent_local(user_input: str) -> Dict[str, str]:
         if 'kantor' in user_input_normalized and 'alamat' not in user_input_normalized:
             pass # Biarkan jatuh ke info_kontak jika hanya "kantor" tanpa "alamat"
         else:
-            print("🎯 ATURAN #9: General Location Request Detected (no project).")
+            print(f"🎯 ATURAN #9: General Location Request Detected (no project).")
             return format_response(
                 "Tentu, lokasi untuk proyek mana yang ingin Anda ketahui?\n\n"
                 "Proyek yang tersedia:\n"
@@ -445,7 +445,7 @@ def detect_intent_local(user_input: str) -> Dict[str, str]:
     # ===== ATURAN #10: General Info Fasilitas (tanpa proyek spesifik) =====
     general_fasilitas_keywords = ['fasilitas', 'fasilitasnya apa', 'apa fasilitasnya']
     if any(kw in user_input_normalized for kw in general_fasilitas_keywords) and not project:
-        print("🎯 ATURAN #10: General Facility Request Detected (no project).")
+        print(f"🎯 ATURAN #10: General Facility Request Detected (no project).")
         return format_response(
             "Tentu, informasi fasilitas untuk proyek mana yang ingin Anda ketahui?\n\n"
             "Proyek yang tersedia:\n"
@@ -456,7 +456,7 @@ def detect_intent_local(user_input: str) -> Dict[str, str]:
     # ===== ATURAN #11: General Promo Request (if no project mentioned) =====
     general_promo_keywords = ['promo', 'diskon', 'dp', 'uang muka']
     if any(kw in user_input_normalized for kw in general_promo_keywords) and not project:
-        print("🎯 ATURAN #11: General Promo Request Detected (no project).")
+        print(f"🎯 ATURAN #11: General Promo Request Detected (no project).")
         promo_intent = next((i for i in INTENTS if i['name'] == 'info_promo'), None)
         if promo_intent:
             response_text = process_conditional_templates(promo_intent['responses'][0], project='all_promos')
@@ -489,7 +489,7 @@ def detect_intent_local(user_input: str) -> Dict[str, str]:
             return format_response(daftar_intent['responses'][0])
             
     # ===== ATURAN #14: PENCOCOKAN KEMIRIPAN UMUM (FALLBACK jika tidak ada yang lebih spesifik) =====
-    print("🚦 Proceeding to Rule #14: Similarity-based matching.")
+    print(f"🚦 Proceeding to Rule #14: Similarity-based matching. User input: '{user_input_normalized}'")
     best_match = None
     highest_score = 0.75 
     for intent in INTENTS:
@@ -505,6 +505,7 @@ def detect_intent_local(user_input: str) -> Dict[str, str]:
             if similarity > highest_score:
                 highest_score = similarity
                 best_match = intent
+                print(f"   - Found better similarity match: {best_match['name']} ({highest_score:.2f}) with phrase: '{phrase}'")
     
     if best_match:
         print(f"🎯 Best match by similarity: {best_match['name']} (score: {highest_score:.2f})")
