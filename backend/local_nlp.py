@@ -215,8 +215,8 @@ def detect_intent_local(user_input: str) -> Dict[str, str]:
         daftar_intent = next((i for i in INTENTS if i['name'] == 'daftar_proyek'), None)
         if daftar_intent:
             return format_response(daftar_intent['responses'][0])
-
-    # ===== NEW ATURAN #1 (INFO KONTAK) - PRIORITAS ABSOLUT UNTUK PERMINTAAN KONTAK EKPLISIT =====
+            
+    # ===== NEW ATURAN #1 (INFO KONTAK) - PRIORITAS SANGAT TINGGI UNTUK PERMINTAAN KONTAK EKPLISIT =====
     kontak_keywords = [
         'kontak', 'cs', 'customer service', 'admin', 'telepon', 'nomor', 'hubungi', 'hp', 'telp',
         'contact us', 'bicara dengan orang', 'wa marketing', 'kantor kianoland', 'email kianoland', 'email', 'wa',
@@ -227,8 +227,7 @@ def detect_intent_local(user_input: str) -> Dict[str, str]:
     # Pengecualian: jika ada "alamat" yang sangat spesifik, biarkan jatuh ke aturan lokasi.
     if any(kw in user_input_normalized for kw in kontak_keywords):
         if 'alamat' in user_input_normalized and ('kantor' in user_input_normalized or 'lokasi' in user_input_normalized):
-            # Biarkan jatuh ke aturan lokasi
-            pass
+            pass # Biarkan jatuh ke aturan lokasi
         else:
             kontak_intent = next((i for i in INTENTS if i['name'] == 'info_kontak'), None)
             if kontak_intent:
@@ -294,10 +293,12 @@ def detect_intent_local(user_input: str) -> Dict[str, str]:
         'mau cek proyek yang ready', 'saya mau tau produknya', 'kalian jual rumah apa aja',
         'info', 'informasi', 'rumah', 'properti', 'perumahan', # General info keywords that might fall here
         'tampilkan proyek', 'lihat daftar', 'lihat proyek', # Added more generic "lihat" phrases
-        'saya ingin lihat-lihat' # Added exact failing phrase again for robustness
+        'saya ingin lihat-lihat', # Added exact failing phrase again for robustness
+        'nama proyek', 'produk apa' # Added for "Nama proyeknya apa?" and "Produk apa yang dijual..."
     ]
     for keyword in strong_daftar_proyek_keywords:
         # Menggunakan re.search dengan word boundary untuk pencocokan yang lebih tepat
+        # Ini akan membantu memastikan bahwa "list project" cocok persis sebagai frasa.
         if re.search(r'\b' + re.escape(keyword) + r'\b', user_input_normalized):
             print(f"🎯 NEW ATURAN #5 (General List): Strong keyword '{keyword}' for 'daftar_proyek' detected. Triggering 'daftar_proyek' intent.")
             daftar_intent = next((i for i in INTENTS if i['name'] == 'daftar_proyek'), None)
@@ -312,8 +313,7 @@ def detect_intent_local(user_input: str) -> Dict[str, str]:
         'apa kabar', 'hai bot', 'hello kianoland', 'awali chat', 'bagaimana hari ini', 
         'bot', 'kianoland bot', 'kianoland group', 'saya baru di sini', 'perkenalkan diri',
         'siapa anda'
-    ] # Menghapus "apakah ada yang bisa saya bantu hari ini" karena itu respon bot
-    
+    ] 
     if any(kw in user_input_normalized for kw in welcome_keywords_refined): # Use refined list
         print(f"🎯 NEW ATURAN #6 (Welcome): Greeting keyword detected. Triggering 'welcome' intent.")
         welcome_intent = next((i for i in INTENTS if i['name'] == 'welcome'), None)
