@@ -25,7 +25,7 @@ COPY ./dialogflow_kianoland /app/dialogflow_kianoland
 COPY ./frontend /app/frontend
 COPY ./nlp_engine /app/nlp_engine
 # Salin juga file-file konfigurasi penting di root
-COPY ./.env /app/.env
+# Baris untuk .env dihapus karena variabel harus dikelola oleh platform deployment
 COPY ./.gitattributes /app/.gitattributes
 
 
