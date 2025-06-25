@@ -1,0 +1,41 @@
+{
+  "bantuan": [
+    "🛎️ **PANDUAN PENGGUNAAN**\n\nAnda bisa menanyakan:\n1. `daftar proyek` - Lihat semua proyek Kianoland\n2. `info [nama_proyek]` - Detail proyek (contoh: _info Natureland Kiano 3_)\n3. `harga [proyek]` - Info harga & KPR (contoh: _harga Green Jonggol_)\n4. `fasilitas [proyek]` - Fasilitas perumahan\n5. `lokasi [proyek]` - Peta dan akses lokasi\n6. `promo` - Promo dan penawaran spesial\n7. `syarat` - Persyaratan dokumen KPR\n8. `rekomendasi` - Rekomendasi proyek berdasarkan lokasi\n\nContoh pertanyaan lengkap:\n_\"Info harga dan fasilitas di Natureland Kiano 3\"_\n\n📞 Untuk bantuan lebih lanjut, hubungi marketing kami di 0811-1611-724"
+  ],
+  "daftar_proyek": [
+    "Kianoland Group memiliki 2 proyek utama yang tersedia:\n\n🏡 Natureland Kiano 3 (Cibarusah, Bekasi) - Harga mulai Rp 465 Juta\n🌳 Green Jonggol Village (Jonggol, Bogor) - Harga mulai Rp 400 Juta\n\nKetik 'info [nama_proyek]' untuk detail lebih lanjut.\n\n_Proyek Natureland Kiano 1 & 2 sudah sold out._"
+  ],
+  "default_fallback": [
+    "Maaf, saya belum memahami maksud Anda. Berikut opsi yang bisa saya bantu:\n\nℹ️  `daftar proyek` - Lihat semua proyek\n🏡  `info [nama_proyek]` - Detail proyek (contoh: info Natureland Kiano 3)\n💰  `promo` - Lihat promo terkini\n📄  `syarat` - Persyaratan dokumen\n\nAtau ketik `bantuan` untuk panduan lengkap."
+  ],
+  "info_fasilitas": [
+    "{{#Natureland Kiano 1}}bold_startFasilitas Natureland Kiano 1:bold_end\nMaaf, proyek ini sudah sold out. Untuk informasi fasilitas proyek yang masih tersedia, silakan ketik 'fasilitas Natureland Kiano 3' atau 'fasilitas Green Jonggol Village'.{{/Natureland Kiano 1}}"
+  ],
+  "info_harga": [
+    "{{#Natureland Kiano 1}}bold_startHarga Natureland Kiano 1:bold_end\nMaaf, proyek ini sudah sold out.{{/Natureland Kiano 1}}"
+  ],
+  "info_kontak": [
+    "Tentu, Anda bisa menghubungi tim kami melalui kontak berikut:\n\n*Untuk Informasi Proyek, Booking, dan Pembelian:*\n\n- **Marketing & Informasi:** +62 811-1611-724\n\nJika ada pertanyaan umum lainnya, Anda bisa menyampaikannya di sini dan saya akan coba bantu jawab."
+  ],
+  "info_lokasi": [
+    "{{#Natureland Kiano 1}}bold_startLokasi Natureland Kiano 1:bold_end\nJl. Kp. Tegal No.3, RT.002/RW.01, Jatisari, Kec. Cileungsi, Kabupaten Bogor, Jawa Barat\nLihat peta: https://kianolandgroup.com{{/Natureland Kiano 1}}"
+  ],
+  "info_promo": [
+    "{{#Natureland Kiano 1}}bold_startPromo Natureland Kiano 1:bold_end\nMaaf, proyek ini sudah sold out sehingga tidak ada promo yang berlaku.{{/Natureland Kiano 1}}"
+  ],
+  "info_proyek": [
+    "{{#Natureland Kiano 1}}bold_startNatureland Kiano 1:bold_end\nMaaf, proyek ini sudah sold out. Kami merekomendasikan proyek terbaru kami:\n\n🏡 Natureland Kiano 3 (Cibarusah, Bekasi)\n🌳 Green Jonggol Village (Jonggol, Bogor)\n\nKetik 'info [nama_proyek]' untuk detail lebih lanjut.{{/Natureland Kiano 1}}"
+  ],
+  "minat_beli": [
+    "Senang mendengar Anda berminat! Tim marketing kami siap membantu Anda untuk proses selanjutnya, mulai dari booking unit, detail pembayaran, hingga jadwal kunjungan lokasi.\n\nSilakan hubungi tim Marketing & Informasi kami di nomor berikut:\n\n- **Kontak:** +62 811-1611-724\n\nSebutkan nama dan proyek yang Anda minati saat menghubungi kami ya. Terima kasih!"
+  ],
+  "rekomendasi_proyek": [
+    "{{lokasi}} - Rekomendasi:\n{{#Cileungsi}}bold_startRekomendasi untuk Cileungsi:bold_end\nProyek kami di Cileungsi (Natureland Kiano 1) sudah sold out. Proyek terdekat yang tersedia adalah bold_startGreen Jonggol Villagebold_end di Jonggol, Bogor.{{/Cileungsi}}{{#Cibarusah}}bold_startRekomendasi:bold_end Natureland Kiano 3, karena berlokasi di Cibarusahkota - Bekasi. (Harga mulai Rp 465 Juta){{/Cibarusah}}{{#Jatisampurna}}bold_startRekomendasi untuk Jatisampurna:bold_end\nProyek kami di Jatisampurna (Natureland Kiano 2) sudah sold out. Proyek terdekat yang tersedia adalah Natureland Kiano 3 di Cibarusah, Bekasi.{{/Jatisampurna}}{{#Jonggol}}bold_startRekomendasi:bold_end Green Jonggol Village, berlokasi di Jonggol - Bogor. (Harga mulai Rp 400 Juta){{/Jonggol}}{{#Bekasi}}bold_startRekomendasi untuk Bekasi:bold_end\nKami merekomendasikan Natureland Kiano 3 yang berlokasi di Cibarusah, Bekasi. (Harga mulai Rp 465 Juta){{/Bekasi}}{{#Cibubur}}bold_startRekomendasi untuk area Cibubur:bold_end\nProyek kami yang terdekat dari Cibubur (Natureland Kiano 2) sudah sold out. Alternatif lainnya adalah:\n\n🌳 Green Jonggol Village (Jonggol)\n🏡 Natureland Kiano 3 (Cibarusah)\n\nKetik 'info [nama proyek]' untuk detail.{{/Cibubur}}{{#fallback}}Maaf, kami belum memiliki proyek di lokasi tersebut.\n\nProyek kami saat ini berada di:\n- Cibarusah, Bekasi\n- Jonggol, Bogor{{/fallback}}"
+  ],
+  "syarat_dokumen": [
+    "bold_startProses & Syarat Dokumen KPR:bold_end\n\nBerikut adalah dokumen yang umumnya diperlukan:\n- KTP suami/istri\n- Kartu Keluarga\n- Surat Nikah (jika sudah menikah)\n- Slip gaji & Surat Keterangan Kerja (untuk karyawan)\n- SKU / NIB & Laporan Keuangan (untuk wiraswasta)\n- Rekening koran 3-6 bulan terakhir\n- NPWP\n\nJika Anda sudah siap dengan dokumen ini atau butuh bantuan lebih lanjut untuk memulai proses pembelian, tim kami siap membantu.\n\nSilakan hubungi tim Marketing & Informasi di nomor berikut:\n- **Kontak:** +62 811-1611-724"
+  ],
+  "welcome": [
+    "Halo! 👋 Selamat datang di Kiano Property Bot. Saya siap membantu Anda mencari informasi properti Kianoland Group.\n\nUntuk mulai, Anda bisa ketik:\n• `daftar proyek` - Lihat semua proyek\n• `promo` - Penawaran spesial\n• `bantuan` - Panduan lengkap\n\nApa yang bisa saya bantu hari ini?"
+  ]
+}

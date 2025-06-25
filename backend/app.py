@@ -1,252 +1,180 @@
+import os
+import random
+import numpy as np
+import threading
+import httpx
+from dotenv import load_dotenv
+
+# FastAPI
 from fastapi import FastAPI, HTTPException, Request
 from pydantic import BaseModel
-from fastapi.middleware.cors import CORSMiddleware
-import httpx
-from .local_nlp import detect_intent_local as detect_intent, load_intents
-import discord
-from discord.ext import commands
-import asyncio
-import threading
-from dotenv import load_dotenv
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
-import os
+from fastapi.middleware.cors import CORSMiddleware
 
-# 🚀 Initialize FastAPI
+# Discord
+import discord
+from discord.ext import commands
+
+# Import kelas IntentPredictor dari engine NLP baru kita
+from nlp_engine.local_nlp_level3 import IntentPredictor
+
+# --- Inisialisasi Aplikasi FastAPI ---
 app = FastAPI()
 
-# Menentukan path absolut ke direktori frontend
-frontend_dir = os.path.join(os.path.dirname(__file__), "..", "frontend")
+# --- Konfigurasi Path dan .env ---
+load_dotenv()
+backend_dir = os.path.dirname(os.path.abspath(__file__))
+project_root = os.path.dirname(backend_dir)
+frontend_dir = os.path.join(project_root, "frontend")
+nlp_engine_dir = os.path.join(project_root, "nlp_engine")
+model_path = os.path.join(nlp_engine_dir, 'intent_model.pkl')
+responses_path = os.path.join(nlp_engine_dir, 'responses.json')
 
-# Mount direktori frontend sebagai file statis
-# Pastikan path ini benar: /static akan menunjuk ke folder 'frontend' Anda
-app.mount("/static", StaticFiles(directory=frontend_dir), name="static")
+# --- Memuat Model NLP ---
+try:
+    predictor = IntentPredictor(model_path=model_path, responses_path=responses_path)
+    print("✅ Model NLP ('intent_model.pkl') berhasil dimuat.")
+except Exception as e:
+    print(f"❌ GAGAL memuat model NLP. Error: {e}")
+    predictor = None
 
-# Endpoint untuk menyajikan index.html dari root
-@app.get("/")
-async def serve_index():
-    return FileResponse(os.path.join(frontend_dir, "index.html"))
+# --- Modifikasi Metode Predict ---
+# Menyesuaikan metode 'predict' pada instance yang sudah dimuat
+# agar mengembalikan skor keyakinan untuk digunakan di seluruh aplikasi.
+def predict_with_confidence(self, text, confidence_threshold=0.2):
+    if not self.model:
+        return "Model belum dilatih.", "error", 0.0
+    predicted_intent = self.model.predict([text])[0]
+    confidence_scores = self.model.decision_function([text])
+    confidence = float(np.max(confidence_scores))
+    print(f"DEBUG: Teks='{text}', Prediksi='{predicted_intent}', Skor Keyakinan='{confidence:.4f}'")
+    if confidence < confidence_threshold:
+        fallback_intent = "default_fallback"
+        response_list = self.responses.get(fallback_intent, ["Maaf, saya tidak begitu mengerti. Bisa coba gunakan kalimat lain?"])
+        return random.choice(response_list), fallback_intent, confidence
+    response_list = self.responses.get(predicted_intent, [])
+    if not response_list:
+        return "Saya menemukan maksud Anda, tapi tidak ada respons yang disiapkan untuk itu.", predicted_intent, confidence
+    return random.choice(response_list), predicted_intent, confidence
 
+if predictor:
+    predictor.predict = predict_with_confidence.__get__(predictor, IntentPredictor)
+
+# --- Middleware CORS ---
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "https://kianolandgroup.com", 
-        "https://www.kianolandgroup.com",
-        "https://kianolandgroup.netlify.app", 
-        "http://localhost:8000",  # Untuk development
-        "kianoland-group-chatbot-ai-production.up.railway.app",
-    ],
-    allow_methods=["POST", "GET", "OPTIONS"],
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
     allow_headers=["*"],
-    allow_credentials=True
 )
 
-# 🛠️ Configurations from .env
-load_dotenv()
-
+# --- Konfigurasi Discord & Telegram ---
 DISCORD_TOKEN = os.getenv("DISCORD_TOKEN")
-if not DISCORD_TOKEN:
-    raise ValueError("FATAL ERROR: DISCORD_TOKEN is not set!")
-
 TELEGRAM_TOKEN = os.getenv("TELEGRAM_TOKEN")
-if not TELEGRAM_TOKEN:
-    raise ValueError("FATAL ERROR: TELEGRAM_TOKEN is not set!")
-
-dedicated_channel_id_str = os.getenv("DEDICATED_CHANNEL_ID")
-if not dedicated_channel_id_str:
-    raise ValueError("FATAL ERROR: DEDICATED_CHANNEL_ID is not set!")
-DEDICATED_CHANNEL_ID = int(dedicated_channel_id_str)
-
+DEDICATED_CHANNEL_ID = int(os.getenv("DEDICATED_CHANNEL_ID", "0"))
 TELEGRAM_WEBHOOK_URL = os.getenv("TELEGRAM_WEBHOOK_URL")
-if not TELEGRAM_WEBHOOK_URL:
-    raise ValueError("FATAL ERROR: TELEGRAM_WEBHOOK_URL is not set!")
-
 TELEGRAM_API_URL = f"https://api.telegram.org/bot{TELEGRAM_TOKEN}"
 
-BOT_PREFIXES = ('!', '/', '$')
-
-@app.post("/detect-intent")
-async def detect_intent_endpoint(text: str):
-    return detect_intent(text)
-
-@app.get("/")
-async def root():
-    return {"message": "Kiano Property Bot API is running"}
-
-# Initialize Discord Client
+# --- Logika Bot Discord ---
 intents = discord.Intents.default()
 intents.message_content = True
-intents.members = True
-discord_bot = commands.Bot(command_prefix=BOT_PREFIXES, intents=intents)
+discord_bot = commands.Bot(command_prefix="!", intents=intents)
 
-# Discord Models
-class DiscordMessage(BaseModel):
-    content: str
-    channel_id: int
-    author: dict
-
-# Discord Bot Functions
 def run_discord_bot():
+    if not DISCORD_TOKEN or not DEDICATED_CHANNEL_ID:
+        print("⚠️  Variabel lingkungan Discord (TOKEN/CHANNEL_ID) tidak diatur. Bot Discord tidak akan berjalan.")
+        return
+
     @discord_bot.event
     async def on_ready():
-        await discord_bot.change_presence(
-            activity=discord.Activity(
-                type=discord.ActivityType.watching,
-                name=f"#{discord_bot.get_channel(DEDICATED_CHANNEL_ID).name}"
-            )
-        )
-        print(f'Logged in as {discord_bot.user} (ID: {discord_bot.user.id})')
-
+        print(f'✅ Discord bot logged in as {discord_bot.user}')
         channel = discord_bot.get_channel(DEDICATED_CHANNEL_ID)
-        async for msg in channel.history(limit=5):
-            if msg.author == discord_bot.user and "PANDUAN" in msg.content:
-                break
-        else:
-            await channel.send(
-                "📌 **PANDUAN PENGGUNAAN**\n"
-                "1. Ketik `!info` untuk melihat promo properti\n"
-                "2. Gunakan `!konsul [pertanyaan]` untuk bantuan\n"
-                "3. Bot hanya aktif di channel ini"
-            )
+        if channel:
+            await discord_bot.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name=f"#{channel.name}"))
 
     @discord_bot.event
     async def on_message(message):
-        if message.author.bot:
+        if message.author.bot or message.channel.id != DEDICATED_CHANNEL_ID:
             return
 
-        # Handle commands first
-        ctx = await discord_bot.get_context(message)
-        if ctx.command:
-            await discord_bot.invoke(ctx)
-            return
-
-        try:
-            if message.channel.id == DEDICATED_CHANNEL_ID:
-                response = detect_intent(message.content)
-                if not response or 'discord' not in response:
-                    await message.reply("Maaf, terjadi kesalahan saat memproses permintaan Anda")
-                else:
-                    # Pecah pesan dan kirim satu per satu
-                    messages_to_send = response['discord'].split('|||')
-                    for msg in messages_to_send:
-                        if msg.strip(): # Pastikan pesan tidak kosong
-                            await message.reply(msg.strip())
-        except Exception as e:
-            print(f"Error processing message: {str(e)}")
-            await message.reply("Maaf, terjadi kesalahan. Silakan coba lagi.")
-
-    @discord_bot.command()
-    async def proyek(ctx):
-        result = detect_intent("daftar proyek")
-        await ctx.send(result['discord'])
-
-    @discord_bot.command()
-    async def info(ctx):
-        response = detect_intent("info properti")
-        await ctx.send(response['discord'])
-
-    @discord_bot.command()
-    async def konsul(ctx, *, question: str = None):
-        if not question:
-            await ctx.send("Silakan ajukan pertanyaan Anda setelah perintah `!konsul`. Contoh: `!konsul info harga Kiano 3`")
-            return
-
-        thread = await ctx.channel.create_thread(
-            name=f"Konsul-{ctx.author.display_name}",
-            type=discord.ChannelType.private_thread,
-            reason=f"Konsultasi properti oleh {ctx.author}"
-        )
-        response = detect_intent(question)
-        await thread.send(
-            f"🛎️ Konsultasi dimulai oleh {ctx.author.mention}!\n"
-            f"**Pertanyaan:** {question}\n\n"
-            f"**Jawaban:** {response['discord']}"
-        )
-        await ctx.message.delete()
+        if predictor:
+            # Menggunakan model NLP baru untuk merespons
+            response, intent, confidence = predictor.predict(message.content)
+            await message.reply(response)
+        else:
+            await message.reply("Maaf, model NLP sedang tidak aktif.")
 
     discord_bot.run(DISCORD_TOKEN)
 
-# REST API Endpoints
-@app.post("/discord-webhook")
-async def discord_webhook(message: DiscordMessage):
-    try:
-        if message.author.get("bot", False):
-            return {"status": "ignored"}
 
-        result = detect_intent(message.content)
-        channel = discord_bot.get_channel(message.channel_id)
-        await channel.send(result['discord'])
+# --- Endpoint Frontend Web ---
+app.mount("/static", StaticFiles(directory=os.path.join(frontend_dir, "static")), name="static")
 
-        return {"status": "success"}
-    except Exception as e:
-        raise HTTPException(400, str(e))
-
-# 🛠️ Konfigurasi Telegram
-TELEGRAM_API_URL = f"https://api.telegram.org/bot{TELEGRAM_TOKEN}"
-
-async def send_telegram_message(chat_id: int, text: str):
-    async with httpx.AsyncClient() as client:
-        await client.post(
-            f"{TELEGRAM_API_URL}/sendMessage",
-            json={"chat_id": chat_id, "text": text, "parse_mode": "HTML"}
-        )
+@app.get("/", include_in_schema=False)
+async def serve_index():
+    return FileResponse(os.path.join(frontend_dir, "index.html"))
 
 class ChatRequest(BaseModel):
     user_input: str
 
 @app.post("/chat")
-async def chat(request: ChatRequest):
+async def chat_endpoint(request: ChatRequest):
+    if not predictor:
+        raise HTTPException(status_code=500, detail="Model NLP tidak berhasil dimuat.")
     try:
-        result = detect_intent(request.user_input)
-        # Pecah respons menjadi beberapa pesan jika ada pemisah '|||'
-        formatted_responses = result['web'].split('|||')
-        
-        return {
-            "response": {
-                "raw": result['raw'],
-                "formatted": formatted_responses # Kirim sebagai list
-            }
-        }
+        answer, intent, confidence = predictor.predict(request.user_input)
+        debug_info = f"Intent: {intent}\nConfidence: {confidence:.4f}"
+        return {"answer": answer, "debug_info": debug_info}
     except Exception as e:
-        raise HTTPException(400, str(e))
+        raise HTTPException(status_code=500, detail=f"Terjadi kesalahan internal: {e}")
+
+# --- Endpoint Telegram Webhook ---
+async def send_telegram_message(chat_id: int, text: str):
+    async with httpx.AsyncClient() as client:
+        await client.post(f"{TELEGRAM_API_URL}/sendMessage", json={"chat_id": chat_id, "text": text, "parse_mode": "HTML"})
 
 @app.post("/telegram-webhook")
 async def telegram_webhook(request: Request):
+    if not predictor:
+        return {"ok": False, "error": "Model NLP tidak aktif"}
     try:
         update = await request.json()
-        print("Received Telegram update:", update)  # Log update
-        
         if "message" in update:
             chat_id = update["message"]["chat"]["id"]
             text = update["message"].get("text", "")
-
-            result = detect_intent(text)
-
-            # Pecah pesan dan kirim satu per satu
-            messages_to_send = result['telegram'].split('|||')
-            for msg in messages_to_send:
-                if msg.strip(): # Pastikan pesan tidak kosong
-                    await send_telegram_message(chat_id, msg.strip())
-            
+            if text:
+                response, _, _ = predictor.predict(text)
+                await send_telegram_message(chat_id, response)
         return {"ok": True}
     except Exception as e:
-        print("Error in telegram_webhook:", str(e))  # Log error
-        raise HTTPException(500, "Internal Server Error")
+        print(f"Error di webhook Telegram: {e}")
+        return {"ok": False}
 
+
+# --- Event Startup & Health Check ---
 @app.on_event("startup")
 async def startup_event():
-    load_intents()
-    thread = threading.Thread(target=run_discord_bot, daemon=True)
-    thread.start()
+    # Jalankan bot Discord di thread terpisah
+    discord_thread = threading.Thread(target=run_discord_bot, daemon=True)
+    discord_thread.start()
 
-    # Telegram webhook setup
-    async with httpx.AsyncClient() as client:
-        res = await client.post(
-            f"{TELEGRAM_API_URL}/setWebhook",
-            json={"url": TELEGRAM_WEBHOOK_URL}
-        )
-        print("Telegram setWebhook result:", res.json())
+    # Atur webhook untuk Telegram
+    if TELEGRAM_TOKEN and TELEGRAM_WEBHOOK_URL:
+        async with httpx.AsyncClient() as client:
+            try:
+                response = await client.post(f"{TELEGRAM_API_URL}/setWebhook", json={"url": TELEGRAM_WEBHOOK_URL})
+                if response.status_code == 200:
+                    print("✅ Webhook Telegram berhasil diatur.")
+                else:
+                    print(f"❌ Gagal mengatur webhook Telegram: {response.text}")
+            except Exception as e:
+                print(f"❌ Error saat menghubungkan ke API Telegram: {e}")
+    else:
+        print("⚠️  Variabel lingkungan Telegram (TOKEN/WEBHOOK_URL) tidak diatur. Integrasi Telegram tidak akan berjalan.")
+
 
 @app.get("/health")
 async def health_check():
-    return {"status": "online"}
+    return {"status": "online", "model_loaded": predictor is not None}

@@ -26,7 +26,16 @@
         {"text": "saya ingin beli rumah di "}, 
         {"text": "kiano 3", "entityType": "@proyek"}
     ]},
-    {"parts": [{"text": "bisa bantu proses pembelian?"}]}
+    {"parts": [{"text": "bisa bantu proses pembelian?"}]},
+    {"parts": [{"text": "Prosedur pembelian rumahnya gimana?"}]},
+    {"parts": [{"text": "Jelaskan alur pembelian"}]},
+    {"parts": [{"text": "Gimana proses pembayaran?"}]},
+    {"parts": [{"text": "Tahapan pembayaran rumah"}]},
+    {"parts": [{"text": "Sistem pembayaran di Kianoland"}]},
+    {"parts": [{"text": "Cara pembayaran rumah"}]},
+    {"parts": [{"text": "Metode pembayaran"}]},
+    {"parts": [{"text": "Tahapan bayar rumah"}]},
+    {"parts": [{"text": "Langkah-langkah pembelian"}]}
   ],
   "messages": [
     {

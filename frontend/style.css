@@ -1,269 +1,146 @@
-/* styles.css */
 body {
-    background-color: #f8f9fa;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    background-color: #f0f2f5;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    padding: 20px;
 }
 
-/* Hide scrollbar but keep scroll functionality */
-#messages {
-    overflow: auto;
-    scrollbar-width: none; /* Firefox */
-    -ms-overflow-style: none;  /* Internet Explorer 10+ */
+.main-container {
+    display: flex;
+    gap: 25px;
+    width: 100%;
+    max-width: 1200px;
+    height: 90vh;
 }
 
-#messages::-webkit-scrollbar {
-    display: none;  /* Chrome, Safari, Opera */
+.chatbot-container, .debug-container {
+    background-color: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.07);
+    display: flex;
+    flex-direction: column;
+    border: 1px solid #e0e0e0;
 }
 
 .chatbot-container {
-    width: 100%;
-    max-width: 500px;
-    border-radius: 15px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    flex: 3; /* Lebar 3 bagian */
 }
 
-.chatbox {
-    height: 400px;
+.debug-container {
+    flex: 2; /* Lebar 2 bagian */
+}
+
+.header {
+    background-color: #007bff;
+    color: white;
+    padding: 15px 20px;
+    border-top-left-radius: 12px;
+    border-top-right-radius: 12px;
+    text-align: left;
+}
+
+.header h2, .header h3 {
+    margin: 0;
+    font-size: 1.2em;
+    font-weight: 600;
+}
+
+.header span {
+    font-size: 0.8em;
+    opacity: 0.9;
+}
+
+.chat-window {
+    flex-grow: 1;
     padding: 20px;
-    display: flex;
-    flex-direction: column;
-    gap: 8px; /* Mengurangi jarak antar pesan */
     overflow-y: auto;
-    background-color: #f0f2f5 !important; /* Warna latar mirip WhatsApp/Telegram */
-    color: #333;
-    border-radius: 10px;
-    flex-grow: 1;
-}
-
-#messages {
     display: flex;
     flex-direction: column;
-    gap: 6px !important;
-    flex-grow: 1;
+    gap: 12px;
 }
 
 .message {
-    position: relative;
-    max-width: 85% !important;
-    min-width: 150px;
-    padding: 10px 14px !important;
-    border-radius: 20px;
-    margin-bottom: 6px !important;
-    font-size: 16px;
-    line-height: 1.4;
-    background-color: #f1f1f1;
-    word-wrap: break-word;
-    display: inline-block;
-}
-
-.user-message {
-    background: #007bff !important;
-    color: white !important;
-    border-radius: 18px 18px 4px 18px !important;
-    align-self: flex-end;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    position: relative;
-    max-width: 80%;
+    max-width: 85%;
+    padding: 12px 18px;
+    border-radius: 22px;
+    line-height: 1.5;
     word-wrap: break-word;
 }
 
 .bot-message {
-    background: #ffffff !important;
-    color: #333 !important;
-    border-radius: 18px 18px 18px 4px !important;
+    background-color: #e9e9eb;
+    color: #2c2c2e;
     align-self: flex-start;
-    box-shadow: 0 1px 1px rgba(0,0,0,0.1);
+    border-bottom-left-radius: 5px;
 }
 
-/* PERBAIKAN TIMESTAMP PESAN BOT */
-.bot-message .time {
-    color: rgba(0, 0, 0, 0.4) !important; /* Warna abu-abu gelap */
-    text-align: left;
+.user-message {
+    background-color: #007bff;
+    color: white;
+    align-self: flex-end;
+    border-bottom-right-radius: 5px;
 }
 
-/* PERBAIKAN TIMESTAMP PESAN USER */
-.user-message .time {
-    color: rgba(255, 255, 255, 0.7) !important; /* Tetap putih transparan */
-    text-align: right;
+.message p {
+    margin: 0;
 }
 
-/* PERBAIKAN LAYOUT TIMESTAMP */
-.time {
-    position: relative !important;
-    display: block;
-    font-size: 11px !important;
-    margin-top: 4px;
-    bottom: auto !important;
-    right: auto !important;
-    left: auto !important;
-}
-
-.input-group {
+.chat-input-area {
     display: flex;
+    padding: 15px;
+    border-top: 1px solid #e0e0e0;
     gap: 10px;
 }
 
 #user-input {
-    border-radius: 30px;
+    flex-grow: 1;
+    border: 1px solid #ccc;
+    border-radius: 20px;
+    padding: 10px 18px;
+    font-size: 1em;
+    outline: none;
+    transition: border-color 0.2s;
 }
 
-button {
-    border-radius: 30px;
+#user-input:focus {
+    border-color: #007bff;
 }
 
-.options-button {
-    border-radius: 10px;
-    padding: 10px;
+#send-btn {
     background-color: #007bff;
     color: white;
     border: none;
+    border-radius: 20px;
+    padding: 0 20px;
     cursor: pointer;
-    font-size: 14px;
-    margin: 5px;
+    font-weight: 500;
+    font-size: 1em;
+    transition: background-color 0.2s;
 }
 
-.options-button:hover {
+#send-btn:hover {
     background-color: #0056b3;
 }
 
-/* Pastikan .chat-message menangani format teks */
-.chat-message {
-    white-space: pre-line;
-    line-height: 1.5;
-    text-align: left;
+.debug-content {
+    padding: 20px;
+    overflow-y: auto;
+    font-size: 0.9em;
+    color: #333;
 }
 
-/* Style untuk bullet points */
-.chat-message ul {
-    padding-left: 20px;
-    margin: 5px 0;
-}
-
-.chat-message li {
-    list-style-type: disc;
-    margin-bottom: 5px;
-}
-
-.chat-message strong {
-    font-weight: bold;
-    color: #2c3e50;
-}
-
-/* Untuk Telegram-like preview */
-.chat-message b {
-    font-weight: bold;
-    color: inherit;
-}
-
-/* Penyesuaian waktu */
-.time {
-    display: block;
-    font-size: 11px;
-    color: rgba(255, 255, 255, 0.7);
-    margin-top: 5px;
-    text-align: right;
-}
-
-.bot-message .time {
-    text-align: left;
-}
-
-/* Telegram-like styles */
-.quick-replies {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    margin-top: 10px;
-}
-
-.quick-reply-btn {
-    background: #E6E6E6;
-    border: none;
-    border-radius: 15px;
-    padding: 8px 12px;
-    font-size: 14px;
-    cursor: pointer;
-    transition: background 0.2s;
-}
-
-.quick-reply-btn:hover {
-    background: #D1D1D1;
-}
-
-.message {
-    max-width: 80%;
-    padding: 8px 12px;
-    border-radius: 7.5px;
-    margin-bottom: 10px;
-    position: relative;
-}
-
-.bot-message {
-    background: #E6E6E6;
-    color: #333; /* Warna teks gelap untuk kontras */
-    align-self: flex-start;
-    border-radius: 20px 20px 20px 0;
-}
-
-.user-message {
-    background: #007bff;
-    color: white;
-    align-self: flex-end;
-    border-top-right-radius: 0;
-}
-
-/* Tambahkan style untuk header baru */
-.chat-header {
-    background-color: #0071C8;
-    color: white;
+#debug-info {
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    background-color: #f8f9fa;
     padding: 15px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    position: relative;
-    z-index: 2;
-    border-top-left-radius: 15px;
-    border-top-right-radius: 15px;
-}
-
-.chat-title h5 {
-    margin: 0;
-    font-size: 16px;
-    font-weight: 600;
-}
-
-.chat-title p {
-    margin: 2px 0 0;
-    font-size: 12px;
-    opacity: 0.8;
-}
-
-.status-indicator {
-    font-size: 12px;
-    display: inline-block;
-    padding: 2px 8px;
-    border-radius: 10px;
-}
-
-.status-indicator.online {
-    background-color: #28a745;
-    color: white;
-}
-
-.status-indicator.offline {
-    background-color: #dc3545;
-    color: white;
-}
-
-.status-indicator:before {
-    content: "•";
-    margin-right: 5px;
-    font-size: 16px;
-}
-
-.status-indicator.online:before {
-    color: #28a745;
-}
-
-.status-indicator.offline:before {
-    color: #dc3545;
+    border-radius: 8px;
+    border: 1px solid #eee;
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 1.1em;
+    min-height: 50px;
 }

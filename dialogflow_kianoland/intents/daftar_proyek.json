@@ -48,7 +48,10 @@
     {"parts": [{"text": "ada pilihan properti apa aja?"}]},
     {"parts": [{"text": "mau cek proyek yang ready"}]},
     {"parts": [{"text": "saya mau tau produknya"}]},
-    {"parts": [{"text": "kalian jual rumah apa aja?"}]}
+    {"parts": [{"text": "kalian jual rumah apa aja?"}]},
+    {"parts": [{"text": "Properti"}]},
+    {"parts": [{"text": "Perumahan"}]},
+    {"parts": [{"text": "Rumah"}]}
   ],
   "messages": [
     {

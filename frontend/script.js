@@ -1,154 +1,82 @@
-const messageContainer = document.getElementById('messages');
-const userInput = document.getElementById('user-input');
-const sendButton = document.getElementById('send-button');
+document.addEventListener("DOMContentLoaded", function() {
+    const chatWindow = document.getElementById('chat-window');
+    const userInput = document.getElementById('user-input');
+    const sendBtn = document.getElementById('send-btn');
+    const debugInfo = document.getElementById('debug-info');
 
-// Fungsi untuk mendapatkan waktu dalam format jam:menit AM/PM
-function getCurrentTime() {
-    const now = new Date();
-    let hours = now.getHours();
-    let minutes = now.getMinutes();
-    const ampm = hours >= 12 ? 'PM' : 'AM'; // Tentukan AM/PM
-    hours = hours % 12;
-    hours = hours ? hours : 12; // jam 0 harus menjadi 12
-    minutes = minutes < 10 ? '0' + minutes : minutes; // Format menit agar selalu dua digit
-    return `${hours}:${minutes} ${ampm}`;
-}
-
-// Fungsi untuk menambahkan pesan dari pengguna
-function addUserMessage(message) {
-    const userMessage = document.createElement('div');
-    userMessage.classList.add('message', 'user-message');
-    userMessage.innerHTML = `
-        ${message}
-        <span class="time">${getCurrentTime()}</span>
-    `;
-    messageContainer.appendChild(userMessage);
-    scrollToBottom();
-}
-
-// Fungsi untuk menambahkan pesan dari bot
-function addBotMessage(message) {
-    const botMessage = document.createElement('div');
-    botMessage.classList.add('message', 'bot-message');
-    botMessage.innerHTML = `
-        ${message}
-        <span class="time">${getCurrentTime()}</span>
-    `;
-    messageContainer.appendChild(botMessage);
-    scrollToBottom();
-}
-
-// Fungsi untuk menggulir ke bawah setiap kali pesan baru ditambahkan
-function scrollToBottom() {
-    messageContainer.scrollTop = messageContainer.scrollHeight;
-}
-
-// Fungsi untuk memproses respons kaya (rich response)
-function handleRichResponse(response) {
-    const responses = response.formatted;
-
-    if (Array.isArray(responses)) {
-        // Jika backend mengirim sebuah array/list pesan
-        responses.forEach((msg, index) => {
-            // Beri jeda 1 detik untuk setiap pesan baru agar terlihat alami
-            setTimeout(() => {
-                if (msg.trim()) { // Pastikan pesan tidak kosong
-                    addBotMessage(msg.trim());
-                }
-            }, index * 1000);
-        });
-    } else if (typeof responses === 'string') {
-        // Jika backend mengirim pesan tunggal (sebagai fallback)
-        addBotMessage(responses);
-    } else if (response.raw) {
-        // Fallback jika 'formatted' tidak ada
-        addBotMessage(response.raw);
+    // Fungsi untuk menambahkan pesan ke jendela chat
+    function addMessage(text, sender) {
+        const messageDiv = document.createElement('div');
+        messageDiv.classList.add('message', `${sender}-message`);
+        const p = document.createElement('p');
+        p.innerHTML = text.replace(/\n/g, '<br>'); // Mengganti newline dengan <br>
+        messageDiv.appendChild(p);
+        chatWindow.appendChild(messageDiv);
+        chatWindow.scrollTop = chatWindow.scrollHeight;
     }
-}
+    
+    // Fungsi untuk menampilkan status 'mengetik...' dari bot
+    function showBotTyping() {
+        let typingMessage = document.querySelector('.bot-typing');
+        if (!typingMessage) {
+            typingMessage = document.createElement('div');
+            typingMessage.classList.add('message', 'bot-message', 'bot-typing');
+            typingMessage.innerHTML = `<p><span>.</span><span>.</span><span>.</span></p>`;
+            chatWindow.appendChild(typingMessage);
+            chatWindow.scrollTop = chatWindow.scrollHeight;
+        }
+    }
 
-// Fungsi utama untuk menangani respons dari server
-async function sendMessage() {
-    const message = userInput.value.trim();
-    if (message) {
-        addUserMessage(message);
+    // Fungsi untuk menghapus status 'mengetik...'
+    function hideBotTyping() {
+        const typingMessage = document.querySelector('.bot-typing');
+        if (typingMessage) {
+            chatWindow.removeChild(typingMessage);
+        }
+    }
+
+    // Fungsi utama untuk mengirim pesan ke backend
+    async function sendMessage() {
+        const messageText = userInput.value.trim();
+        if (messageText === '') return;
+
+        addMessage(messageText, 'user');
         userInput.value = '';
-        
+        showBotTyping();
+
         try {
             const response = await fetch('/chat', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ 
-                    user_input: message
-                })
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ user_input: messageText }),
             });
-            
+
+            hideBotTyping();
+
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
-            
+
             const data = await response.json();
-            handleRichResponse(data.response); // Panggil fungsi handler di sini
             
+            // Tampilkan jawaban bot
+            addMessage(data.answer, 'bot');
+            
+            // Tampilkan info debug di panel sebelah kanan
+            debugInfo.textContent = data.debug_info;
+
         } catch (error) {
+            hideBotTyping();
             console.error('Error:', error);
-            addBotMessage("Maaf, terjadi kesalahan saat memproses permintaan Anda.");
+            addMessage('Maaf, terjadi kesalahan saat menghubungi server.', 'bot');
+            debugInfo.textContent = `Error: ${error.message}`;
         }
     }
-}
 
-// Update event listener
-sendButton.addEventListener('click', sendMessage);
-userInput.addEventListener('keypress', (e) => {
-    if (e.key === 'Enter') sendMessage();
+    sendBtn.addEventListener('click', sendMessage);
+    userInput.addEventListener('keypress', (event) => {
+        if (event.key === 'Enter') {
+            sendMessage();
+        }
+    });
 });
-
-// Fungsi untuk memformat pesan bot
-function formatBotMessage(message) {
-    // Biarkan HTML tags tetap utuh
-    return message
-        .replace(/\n/g, '<br>')
-        .replace(/•/g, '•');
-}
-
-// Update fungsi addBotMessage
-function addBotMessage(message) {
-    const botMessage = document.createElement('div');
-    botMessage.classList.add('message', 'bot-message');
-    botMessage.innerHTML = `
-        <div class="chat-message">${message}</div>
-        <span class="time">${getCurrentTime()}</span>
-    `;
-    messageContainer.appendChild(botMessage);
-    scrollToBottom();
-}
-
-// Fungsi untuk memeriksa status server
-async function checkServerStatus() {
-    try {
-        const response = await fetch('/health');
-        if (response.ok) {
-            updateStatusIndicator(true);
-        } else {
-            updateStatusIndicator(false);
-        }
-    } catch (error) {
-        updateStatusIndicator(false);
-    }
-}
-
-// Fungsi untuk mengupdate indikator status
-function updateStatusIndicator(isOnline) {
-    const statusElement = document.querySelector('.status-indicator');
-    if (statusElement) {
-        statusElement.textContent = isOnline ? 'Online' : 'Offline';
-        statusElement.className = isOnline ? 'status-indicator online' : 'status-indicator offline';
-    }
-}
-
-// Panggil fungsi check setiap 10 detik
-setInterval(checkServerStatus, 10000);
-
-// Cek status saat pertama kali load
-document.addEventListener('DOMContentLoaded', checkServerStatus);
