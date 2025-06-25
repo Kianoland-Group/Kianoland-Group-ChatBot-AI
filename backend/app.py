@@ -40,8 +40,6 @@ except Exception as e:
     predictor = None
 
 # --- Modifikasi Metode Predict ---
-# Menyesuaikan metode 'predict' pada instance yang sudah dimuat
-# agar mengembalikan skor keyakinan untuk digunakan di seluruh aplikasi.
 def predict_with_confidence(self, text, confidence_threshold=0.2):
     if not self.model:
         return "Model belum dilatih.", "error", 0.0
@@ -70,6 +68,31 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# --- Mounting File Statis untuk Frontend ---
+# PERBAIKAN: Langsung menunjuk ke `frontend_dir` karena tidak ada subfolder `static`
+app.mount("/static", StaticFiles(directory=frontend_dir), name="static")
+
+# --- Definisi Model Request ---
+class ChatRequest(BaseModel):
+    user_input: str
+
+# --- API Endpoints ---
+@app.get("/", include_in_schema=False)
+async def serve_index():
+    """Menyajikan halaman utama frontend."""
+    return FileResponse(os.path.join(frontend_dir, "index.html"))
+
+@app.post("/chat")
+async def chat_endpoint(request: ChatRequest):
+    if not predictor:
+        raise HTTPException(status_code=500, detail="Model NLP tidak berhasil dimuat.")
+    try:
+        answer, intent, confidence = predictor.predict(request.user_input)
+        debug_info = f"Intent: {intent}\nConfidence: {confidence:.4f}"
+        return {"answer": answer, "debug_info": debug_info}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Terjadi kesalahan internal: {e}")
+
 # --- Konfigurasi Discord & Telegram ---
 DISCORD_TOKEN = os.getenv("DISCORD_TOKEN")
 TELEGRAM_TOKEN = os.getenv("TELEGRAM_TOKEN")
@@ -86,49 +109,22 @@ def run_discord_bot():
     if not DISCORD_TOKEN or not DEDICATED_CHANNEL_ID:
         print("⚠️  Variabel lingkungan Discord (TOKEN/CHANNEL_ID) tidak diatur. Bot Discord tidak akan berjalan.")
         return
-
     @discord_bot.event
     async def on_ready():
         print(f'✅ Discord bot logged in as {discord_bot.user}')
         channel = discord_bot.get_channel(DEDICATED_CHANNEL_ID)
         if channel:
             await discord_bot.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name=f"#{channel.name}"))
-
     @discord_bot.event
     async def on_message(message):
         if message.author.bot or message.channel.id != DEDICATED_CHANNEL_ID:
             return
-
         if predictor:
-            # Menggunakan model NLP baru untuk merespons
-            response, intent, confidence = predictor.predict(message.content)
+            response, _, _ = predictor.predict(message.content)
             await message.reply(response)
         else:
             await message.reply("Maaf, model NLP sedang tidak aktif.")
-
     discord_bot.run(DISCORD_TOKEN)
-
-
-# --- Endpoint Frontend Web ---
-app.mount("/static", StaticFiles(directory=os.path.join(frontend_dir, "static")), name="static")
-
-@app.get("/", include_in_schema=False)
-async def serve_index():
-    return FileResponse(os.path.join(frontend_dir, "index.html"))
-
-class ChatRequest(BaseModel):
-    user_input: str
-
-@app.post("/chat")
-async def chat_endpoint(request: ChatRequest):
-    if not predictor:
-        raise HTTPException(status_code=500, detail="Model NLP tidak berhasil dimuat.")
-    try:
-        answer, intent, confidence = predictor.predict(request.user_input)
-        debug_info = f"Intent: {intent}\nConfidence: {confidence:.4f}"
-        return {"answer": answer, "debug_info": debug_info}
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Terjadi kesalahan internal: {e}")
 
 # --- Endpoint Telegram Webhook ---
 async def send_telegram_message(chat_id: int, text: str):
@@ -152,15 +148,11 @@ async def telegram_webhook(request: Request):
         print(f"Error di webhook Telegram: {e}")
         return {"ok": False}
 
-
 # --- Event Startup & Health Check ---
 @app.on_event("startup")
 async def startup_event():
-    # Jalankan bot Discord di thread terpisah
     discord_thread = threading.Thread(target=run_discord_bot, daemon=True)
     discord_thread.start()
-
-    # Atur webhook untuk Telegram
     if TELEGRAM_TOKEN and TELEGRAM_WEBHOOK_URL:
         async with httpx.AsyncClient() as client:
             try:
@@ -173,7 +165,6 @@ async def startup_event():
                 print(f"❌ Error saat menghubungkan ke API Telegram: {e}")
     else:
         print("⚠️  Variabel lingkungan Telegram (TOKEN/WEBHOOK_URL) tidak diatur. Integrasi Telegram tidak akan berjalan.")
-
 
 @app.get("/health")
 async def health_check():
